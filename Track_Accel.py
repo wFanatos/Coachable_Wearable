@@ -1,7 +1,17 @@
+"""
+#    FILE:          Track_Accel.py
+#    PROGRAMMER:    William Bicknell
+#    FIRST VERSION: January 25, 2020
+#    DESCRIPTION:   This file runs a test skiing metrics tracker that uses
+#                   acceleration to determine when a run starts and ends.
+"""
+
+
 from sense_hat import SenseHat
 from Metrics import Metrics
 import socket
 import time
+import timeit
 
 sense = SenseHat()
 sense.get_pressure()
@@ -30,13 +40,22 @@ endAt = 2 # approx 1 sec of end conditions
 
 
 def calcAltitude(pressure, temp):
-    # Using Hypsometric formula
+    """
+    Calculates altitude using the Hypsometric formula.
+    
+    Args:
+    pressure -- The pressure (in hPa/millibars) to use
+    temp -- The temperature (in Celsius) to use
+    """
     h = (((pow((SEA_LVL_PRESSURE / pressure), (1 / 5.257)) - 1) * (temp + 273.15)) / 0.0065) * 3.281
     return h
     
 
 def checkConnection():
-    # Check by trying to connect to Google DNS
+    """
+    Checks if a connection is available by trying to connect
+    to Google's DNS servers.
+    """
     try:
         socket.setdefaulttimeout(3)
         socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect(("8.8.8.8", 53))
@@ -48,12 +67,12 @@ def checkConnection():
 
 
 # Calibrate acceleration
-numSamples = 1024
+numSamples = 256
 for i in range(0, numSamples):
     rawAccel = sense.get_accelerometer_raw()
     accelNoiseX += rawAccel['x']
     accelNoiseY += rawAccel['y']
-    
+
 accelNoiseX /= numSamples
 accelNoiseY /= numSamples
 print(accelNoiseX)
@@ -80,8 +99,7 @@ while True:
 
     if (runOngoing):
         # Track pressure and temperature during run
-        metrics.pressureReadings.append(currentPressure)
-        metrics.tempReadings.append(currentTemp)
+        metrics.inputReadings(currentTemp, currentPressure)
 
         # Check for run end conditions
         if (currentAccelX > -MIN_ACCEL_DIFF and currentAccelX < MIN_ACCEL_DIFF and currentAccelY > -MIN_ACCEL_DIFF and currentAccelY < MIN_ACCEL_DIFF):
