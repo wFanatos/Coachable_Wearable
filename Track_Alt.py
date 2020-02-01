@@ -17,7 +17,7 @@ sense.get_pressure()
 sense.get_temperature()
 runOngoing = False;
 
-MIN_ALTITUDE_DIFF = 0.5;
+MIN_ALTITUDE_DIFF = 0.75;
 SEA_LVL_PRESSURE = 1013.25
 
 metrics = Metrics()
@@ -25,7 +25,7 @@ metrics = Metrics()
 lastAltitude = 0
 currentAltitude = 0
 altCount = 0
-altitudes = []
+altSum = 0
 
 checkConnCount = 0
 checkConnAt = 10 # approx every 5 sec
@@ -68,20 +68,17 @@ while True:
     currentTemp = sense.get_temperature()
 
     altCount += 1
-    altitudes.append(calcAltitude(currentPressure, currentTemp))
+    altSum += calcAltitude(currentPressure, currentTemp)
     
-    # Happens every ~0.5 sec
-    if (altCount >= 5):
-        sumAlt = 0
+    # Happens every ~1 sec
+    if (altCount >= 10):
         lastAltitude = currentAltitude
-        for alt in altitudes:
-            sumAlt += alt
         
         # Get average of last 10 altitudes
-        currentAltitude = sumAlt / altCount
+        currentAltitude = altSum / altCount
         print("Alt: %.2f ft" % currentAltitude)
         altCount = 0
-        altitudes = []
+        altSum = 0
     
         if (runOngoing):
             # Track pressure and temperature during run
