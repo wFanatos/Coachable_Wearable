@@ -14,9 +14,8 @@ from datetime import date
 
 MIN_RUN_LENGTH = 5
 METRICS_FILE_NAME = "./metrics.json"
+PROG_DATA_FILE_NAME = "./prog.dat"
 
-# TODO: Store run number so when shutdown can remember
-# TODO: Change Track_Accel to use velocity
 
 class Metrics:
     """
@@ -28,15 +27,19 @@ class Metrics:
         Init all variables and data file
         """
         self.url = "https://webhook.site/6c07f778-07f7-45b8-9a4b-35bd2ca04e3b"
+        self.numTotalRuns = 0
         self.numRuns = 0
         self.startTime = ""
         self.pressureSum = 0
         self.temperatureSum = 0
         self.readingsCount = 0
-        self.runJson = ""
+        self.runData = {}
         
         # Init metrics json file
         self.initFile()
+        
+        # Load prog data
+        self.loadProgData()
     
     
     def initFile(self, reset=False):
@@ -49,6 +52,25 @@ class Metrics:
         if (reset or not os.path.exists(METRICS_FILE_NAME)):
             file = open(METRICS_FILE_NAME, "w")
             file.write('{ "Runs": [')
+            file.close()
+    
+    
+    def saveProgData(self):
+        """
+        Saves the current program data for use between program uses
+        """
+        file = open(PROG_DATA_FILE_NAME, "w")
+        file.write(str(self.numTotalRuns))
+        file.close()
+        
+        
+    def loadProgData(self):
+        """
+        Loads the saved program data if it exists
+        """
+        if (os.path.exists(PROG_DATA_FILE_NAME)):
+            file = open(PROG_DATA_FILE_NAME, "r")
+            self.numTotalRuns = int(file.read())
             file.close()
     
     
@@ -98,8 +120,12 @@ class Metrics:
         self.startTime = datetime.datetime.now()
         
         self.initFile()
-        self.runJson = '{"RunNumber":%d, "Date":"%s", "StartAltitude":%.2f, "StartTime":"%s",'
-        self.runJson = self.runJson % (self.numRuns + 1, date.today().strftime("%m/%d/%Y"), altitude, self.startTime.strftime("%H:%M:%S"))
+        self.runData = {
+            "RunNumber": self.numRuns + 1,
+            "Date": date.today().strftime("%m/%d/%Y"),
+            "StartAltitude": float("%.2f" % altitude),
+            "StartTime": self.startTime.strftime("%H:%M:%S")
+        }
         print("Start run\n")
         
         
@@ -118,12 +144,17 @@ class Metrics:
             temperatureAvg = self.temperatureSum / self.readingsCount
             pressureAvg = self.pressureSum / self.readingsCount
             
-            self.runJson += '"EndTime":"%s", "EndAltitude":%.2f, "Length":"%s", "AvgTemperature":%.2f, "AvgPressure":%.2f},'
-            self.runJson = self.runJson % (endTime.strftime("%H:%M:%S"), altitude, runLength, temperatureAvg, pressureAvg)
+            self.runData["EndTime"] = endTime.strftime("%H:%M:%S")
+            self.runData["EndAltitude"] = float("%.2f" % altitude)
+            self.runData["Length"] = str(runLength)
+            self.runData["AvgTemperature"] = float("%.2f" % temperatureAvg)
+            self.runData["AvgPressure"] = float("%.2f" % pressureAvg)
             self.numRuns += 1
+            self.numTotalRuns += 1
+            self.saveProgData()
             
             file = open(METRICS_FILE_NAME, "a")
-            file.write(self.runJson)
+            file.write(json.dumps(self.runData) + ",")
             file.close()
             
             print("End run\n")
