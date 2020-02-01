@@ -11,7 +11,6 @@ from sense_hat import SenseHat
 from Metrics import Metrics
 import socket
 import time
-import timeit
 
 sense = SenseHat()
 sense.get_pressure()
