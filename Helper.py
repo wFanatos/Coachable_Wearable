@@ -82,41 +82,47 @@ def SearchLog(module="", msgType="", last=0):
         with open(Logger.LOG_FILE) as file:
             lines = file.readlines()
         lines = [line.strip() for line in lines]
+        lines.reverse()
+        printLines = []
         
         print()
         
-        numFound = 0
         if (not module == ""):
             for line in lines:
                 info = line.split(" - ")
                 
                 if (info[1] == module):
-                    print(line)
-                    numFound += 1
+                    printLines.append(line)
+                    if (len(printLines) >= last):
+                        break
+                    
+            print("Displaying last %d messages for module %s" % (last, module))
         elif (not msgType == ""):
             for line in lines:
                 info = line.split(" - ")
                 
                 if (info[2] == msgType):
-                    print(line)
-                    numFound += 1
-        elif (not last == 0):
-            lines.reverse()
-            printLines = []
+                    printLines.append(line)
+                    if (len(printLines) >= last):
+                        break
             
+            print("Displaying last %d messages for type %s" % (last, module))
+        elif (not last == 0):
             if (last > len(lines)):
                 last = len(lines)
+                print("Displaying all %d messages" % last)
+            else:
+                print("Displaying last %d messages" % last)
             
             for i in range(0, last):
                 printLines.append(lines[i])
-                numFound += 1
             
-            printLines.reverse()
-            
-            for line in printLines:
-                print(line)
+        printLines.reverse()
+        
+        for line in printLines:
+            print(line)
                     
-        if (numFound == 0):
+        if (len(printLines) == 0):
             print("No log messages found")
         
     print("\nPress ENTER to continue...")
@@ -168,11 +174,21 @@ def LogMenu():
         userIn = input("\nEnter a selection: ")
         
         if (userIn == "1"):
-            userIn = input("\nEnter a module name: ")
-            SearchLog(module=userIn)
+            inModule = input("\nEnter a module name: ")
+            userIn = input("\nHow many: ")
+            
+            if (userIn.isdigit() and int(userIn) >= 0):
+                SearchLog(module=inModule, last=int(userIn))
+            else:
+                "Invalid input! Expected a valid positive integer!"
         elif (userIn == "2"):
-            userIn = input("\nEnter a type: ")
-            SearchLog(msgType=userIn)
+            inType = input("\nEnter a type: ")
+            userIn = input("\nHow many: ")
+            
+            if (userIn.isdigit() and int(userIn) >= 0):
+                SearchLog(msgType=inType, last=int(userIn))
+            else:
+                "Invalid input! Expected a valid positive integer!"
         elif (userIn == "3"):
             userIn = input("\nHow many: ")
             
