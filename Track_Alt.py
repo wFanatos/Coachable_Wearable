@@ -9,6 +9,7 @@
 
 from sense_hat import SenseHat
 from Metrics import Metrics
+from Logger import *
 import socket
 import time
 
@@ -53,16 +54,18 @@ def checkConnection():
     Checks if a connection is available by trying to connect
     to Google's DNS servers.
     """
+    LogInfo(__name__, "Checking if internet connection is available")
     try:
         socket.setdefaulttimeout(3)
         socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect(("8.8.8.8", 53))
-        print("Attempt connect success")
+        LogInfo(__name__, "Internet connection found")
         return True
     except:
-        print("Attempt connect failed")
+        LogInfo(__name__, "Could not detect internet connection")
         return False
 
 
+LogInfo(__name__, "Starting metrics tracking (altitude version)")
 while True:
     currentPressure = sense.get_pressure()
     currentTemp = sense.get_temperature()
@@ -76,7 +79,7 @@ while True:
         
         # Get average of last 10 altitudes
         currentAltitude = altSum / altCount
-        print("Alt: %.2f ft" % currentAltitude)
+        LogDebug(__name__, "Current Altitude: %.2f" % currentAltitude)
         altCount = 0
         altSum = 0
     
@@ -90,6 +93,7 @@ while True:
                 
                 if (diff > -MIN_ALTITUDE_DIFF and diff < MIN_ALTITUDE_DIFF):
                     endCount += 1
+                    LogInfo(__name__, "Run end conditions detected")
                     
                     if (endCount >= endAt):
                         metrics.endRun(currentAltitude)
@@ -112,6 +116,7 @@ while True:
                 
                 if (diff < -MIN_ALTITUDE_DIFF):
                     startCount += 1
+                    LogInfo(__name__, "Run start conditions detected")
                     
                     if (startCount >= startAt):
                         metrics.startRun(currentAltitude)

@@ -9,6 +9,7 @@
 
 from sense_hat import SenseHat
 from Metrics import Metrics
+from Logger import *
 import socket
 import time
 
@@ -55,15 +56,18 @@ def checkConnection():
     Checks if a connection is available by trying to connect
     to Google's DNS servers.
     """
+    LogInfo(__name__, "Checking if internet connection is available")
     try:
         socket.setdefaulttimeout(3)
         socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect(("8.8.8.8", 53))
-        print("Attempt connect success")
+        LogInfo(__name__, "Internet connection found")
         return True
     except:
-        print("Attempt connect failed")
+        LogInfo(__name__, "Could not detect internet connection")
         return False
 
+
+LogInfo(__name__, "Starting metrics tracking (acceleration version)")
 
 # Calibrate acceleration
 numSamples = 256
@@ -74,8 +78,7 @@ for i in range(0, numSamples):
 
 accelNoiseX /= numSamples
 accelNoiseY /= numSamples
-print(accelNoiseX)
-print(accelNoiseY)
+LogInfo(__name__, "Initialized accelerometer, X Noise: %f | Y Noise: %f" % (accelNoiseX, accelNoiseY))
 
 while True:
     currentPressure = sense.get_pressure()
@@ -93,8 +96,7 @@ while True:
     # Get average of last accels
     currentAccelX = (sumAccelX / accelCount) - accelNoiseX
     currentAccelY = (sumAccelY / accelCount) - accelNoiseY
-    print("AccelX: %.2f" % currentAccelX)
-    print("AccelY: %.2f" % currentAccelY)
+    LogDebug(__name__, "Current Acceleration, X: %.2f | Y: %.2f" % (currentAccelX, currentAccelY))
 
     if (runOngoing):
         # Track pressure and temperature during run
@@ -103,6 +105,7 @@ while True:
         # Check for run end conditions
         if (currentAccelX > -MIN_ACCEL_DIFF and currentAccelX < MIN_ACCEL_DIFF and currentAccelY > -MIN_ACCEL_DIFF and currentAccelY < MIN_ACCEL_DIFF):
             endCount += 1
+            LogInfo(__name__, "Run end conditions detected")
             
             if (endCount >= endAt):
                 metrics.endRun(currentAltitude)
@@ -122,6 +125,7 @@ while True:
         # Check for run start conditions
         if (currentAccelX > MIN_ACCEL_DIFF or currentAccelX < -MIN_ACCEL_DIFF or currentAccelY > MIN_ACCEL_DIFF or currentAccelY < -MIN_ACCEL_DIFF):
             startCount += 1
+            LogInfo(__name__, "Run start conditions detected")
             
             if (startCount >= startAt):
                 metrics.startRun(currentAltitude)
