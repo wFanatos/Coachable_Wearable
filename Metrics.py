@@ -10,6 +10,7 @@ import requests
 import json
 import datetime
 import os.path
+from Logger import *
 from datetime import date
 
 MIN_RUN_LENGTH = 5
@@ -53,6 +54,11 @@ class Metrics:
             file = open(METRICS_FILE_NAME, "w")
             file.write('{ "Runs": [')
             file.close()
+            
+            if (not reset):
+                LogInfo(__name__, "Initialized run data json file")
+            else:
+                LogInfo(__name__, "Reset run data json file")
     
     
     def saveProgData(self):
@@ -62,6 +68,7 @@ class Metrics:
         file = open(PROG_DATA_FILE_NAME, "w")
         file.write(str(self.numTotalRuns))
         file.close()
+        LogInfo(__name__, "Saved total run count. Total runs = %d" % self.numTotalRuns)
         
         
     def loadProgData(self):
@@ -72,6 +79,7 @@ class Metrics:
             file = open(PROG_DATA_FILE_NAME, "r")
             self.numTotalRuns = int(file.read())
             file.close()
+            LogInfo(__name__, "Loaded saved program data. Total runs = %d" % self.numTotalRuns)
     
     
     def inputReadings(self, temperature, pressure):
@@ -85,6 +93,7 @@ class Metrics:
         self.temperatureSum += temperature
         self.pressureSum += pressure
         self.readingsCount += 1
+        LogInfo(__name__, "Received temperature: %.2f and pressure: %.2f" % (temperature, pressure))
         
 
     def sendReq(self):
@@ -102,8 +111,12 @@ class Metrics:
         
         rawJson += ']}'
 
+        LogInfo(__name__, "Sending metrics to: %s" % self.url)
+
         metrics = json.loads(rawJson)
         response = requests.post(self.url, json=metrics)
+        
+        LogInfo(__name__, "Received %s response" % response.status_code)
         
         if (response):
             self.numRuns = 0
@@ -126,7 +139,8 @@ class Metrics:
             "StartAltitude": float("%.2f" % altitude),
             "StartTime": self.startTime.strftime("%H:%M:%S")
         }
-        print("Start run\n")
+        
+        LogInfo(__name__, "Run started")
         
         
     def endRun(self, altitude):
@@ -157,9 +171,9 @@ class Metrics:
             file.write(json.dumps(self.runData) + ",")
             file.close()
             
-            print("End run\n")
+            LogInfo(__name__, "Run ended, Length: %f s" % runLength.total_seconds())
         else:
-            print("Invalid run")
+            LogInfo(__name__, "Run ended but was invalid, Length: %f s" % runLength.total_seconds())
         
         self.sumTemp = 0
         self.sumPressure = 0
