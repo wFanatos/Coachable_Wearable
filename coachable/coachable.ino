@@ -7,6 +7,7 @@
 #include <ArduinoJson.h>
 #include <Adafruit_GPS.h>
 #include <string>
+#include <HTTPClient.h>
 
 #define NUM_RUNS 50
 #define NUM_METRICS 9
@@ -36,6 +37,7 @@ Adafruit_GPS GPS(&GPSSerial);
 // Initialize
 void setup() {
   Serial.begin(115200);
+  Serial.print("cap: "); Serial.println(capacity);
 
   // Init GPS
   GPS.begin(9600);
@@ -184,4 +186,18 @@ void finishRun() {
   obj["Distance"] = calcDistance(metrics.startLat, metrics.startLon, lat, lon);
 
   runCount++;
+}
+
+
+void sendData() {
+  HTTPClient http;
+
+  http.begin(""); // TODO: add address
+  
+  int response = http.POST(); // TODO: add json string
+  if (response == HTTP_CODE_OK) {
+    // TODO: clear JSON
+  }
+
+  http.end();
 }
