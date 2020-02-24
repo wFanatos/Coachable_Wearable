@@ -9,6 +9,8 @@
 #include <string>
 
 #define NUM_METRICS 12
+#define NUM_RUNS 50
+#define MIN_DURATION 5
 
 class Metrics {
 public:
@@ -23,12 +25,15 @@ public:
   int GetNumSavedRuns();
   bool IsRunOngoing();
   
+  float sumSpeed;
+  
 private:
   float DegToRad(float deg);
   float CalcDistance(float lat1, float lon1, float lat2, float lon2);
   void SaveData();
   
-  static const int capacity = JSON_OBJECT_SIZE(NUM_METRICS);
+  //static const int capacity = JSON_OBJECT_SIZE(NUM_METRICS);
+  static const int capacity = JSON_ARRAY_SIZE(NUM_RUNS) + NUM_RUNS * JSON_OBJECT_SIZE(NUM_METRICS);
   StaticJsonDocument<capacity> metricsDoc;
   
   int runCount;
@@ -36,7 +41,7 @@ private:
   String date;
   String startTime;
   float startAltitude;
-  float sumSpeed;
+  
   int numSamples;
   float startLat;
   float startLon;

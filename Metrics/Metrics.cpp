@@ -58,6 +58,11 @@ void Metrics::FinishRun(String time, float altitude, float lat, char latDir, flo
   
   float duration = (millis() - startMillis) / 1000.0f;
   
+  if (duration < MIN_DURATION) {
+    runOngoing = false;
+    return;
+  }
+  
   if (latDir == 'S') {
     lat *= -1.0f;
   }
@@ -66,15 +71,25 @@ void Metrics::FinishRun(String time, float altitude, float lat, char latDir, flo
     lon *= -1.0f;
   }
   
-  metricsDoc["RunNumber"] = runCount + 1;
-  metricsDoc["Duration"] = duration;
-  metricsDoc["Date"] = date;
-  metricsDoc["StartTime"] = startTime;
-  metricsDoc["EndTime"] = time;
-  metricsDoc["StartAltitude"] = startAltitude;
-  metricsDoc["EndAltitude"] = altitude;
-  metricsDoc["AvgSpeed"] = sumSpeed / numSamples;
-  metricsDoc["Distance"] = CalcDistance(startLat, startLon, lat, lon);
+  JsonObject obj = metricsDoc.createNestedObject();
+  obj["RunNumber"] = runCount + 1;
+  obj["Duration"] = duration;
+  obj["Date"] = date;
+  obj["StartTime"] = startTime;
+  obj["EndTime"] = time;
+  obj["StartAltitude"] = startAltitude;
+  obj["EndAltitude"] = altitude;
+  obj["AvgSpeed"] = sumSpeed / numSamples;
+  obj["Distance"] = CalcDistance(startLat, startLon, lat, lon);
+  // metricsDoc["RunNumber"] = runCount + 1;
+  // metricsDoc["Duration"] = duration;
+  // metricsDoc["Date"] = date;
+  // metricsDoc["StartTime"] = startTime;
+  // metricsDoc["EndTime"] = time;
+  // metricsDoc["StartAltitude"] = startAltitude;
+  // metricsDoc["EndAltitude"] = altitude;
+  // metricsDoc["AvgSpeed"] = sumSpeed / numSamples;
+  // metricsDoc["Distance"] = CalcDistance(startLat, startLon, lat, lon);
 
   runCount++;
   runOngoing = false;
@@ -116,7 +131,7 @@ int Metrics::GetNumSavedRuns() {
 
 // Returns whether a run is ongoing
 bool Metrics::IsRunOngoing() {
-    return runOngoing;
+  return runOngoing;
 }
 
 
@@ -147,8 +162,8 @@ float Metrics::CalcDistance(float lat1, float lon1, float lat2, float lon2) {
 void Metrics::SaveData() {
   // TODO: save data to SD
 
-  String jsonStr = "";
-  serializeJson(metricsDoc, jsonStr);
+  //String jsonStr = "";
+  //serializeJson(metricsDoc, jsonStr);
 
   // Serial.println();
   // Serial.println("---RUN METRICS---");
