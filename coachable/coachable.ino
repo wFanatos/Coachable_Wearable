@@ -17,6 +17,7 @@
 
 const int MIN_ALT_DIFF = 1;
 const float MIN_SPD_DIFF = 0.25f;
+const float MIN_SPD = 1.0f;
 
 uint32_t timer = millis();
 int stopCount = 0;
@@ -36,7 +37,35 @@ WiFiMulti wifiMulti;
 
 // TODO: remove below
 int trackCount = 0;
+int testRuns = 0;
 bool firstRun = true;
+
+// testing for grabbing data
+struct Data {
+  float lat;
+  char latDir;
+  float lon;
+  float lonDir;
+  float spd;
+  float alt;
+  String time;
+
+  Data() {}
+  Data(float lat, char latDir, float lon, float lonDir, float spd, float alt, String time) {
+    this->lat = lat;
+    this->latDir = latDir;
+    this->lon = lon;
+    this->lonDir = lonDir;
+    this->spd = spd;
+    this->alt = alt;
+    this->time = time;
+  }
+};
+
+int datsSize = 1000;
+struct Data dats[1000];
+int i = 0;
+bool addDat = false;
 
 // Initialize
 void setup() {
@@ -48,7 +77,7 @@ void setup() {
   // Init GPS
   GPS.begin(9600);
   GPS.sendCommand(PMTK_SET_NMEA_OUTPUT_RMCGGA);
-  GPS.sendCommand(PMTK_SET_NMEA_UPDATE_1HZ);
+  GPS.sendCommand(PMTK_SET_NMEA_UPDATE_10HZ);
   GPS.sendCommand(PGCMD_ANTENNA);
   delay(1000);
   GPSSerial.println(PMTK_Q_RELEASE);
@@ -69,8 +98,8 @@ void loop() {
     timer = millis();
   }
 
-  // If GPS is working, runs every ~2 secs
-  if (millis() - timer >= 2000) {
+  // If GPS is working, runs every ~0.5 secs
+  if (millis() - timer >= 500) {
     timer = millis();
     Serial.print("Time: "); Serial.println(getTime());
     Serial.print("Date: "); Serial.println(getDate());
@@ -91,18 +120,18 @@ void loop() {
       Serial.print("Longitude: "); Serial.print(GPS.longitude); Serial.println(GPS.lon);
 
       // TODO: remove below
-      if (firstRun) {
-        Serial.println("--RUN START--");
-        metrics.StartRun(getDate(), getTime(), currentAltitude, GPS.latitude, GPS.lat, GPS.longitude, GPS.lon);
-        firstRun = false;
-      }
+//      if (firstRun && testRuns < 1) {
+//        Serial.println("--RUN START--");
+//        metrics.StartRun(getDate(), getTime(), currentAltitude, GPS.latitude, GPS.lat, GPS.longitude, GPS.lon);
+//        firstRun = false;
+//      }
 
       if (!metrics.IsRunOngoing()) {
         if (wifiMulti.run() == WL_CONNECTED && metrics.GetNumSavedRuns() > 0) {
-          // TODO: check if data should be sent
           Serial.println("Sending http request...");
           sendData();
-          while(1);
+          printDats();
+          //while(1);
         }
         
         if (checkRunStart()) {
@@ -111,26 +140,31 @@ void loop() {
         }
       }
       else {
-//        if (checkRunStop()) {
-//          stopCount++;
-//
-//          if (stopCount >= 3) {
-//            metrics.FinishRun(getTime(), currentAltitude, GPS.latitude, GPS.lat, GPS.longitude, GPS.lon);
-//            stopCount = 0;
-//            Serial.println("--RUN STOP--");
-//          }
-//        }
-//        else {
-//          stopCount = 0;
-//        }
+        if (checkRunStop()) {
+          stopCount++;
 
-        trackCount += 1;
+          if (stopCount >= 4) {
+            metrics.FinishRun(getTime(), currentAltitude, GPS.latitude, GPS.lat, GPS.longitude, GPS.lon);
+            stopCount = 0;
+            Serial.println("--RUN STOP--");
+          }
+        }
+        else {
+          stopCount = 0;
+        }
+
         metrics.AddSpeedSample(currentSpeed);
 
-        if (trackCount >= 20) {
-          Serial.println("--RUN STOP--");
-          metrics.FinishRun(getTime(), currentAltitude, GPS.latitude, GPS.lat, GPS.longitude, GPS.lon);
-        }
+        // TODO: remove below
+        addDats();
+//        trackCount += 1;
+//        if (trackCount >= 20) {
+//          Serial.println("--RUN STOP--");
+//          metrics.FinishRun(getTime(), currentAltitude, GPS.latitude, GPS.lat, GPS.longitude, GPS.lon);
+//          trackCount = 0;
+//          testRuns++;
+//          firstRun = true;
+//        }
       }
 
       lastSpeed = currentSpeed;
@@ -140,7 +174,7 @@ void loop() {
     }
     
     lastAltitude = currentAltitude;
-    Serial.println("");
+    Serial.println();
   }
 }
 
@@ -180,7 +214,7 @@ bool checkRunStart() {
   }
 
   // Using speed
-  if (lastSpeed - currentSpeed >= MIN_SPD_DIFF) {
+  if (currentSpeed - lastSpeed >= MIN_SPD_DIFF) {
     return true;
   }
 
@@ -196,7 +230,7 @@ bool checkRunStop() {
   }
 
   // Using speed
-  if (lastSpeed - currentSpeed < MIN_SPD_DIFF) {
+  if (currentSpeed < MIN_SPD) {
     return true;
   }
 
@@ -212,7 +246,8 @@ void sendData() {
 
   // TODO: get json from file once saving works
   String jsonStr = metrics.GetJsonStr();
-  
+
+  http.setUserAgent("Wearable");
   http.addHeader("Content-Type", "application/json");
   int response = http.POST(jsonStr);
 
@@ -226,4 +261,25 @@ void sendData() {
   }
 
   http.end();
+}
+
+void printDats() {
+  for (int j = 0; j < i; j++) {
+    Serial.print("Time: "); Serial.println(dats[j].time);
+    Serial.print("Lat: "); Serial.print(dats[j].lat); Serial.print(dats[j].latDir); Serial.print(" | Lon: "); Serial.print(dats[j].lon); Serial.println(dats[j].lonDir);
+    Serial.print("Spd: "); Serial.println(dats[j].spd);
+    Serial.print("Alt: "); Serial.println(dats[j].alt);
+    Serial.println();
+  }
+}
+
+void addDats() {
+  if (addDat && i < datsSize) {
+    dats[i] = Data(GPS.latitude, GPS.lat, GPS.longitude, GPS.lon, currentSpeed, currentAltitude, getTime());
+    i++;
+    addDat = false;
+  }
+  else {
+    addDat = true;
+  }
 }
