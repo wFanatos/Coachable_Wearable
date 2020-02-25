@@ -72,6 +72,7 @@ void Metrics::FinishRun(String time, float altitude, float lat, char latDir, flo
   }
   
   JsonObject obj = metricsDoc.createNestedObject();
+  // TODO: remove runNumber
   obj["RunNumber"] = runCount + 1;
   obj["Duration"] = duration;
   obj["Date"] = date;
