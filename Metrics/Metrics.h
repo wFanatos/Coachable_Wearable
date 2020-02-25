@@ -5,12 +5,15 @@
  */
 
 #include "Arduino.h"
+#include "FS.h"
+#include "SD.h"
+#include "SPI.h"
 #include <ArduinoJson.h>
 #include <string>
 
 #define NUM_METRICS 12
-#define NUM_RUNS 50
 #define MIN_DURATION 5
+#define JSON_PATH "/data.json"
 
 class Metrics {
 public:
@@ -18,10 +21,10 @@ public:
   ~Metrics();
   
   void StartRun(String date, String time, float altitude, float lat, char latDir, float lon, char lonDir);
-  void FinishRun(String time, float altitude, float lat, char latDir, float lon, char lonDir);
+  void FinishRun(String time, float altitude, float lat, char latDir, float lon, char lonDir, fs::FS &fs);
   void AddSpeedSample(float speed);
-  void ClearJson();
-  String GetJsonStr();
+  void ClearJson(fs::FS &fs);
+  String GetJsonStr(fs::FS &fs);
   int GetNumSavedRuns();
   bool IsRunOngoing();
   
@@ -30,10 +33,9 @@ public:
 private:
   float DegToRad(float deg);
   float CalcDistance(float lat1, float lon1, float lat2, float lon2);
-  void SaveData();
+  void SaveData(fs::FS &fs);
   
-  //static const int capacity = JSON_OBJECT_SIZE(NUM_METRICS);
-  static const int capacity = JSON_ARRAY_SIZE(NUM_RUNS) + NUM_RUNS * JSON_OBJECT_SIZE(NUM_METRICS);
+  static const int capacity = JSON_OBJECT_SIZE(NUM_METRICS);
   StaticJsonDocument<capacity> metricsDoc;
   
   int runCount;
