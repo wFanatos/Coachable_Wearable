@@ -1,0 +1,151 @@
+$data = new App\Role
+$data->type_name= 'Athlete'
+$data->save();
+
+$data = new App\Role
+$data->type_name= 'Parent'
+$data->save();
+
+$data = new App\Role
+$data->type_name= 'Coach'
+$data->save();
+
+$data = new App\Role
+$data->type_name= 'Head Coach'
+$data->save();
+
+$data = new App\Device
+$data->device_name = 'NONE'
+$data->save();
+
+$data = new App\Device
+$data->device_name = 'ABC123'
+$data->save();
+
+$data = new App\User
+$data->user_type_id = 1
+$data->device_id = 2
+$data->name= "Blake Ribble"
+$data->email= "blakeribble99@outlook.com"
+$data->password = Hash::make('password')
+$data->save();
+
+$data = new App\User
+$data->user_type_id = 2
+$data->device_id = 1
+$data->name= "Dylan M"
+$data->email= "dylan@dylan.com"
+$data->password = Hash::make('password')
+$data->save();
+
+$data = new App\User
+$data->user_type_id = 3
+$data->device_id = 1
+$data->name= "Justin"
+$data->email= "justin@justin.com"
+$data->password = Hash::make('password')
+$data->save();
+
+$data = new App\User
+$data->user_type_id = 4
+$data->device_id = 1
+$data->name= "Rick"
+$data->email= "rick@rick.com"
+$data->password = Hash::make('password')
+$data->save();
+
+$data = new App\ParentAthlete
+$data->parent_id = 2
+$data->athlete_id = 1
+$data->save();
+
+
+$data = new App\Organization
+$data->org_name= 'Blakes org'
+$data->save();
+
+
+$data = new App\Organization
+$data->org_name= 'Bass org'
+$data->save();
+
+$data = new App\UserOrg
+$data->org_id = 1
+$data->user_id = 4
+$data->save();
+
+
+$data = new App\Season
+$data->org_id = 1
+$data->season_name = "Spring 2020"
+$data->season_description = "Ski times in the spring"
+$data->season_start = "Early 2020"
+$data->season_end = "Late 2020"
+$data->save();
+
+$data = new App\Season
+$data->org_id = 1
+$data->season_name = "Winter 2020"
+$data->season_description = "Ski times in the winter"
+$data->season_start = "Late 2020"
+$data->season_end = "Early 2021"
+$data->save();
+
+
+$data = new App\Season
+$data->org_id = 2
+$data->season_name = "Winter 2020"
+$data->season_description = "Ski times in the winter"
+$data->season_start = "Late 2020"
+$data->season_end = "Early 2021"
+$data->save();
+
+$data = new App\Team
+$data->season_id = 1
+$data->name = "Team Alpha"
+$data->save();
+
+$data = new App\Team
+$data->season_id = 2
+$data->name = "Conestoga Skiers"
+$data->save();
+
+$data = new App\UserTeam
+$data->user_id = 1
+$data->team_id = 1
+$data->save();
+
+$data = new App\UserTeam
+$data->user_id = 3
+$data->team_id = 1
+$data->save();
+
+$data = new App\Event
+$data->team_id = 1
+$data->event_name = "Slope A Race"
+$data->event_date = "01/01/2021"
+$data->save();
+
+$data = new App\Event
+$data->team_id = 2
+$data->event_name = "Slope C Race"
+$data->event_date = "01/02/2021"
+$data->save();
+
+$data = new App\Run
+$data->user_id = 1
+$data->event_id = 1
+$data->duration = "00:50:50"
+$data->date = "01/01/2020"
+$data->start_time = "2:50:01"
+$data->end_time = "2:57:01"
+$data->start_altitude = "333"
+$data->end_altitude = "555"
+$data->extra_data = "STRING FOR NOW"
+$data->save();
+
+
+
+
+
+

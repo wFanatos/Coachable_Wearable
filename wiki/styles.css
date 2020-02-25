@@ -1,0 +1,184 @@
+
+
+/* Navigation */
+#nav-bar
+{
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.navbar-brand img
+{
+    height: 40px;
+    padding-left: 30px;
+}
+
+.navbar-nav li
+{
+    padding: 0 10px;
+}
+
+.navbar-nav li a
+{
+    float: right;
+    text-align: left;
+}
+
+.active{
+
+    background-color: lightgray;
+
+}
+
+#nav-bar ul li a:hover
+{
+    color: #007bff!important;
+}
+
+.navbar
+{
+    background: #fff;
+}
+
+.navbar-toggler
+{
+    border: none!important;
+}
+
+.nav-link
+{
+    color: #555!important;
+    font-weight: 600;
+    font-size: 16px;
+
+}
+
+#about
+{
+    padding-top: 50px;
+    padding-bottom: 50px;
+    text-align: center;
+    color: #555;
+}
+
+#documentation
+{
+    padding-top: 50px;
+    padding-bottom: 50px;
+    text-align: center;
+    color: #555;
+}
+
+#about .btn
+{
+    margin-top: 20px;
+    margin-bottom: 30px;
+}
+
+.about-content
+{
+    padding-top: 20px;
+}
+
+#about h2::after
+{
+    content: '';
+    background: #000000;
+    display:block;
+    height: 3px;
+    width: 170px;
+    margin: 20px auto 5px;
+}
+
+#team
+{
+    padding-top: 50px;
+    padding-bottom: 50px;
+    color: #555;
+}
+
+h1
+{
+    text-align: center;
+    color: #555!important;
+    padding-bottom: 10px;
+}
+
+h1::after
+{
+    content: '';
+    background: #007bff;
+    display: block;
+    height: 3px;
+    width: 170px;
+    margin: 20px auto 5px;
+}
+
+.profile-pic
+{
+    margin-top: 25px;
+}
+
+.profile-pic .img-box
+{
+    display:block;
+    position:relative;
+}
+
+.profile-pic h2
+{
+    font-size: 22px;
+    font-weight: bold;
+    margin-top: 15px;
+    color: #007bff!important;
+
+}
+
+.profile-pic h3
+{
+    font-size: 15px;
+    font-weight: bold;
+    margin-top: 15px;    
+}
+
+#footer
+{
+    background: #333;
+    padding: 12px;
+    color: #ffffff
+}
+
+#documentation .p
+{
+    padding-bottom: 10px;
+}
+
+#page-container {
+    position: relative;
+    min-height: 100vh;
+  }
+  
+#content-wrap {
+    padding-bottom: 2.5rem;    /* Footer height */
+  }
+  
+#footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 2.5rem;            /* Footer height */
+  }
+
+  article {
+    float: center;
+    padding: 30px;
+    width: 60%;
+    background-color: #f1f1f1;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  ul.a {
+    list-style-type: none;
+  }

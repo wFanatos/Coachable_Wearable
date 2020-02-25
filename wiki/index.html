@@ -1,0 +1,140 @@
+
+<!-- Used this video as a framework for setting up the website: https://www.youtube.com/watch?v=99vHH_6F0Ko-->
+
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>SC Wiki</title>
+        <link rel="stylesheet" href="styles.css">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+        <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+
+        <body>
+            <!--NavigationBar-->
+            <section id="nav-bar">
+                <nav class="navbar navbar-expand-lg navbar-light">
+                    <a class="navbar-brand" href="./index.html"><img src="pictures/whistle.png"> Ski Coachable Wiki</a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                      <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarNav">
+                      <ul class="navbar-nav ml-auto">
+                        <li class="nav-item active">
+                          <a class="nav-link" href="./index.html">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="./updates.html">Updates</a>
+                        </li>
+                        <li class="nav-item">
+                          <a class="nav-link" href="./team.html">Our Team</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="./documentation.html">Documentation</a>
+                        </li>
+                      </ul>
+                    </div>
+                  </nav>
+            </section>
+            <div id="page-container">
+                <div id="content-wrap">
+                    <div class="jumbotron border-bottom">
+                        <h1 class="display-4">Skiing Wearable</h1>
+                            <p class="lead text-center">The next entry in the professional marketplace for skiiers.</p>
+                            <hr class="my-4">
+                            <div class="text-center">
+                                <iframe width="700" height="400" src="video/StardustCrusaders_CoachableVid.mp4"></iframe>
+                            </div>
+                    </div>                
+                    <section id="about">
+                        <div class="container">
+                                <div>
+                                    <h1>What is it?</h1>
+                                    <div class="about-content">
+                                        <p>This page acts as the project wiki for the wearable device created by our team at Stardust Crusaders and backed by our industry partner Coachable (@skicoachable.com). The purpose of this device is to help track a user’s skiing metrics to help them better understand how they performed and what they can work to improve.  
+                                        </p>
+                                        <br>                                     
+                                    </div>
+                                </div>
+                                <div>
+                                    <h1>What it tracks</h1>
+                                    <div>
+                                        <p>
+                                            Before describing the technology, it is important to list the different metrics that we will be tracking. These include:  
+                                        </p>
+                                        <ul class="a">
+                                            <li>Run time</li>
+                                            <li>Distance travelled</li>
+                                            <li>Velocity</li>
+                                            <li>Average speed</li>
+                                            <li>Average altitude</li>
+                                            <li>Location</li>
+                                        </ul>   
+                                        <p>
+                                            Although there are a wider variety of metrics we could track, we feel that these are the most essential to track to inform the user of their progress and allow them to learn from them.
+                                        </p>
+                                        <br>                                  
+                                    </div>
+                                </div>
+                                <div>
+                                    <h1>Technology</h1>
+                                    <div>
+                                        <img src="pictures/diagram.png"/>
+                                        <p>
+                                            This architecture diagram represents the structure of the wearable device. 
+                                            The device tethers over Bluetooth to the user's device where it uses wifi to upload the data to the Coachable API. 
+                                            For this to happen, we will be using the SparkFun ESP32 Thing board, which comes with built-in Bluetooth and WIFI capabilities, integrated LiPo battery charging, 4MB flash memory, and 520kB SRAM.
+                                            This board was chosen as it provides efficient speeds while reducing the size of the device. 
+                                            Our first sensor is the SparkFun ESP32 Thing Motion Shield. This sensor tracks angular velocity, acceleration and heading. It also has a micro SD slot and a JST port for connecting a GPS.
+                                            We are also using the Adafruit Ultimate GPS Breakout sensor that has -165 dBm sensitivity, 10 Hz updates, 66 channels, and a built-in antenna.
+                                            We are using the MPL3115A2 I2C Barometric Pressure/Temperature/Altitude Sensor Breakout Board for tracking additional data.
+                                            All this hardware will be stored within a 3D printed case that we will attach to the boot of a skier.
+                                        </p>
+                                        <br>                                     
+                                    </div>
+                                </div>
+                                <div>
+                                    <h1>Why us?</h1>
+                                    <div>
+                                        <p>
+                                            So, why us? Upon hours of research, we have concluded that there are plenty of high-tech competitors in the marketplace right now. However, some of these competitors are just mobile apps, while others are physical devices such as goggles, watches, or ski clamps (device attached to ski itself). 
+                                            Since the device is exclusive to Coachable, we have taken into consideration professional skiers who are not aloud any device on their body. This issue can be bypassed if the device is clamped onto to boot.
+                                        </p>
+                                        <br>                                     
+                                    </div>
+                                </div>
+                                <div>
+                                    <h1>Deliverables</h1>
+                                    <div>
+                                        <p>
+                                            Here is a list of deliverables that our team will be completing and submitting throughout this semesters development:
+                                        </p>
+                                        <p>Weekly Updates: Check the updates page every week for updates on our team</p>
+                                        <br>
+                                        <p>Monthly Updates:</p>
+                                        <ul class="a">
+                                            <li><del>January 31, 2020 – Wiki and updated SRS</del> Submitted</li>
+                                            <li><del>February 28, 2020 – Updated Wiki, SRS and Video</del> Submitted</li>
+                                            <li>March 31, 2020 – Updated Wiki, SRS, Video and Feature Freeze</li>
+                                            <li>April 14, 2020 – Code Freeze and Go/No-Go</li>
+                                            <li>April 23, 2020 – SET Project Day Demo</li>
+                                        </ul>
+                                        <br>                                     
+                                    </div>
+                                </div>                             
+                        </div>
+                    </section>
+                </div>
+                <section id="footer">
+                    <div class="container text-center">
+                        <p>Made by Stardust Crusaders. Site "skeleton" from <a href="https://www.youtube.com/watch?v=99vHH_6F0Ko">here</a></p>
+                    </div>
+                </section>
+            </div>
+        </body>
+    </head>
+</html>

@@ -1,0 +1,90 @@
+
+<!-- Used this video as a framework for setting up the website: https://www.youtube.com/watch?v=99vHH_6F0Ko-->
+
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>SC Wiki</title>
+        <link rel="stylesheet" href="styles.css">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+        <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+
+        <body>
+            <!--NavigationBar-->
+            <section id="nav-bar">
+                <nav class="navbar navbar-expand-lg navbar-light">
+                    <a class="navbar-brand" href="./index.html"><img src="pictures/whistle.png">      Ski Coachable Wiki</a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                      <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarNav">
+                      <ul class="navbar-nav ml-auto">
+                        <li class="nav-item">
+                          <a class="nav-link" href="./index.html">Home</a>
+                        </li>
+                        <li class="nav-item active">
+                            <a class="nav-link" href="./updates.html">Updates</a>
+                        </li>
+                        <li class="nav-item">
+                          <a class="nav-link" href="./team.html">Our Team</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="./documentation.html">Documentation</a>
+                        </li>
+                      </ul>
+                    </div>
+                  </nav>
+            </section>
+            <div id="page-container">
+                <div id="content-wrap">
+                    <section id="about">
+                        <div class="container">
+                            <article>
+                                <h3>Weekly Update 1</h3>
+                                <h4>Week of: January 21, 2020</h4>
+                                <p> After doing some research on different topics surrounding the development of this project, our team has created a very basic API, a website to interact with it, and this wiki.</p>
+                                <p> Our team has started developing on a raspberry PI 3 and Android Studio since we didn't have the proper hardware in. Team is working to try and connect the two to help form the basis of our architecture.</p>
+                            </article>
+                            <article>
+                                <h3>Weekly Update 2</h3>
+                                <h4>Week of: January 28, 2020</h4>
+                                <p>During this week, tasks were split amongst the group to ensure production in all fields.</p>
+                                <p>After talking with Adrian from Coachable, our team started developing a website using Laravel and Vue.js, which we can use to log in and see the users metrics</p>
+                                <p>While some worked on this aspect of the project, others continued work on the board to make use of its built in sensors. We still don't have the hardware we need.</p>
+                            </article>
+                            <article>
+                                <h3>Weekly Update 3</h3>
+                                <h4>Week of: February 4, 2020</h4>
+                                <p>While development on the laravel application is underway, our team has received the necessary hardware components to actually start putting the pieces together.</p>
+                                <p>We have also started a mobile application that will replicate the websites functionality.</p>
+                            </article>
+                            <article>
+                                <h3>Weekly Update 4</h3>
+                                <h4>Week of: February 11, 2020</h4>
+                                <p>The development on the ESP32 board has been improving, allowing for more features to become present (gps, SD usage, etc.) </p>
+                                <p> After our meeting last week, we met and discussed with Adrian the true scope of the website and the schema revolving around it, which we are creating in Laravel. This helps our team ensure scope is narrowed so we can remain on track  </p>
+                            </article>
+                            <article>
+                                <h3>Weekly Update 5</h3>
+                                <h4>Week of: February 18, 2020</h4>
+                                <p>Our laravel application now contains logic behind logging in as a specific user (user sees respective data corresponding with role).</p>
+                                <p>Our ESP32 board development has been increasing as well, implementing and test different components.</p>
+                                <p>We have started revising this wiki, our SRS, and our video to meet end of month milestones.</p>
+                            </article>
+                        </div>
+                    </section>                
+                </div>
+                <section id="footer">
+                    <div class="container text-center">
+                        <p>Made by Stardust Crusaders. Site "skeleton" from <a href="https://www.youtube.com/watch?v=99vHH_6F0Ko">here</a></p>
+                    </div>
+                </section>
+            </div>                           
+        </body>
+    </head>
+</html>
