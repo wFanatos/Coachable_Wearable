@@ -4,6 +4,9 @@
  * DESCRIPTION:   Tracks skiing metrics
  */
 
+#include "FS.h"
+#include "SD.h"
+#include "SPI.h"
 #include <ArduinoJson.h>
 #include <Adafruit_GPS.h>
 #include <Adafruit_MPL3115A2.h>
@@ -77,6 +80,11 @@ void setup() {
 
   // Init wifi
   wifiMulti.addAP(ssid, password);
+
+  // Init SD
+  if (!SD.begin()) {
+    Serial.println("Initial SD mount failed!");
+  }
   
   // Init GPS
   GPS.begin(9600);
@@ -86,6 +94,7 @@ void setup() {
   delay(1000);
   GPSSerial.println(PMTK_Q_RELEASE);
 }
+
 
 // Main loop, runs repeatedly
 void loop() {
@@ -157,8 +166,11 @@ void loop() {
           stopCount++;
 
           if (stopCount >= 4) {
+            if (!SD.begin()) {
+              Serial.println("Failed to mount SD before finish run");
+            }
             digitalWrite(ledPin, LOW);
-            metrics.FinishRun(getTime(), currentAltitude, GPS.latitude, GPS.lat, GPS.longitude, GPS.lon);
+            metrics.FinishRun(getTime(), currentAltitude, GPS.latitude, GPS.lat, GPS.longitude, GPS.lon, SD);
             stopCount = 0;
             Serial.println("--RUN STOP--");
           }
@@ -184,7 +196,10 @@ void loop() {
       lastSpeed = currentSpeed;
     }
     else {
-      metrics.FinishRun(getTime(), currentAltitude, GPS.latitude, GPS.lat, GPS.longitude, GPS.lon);
+      if (!SD.begin()) {
+        Serial.println("Failed to mount SD before finish run");
+      }
+      metrics.FinishRun(getTime(), currentAltitude, GPS.latitude, GPS.lat, GPS.longitude, GPS.lon, SD);
       Serial.println("Waiting for GPS satellites...");
     }
     
@@ -257,10 +272,14 @@ bool checkRunStop() {
 void sendData() {
   HTTPClient http;
 
-  http.begin("https://webhook.site/000d8382-1952-49f9-a79e-bf4de40e88ac");
+  if (!SD.begin()) {
+    Serial.println("Failed to mount SD before sending http");
+    return;
+  }
 
-  // TODO: get json from file once saving works
-  String jsonStr = metrics.GetJsonStr();
+  http.begin("https://webhook.site/000d8382-1952-49f9-a79e-bf4de40e88ac");
+  
+  String jsonStr = metrics.GetJsonStr(SD);
 
   http.setUserAgent("Wearable");
   http.addHeader("Content-Type", "application/json");
@@ -268,7 +287,7 @@ void sendData() {
 
   if (response > 0) {
     if (response == HTTP_CODE_OK) {
-      metrics.ClearJson();
+      metrics.ClearJson(SD);
     }
   }
   else {
