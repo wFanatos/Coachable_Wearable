@@ -16,8 +16,8 @@
 #define GPSSerial Serial2
 
 const int MIN_ALT_DIFF = 1;
-const float MIN_SPD_DIFF = 0.25f;
-const float MIN_SPD = 1.0f;
+const float MIN_SPD_DIFF = 0.1f;
+const float MIN_SPD = 0.4f;
 
 uint32_t timer = millis();
 int stopCount = 0;
@@ -39,6 +39,8 @@ WiFiMulti wifiMulti;
 int trackCount = 0;
 int testRuns = 0;
 bool firstRun = true;
+bool waitWifi = false;
+int ledPin = 5;
 
 // testing for grabbing data
 struct Data {
@@ -69,6 +71,8 @@ bool addDat = false;
 
 // Initialize
 void setup() {
+  // TODO: remove led
+  pinMode(ledPin, OUTPUT);
   Serial.begin(115200);
 
   // Init wifi
@@ -110,6 +114,21 @@ void loop() {
       Serial.print("Altitude(m): "); Serial.println(currentAltitude);
     }
 
+    // Send data if there are saved runs
+    if (!waitWifi) {
+      if (metrics.GetNumSavedRuns() > 0 && wifiMulti.run() == WL_CONNECTED) {
+        Serial.println("Sending http request...");
+        sendData();
+        printDats();
+        //while(1);
+      }
+
+      waitWifi = true;
+    }
+    else {
+      waitWifi = false;
+    }
+
     if (GPS.fix) {
       // Convert speed from knots to m/s
       currentSpeed = GPS.speed / 1.944f;
@@ -127,14 +146,8 @@ void loop() {
 //      }
 
       if (!metrics.IsRunOngoing()) {
-        if (wifiMulti.run() == WL_CONNECTED && metrics.GetNumSavedRuns() > 0) {
-          Serial.println("Sending http request...");
-          sendData();
-          printDats();
-          //while(1);
-        }
-        
         if (checkRunStart()) {
+          digitalWrite(ledPin, HIGH);
           metrics.StartRun(getDate(), getTime(), currentAltitude, GPS.latitude, GPS.lat, GPS.longitude, GPS.lon);
           Serial.println("--RUN START--");
         }
@@ -144,6 +157,7 @@ void loop() {
           stopCount++;
 
           if (stopCount >= 4) {
+            digitalWrite(ledPin, LOW);
             metrics.FinishRun(getTime(), currentAltitude, GPS.latitude, GPS.lat, GPS.longitude, GPS.lon);
             stopCount = 0;
             Serial.println("--RUN STOP--");
@@ -170,6 +184,7 @@ void loop() {
       lastSpeed = currentSpeed;
     }
     else {
+      metrics.FinishRun(getTime(), currentAltitude, GPS.latitude, GPS.lat, GPS.longitude, GPS.lon);
       Serial.println("Waiting for GPS satellites...");
     }
     
