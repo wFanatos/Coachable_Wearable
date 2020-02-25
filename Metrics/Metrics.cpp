@@ -51,7 +51,7 @@ void Metrics::StartRun(String date, String time, float altitude, float lat, char
 
 
 // Store data in json document
-void Metrics::FinishRun(String time, float altitude, float lat, char latDir, float lon, char lonDir) {
+void Metrics::FinishRun(String time, float altitude, float lat, char latDir, float lon, char lonDir, fs::FS &fs) {
   if (!runOngoing) {
     return;
   }
@@ -71,33 +71,22 @@ void Metrics::FinishRun(String time, float altitude, float lat, char latDir, flo
     lon *= -1.0f;
   }
   
-  JsonObject obj = metricsDoc.createNestedObject();
-  // TODO: remove runNumber
-  obj["RunNumber"] = runCount + 1;
-  obj["Duration"] = duration;
-  obj["Date"] = date;
-  obj["StartTime"] = startTime;
-  obj["EndTime"] = time;
-  obj["StartAltitude"] = startAltitude;
-  obj["EndAltitude"] = altitude;
-  obj["AvgSpeed"] = sumSpeed / numSamples;
-  obj["Distance"] = CalcDistance(startLat, startLon, lat, lon);
-  // metricsDoc["RunNumber"] = runCount + 1;
-  // metricsDoc["Duration"] = duration;
-  // metricsDoc["Date"] = date;
-  // metricsDoc["StartTime"] = startTime;
-  // metricsDoc["EndTime"] = time;
-  // metricsDoc["StartAltitude"] = startAltitude;
-  // metricsDoc["EndAltitude"] = altitude;
-  // metricsDoc["AvgSpeed"] = sumSpeed / numSamples;
-  // metricsDoc["Distance"] = CalcDistance(startLat, startLon, lat, lon);
+  // TODO: remove RunNumber
+  metricsDoc["RunNumber"] = runCount + 1;
+  metricsDoc["Duration"] = duration;
+  metricsDoc["Date"] = date;
+  metricsDoc["StartTime"] = startTime;
+  metricsDoc["EndTime"] = time;
+  metricsDoc["StartAltitude"] = startAltitude;
+  metricsDoc["EndAltitude"] = altitude;
+  metricsDoc["AvgSpeed"] = sumSpeed / numSamples;
+  metricsDoc["Distance"] = CalcDistance(startLat, startLon, lat, lon);
 
   runCount++;
   runOngoing = false;
 
-  SaveData();
-  // TODO: uncomment when saveData works
-  // metricsDoc.clear();
+  SaveData(fs);
+  metricsDoc.clear();
 }
 
 
@@ -109,17 +98,24 @@ void Metrics::AddSpeedSample(float speed) {
 
 
 // Clears all json data
-void Metrics::ClearJson() {
-  // TODO: clear json file
-  metricsDoc.clear();
+void Metrics::ClearJson(fs::FS &fs) {
+  fs.remove(JSON_PATH);
   numSavedRuns = 0;
 }
 
 
 // Returns the JSON string
-String Metrics::GetJsonStr() {
+String Metrics::GetJsonStr(fs::FS &fs) {
   String jsonStr = "";
-  serializeJson(metricsDoc, jsonStr);
+  
+  File file = fs.open(JSON_PATH);
+  while (file.available()) {
+    jsonStr += file.read();
+  }
+  file.close();
+  
+  jsonStr += "]}";
+  
   return jsonStr;
 }
 
@@ -160,23 +156,24 @@ float Metrics::CalcDistance(float lat1, float lon1, float lat2, float lon2) {
 
 
 // Saves the current JSON data to the json data file
-void Metrics::SaveData() {
-  // TODO: save data to SD
-
-  //String jsonStr = "";
-  //serializeJson(metricsDoc, jsonStr);
-
-  // Serial.println();
-  // Serial.println("---RUN METRICS---");
-  // Serial.print("Run #: "); Serial.println(metricsDoc["RunNumber"].as<int>());
-  // Serial.print("Duration (s): "); Serial.println(metricsDoc["Duration"].as<float>());
-  // Serial.print("Date: "); Serial.println(metricsDoc["Date"].as<String>());
-  // Serial.print("Start Time: "); Serial.println(metricsDoc["StartTime"].as<String>());
-  // Serial.print("End Time: "); Serial.println(metricsDoc["EndTime"].as<String>());
-  // Serial.print("Start Altitude (m): "); Serial.println(metricsDoc["StartAltitude"].as<float>());
-  // Serial.print("End Altitude (m): "); Serial.println(metricsDoc["EndAltitude"].as<float>());
-  // Serial.print("Avg Speed (m/s): "); Serial.println(metricsDoc["AvgSpeed"].as<float>());
-  // Serial.print("Distance (km): "); Serial.println(metricsDoc["Distance"].as<float>());
+void Metrics::SaveData(fs::FS &fs) {
+  String jsonStr = "";
+  serializeJson(metricsDoc, jsonStr);
+  
+  if (!fs.exists(JSON_PATH)) {
+    File file = fs.open(JSON_PATH, FILE_WRITE);
+	file.print("{ \"Runs\": [");
+	file.close();
+  }
+  else {
+    File file = fs.open(JSON_PATH, FILE_APPEND);
+    file.print(",\n");
+    file.close();
+  }
+  
+  File file = fs.open(JSON_PATH, FILE_APPEND);
+  file.print(jsonStr);
+  file.close();
 
   numSavedRuns++;
 }
