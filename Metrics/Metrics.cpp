@@ -18,6 +18,7 @@ Metrics::Metrics() {
   startLon = 0.0f;
   startMillis = 0;
   runOngoing = false;
+  sdInfoRead = false;
 }
 
 Metrics::~Metrics() {}
@@ -34,6 +35,7 @@ void Metrics::StartRun(String date, String time, float altitude, float lat, char
   startAltitude = altitude;
   sumSpeed = 0.0f;
   numSamples = 0;
+  incrementalData = "";
   
   startLat = lat;
   if (latDir == 'S') {
@@ -50,8 +52,8 @@ void Metrics::StartRun(String date, String time, float altitude, float lat, char
 }
 
 
-// Store data in json document
-void Metrics::FinishRun(String time, float altitude, float lat, char latDir, float lon, char lonDir, fs::FS &fs) {
+// Store end of run data
+void Metrics::FinishRun(String time, float altitude, float lat, char latDir, float lon, char lonDir, fs::FS &fs, bool useSD) {
   if (!runOngoing) {
     return;
   }
@@ -71,22 +73,23 @@ void Metrics::FinishRun(String time, float altitude, float lat, char latDir, flo
     lon *= -1.0f;
   }
   
-  // TODO: remove RunNumber
-  metricsDoc["RunNumber"] = runCount + 1;
-  metricsDoc["Duration"] = duration;
-  metricsDoc["Date"] = date;
-  metricsDoc["StartTime"] = startTime;
-  metricsDoc["EndTime"] = time;
-  metricsDoc["StartAltitude"] = startAltitude;
-  metricsDoc["EndAltitude"] = altitude;
-  metricsDoc["AvgSpeed"] = sumSpeed / numSamples;
-  metricsDoc["Distance"] = CalcDistance(startLat, startLon, lat, lon);
+  // jsonData[runCount] = "{\"RunNumber\": " + String(runCount + 1) + ",";
+  jsonData[runCount] += "{\"Duration\": " + String(duration) + ",";
+  jsonData[runCount] += "\"Date\": " + date + ",";
+  jsonData[runCount] += "\"StartTime\": " + startTime + ",";
+  jsonData[runCount] += "\"EndTime\": " + time + ",";
+  jsonData[runCount] += "\"StartAltitude\": " + String(startAltitude) + ",";
+  jsonData[runCount] += "\"EndAltitude\": " + String(altitude) + ",";
+  jsonData[runCount] += "\"AvgSpeed\": " + String(sumSpeed / numSamples) + ",";
+  jsonData[runCount] += "\"Distance\": " + String(CalcDistance(startLat, startLon, lat, lon)) + ",";
+  jsonData[runCount] += "\"Data\": [" + incrementalData + "]}";
 
   runCount++;
   runOngoing = false;
-
-  SaveData(fs);
-  metricsDoc.clear();
+  
+  if (useSD) {
+    SaveData(fs);
+  }
 }
 
 
@@ -97,22 +100,71 @@ void Metrics::AddSpeedSample(float speed) {
 }
 
 
+// Adds a data sample
+void Metrics::AddDataSample(float lat, char latDir, float lon, float lonDir, float spd, float alt, String time) {
+  if (incrementalData != "") {
+    incrementalData += ",";
+  }
+  
+  if (latDir == 'S') {
+    lat *= -1.0f;
+  }
+  
+  if (lonDir == 'W') {
+    lon *= -1.0f;
+  }
+  
+  incrementalData += "{\"Latitude\": " + String(lat) + ",";
+  incrementalData += "\"Longitude\": " + String(lon) + ",";
+  incrementalData += "\"Speed\": " + String(spd) + ",";
+  incrementalData += "\"Altitude\": " + String(alt) + ",";
+  incrementalData += "\"Time\": " + time + "}";
+}
+
+
 // Clears all json data
-void Metrics::ClearJson(fs::FS &fs) {
-  fs.remove(JSON_PATH);
-  numSavedRuns = 0;
+void Metrics::ClearJson(fs::FS &fs, bool useSD) {
+  // Clear SD
+  if (useSD) {
+    fs.remove(JSON_PATH);
+    numSavedRuns = 0;
+    UpdateSDInfo(fs);
+  }
+  
+  // Clear memory
+  for (int i = 0; i < runCount; i++) {
+    jsonData[i] = "";  
+  }
+  
+  runCount = 0;
 }
 
 
 // Returns the JSON string
-String Metrics::GetJsonStr(fs::FS &fs) {
-  String jsonStr = "";
+String Metrics::GetJsonStr(fs::FS &fs, bool useSD) {
+  String jsonStr = "{ \"Runs\": [";
   
-  File file = fs.open(JSON_PATH);
-  while (file.available()) {
-    jsonStr += file.read();
+  if (useSD) {
+    if (!sdInfoRead) {
+      GetSDInfo(fs);
+      sdInfoRead = true;
+    }
+    
+    if (numSavedRuns > 0) {
+      File file = fs.open(JSON_PATH);
+      while (file.available()) {
+        jsonStr += file.read();
+      }
+      file.close();
+    }
   }
-  file.close();
+  
+  for (int i = 0; i < runCount; i++) {
+    if (i != 0 || numSavedRuns > 0) {
+      jsonStr += ",";
+    }
+    jsonStr += jsonData[i];
+  }
   
   jsonStr += "]}";
   
@@ -122,7 +174,7 @@ String Metrics::GetJsonStr(fs::FS &fs) {
 
 // Returns number of saved runs
 int Metrics::GetNumSavedRuns() {
-  return numSavedRuns;
+  return numSavedRuns + runCount;
 }
 
 
@@ -157,23 +209,48 @@ float Metrics::CalcDistance(float lat1, float lon1, float lat2, float lon2) {
 
 // Saves the current JSON data to the json data file
 void Metrics::SaveData(fs::FS &fs) {
-  String jsonStr = "";
-  serializeJson(metricsDoc, jsonStr);
-  
-  if (!fs.exists(JSON_PATH)) {
-    File file = fs.open(JSON_PATH, FILE_WRITE);
-	file.print("{ \"Runs\": [");
-	file.close();
+  if (!sdInfoRead) {
+    GetSDInfo(fs);
+    sdInfoRead = true;
   }
-  else {
+  
+  for (int i = 0; i < runCount; i++) {
     File file = fs.open(JSON_PATH, FILE_APPEND);
-    file.print(",\n");
+    
+    if (numSavedRuns != 0) {
+      file.print(",\n");
+    }
+    
+    file.print(jsonData[i]);
     file.close();
+    
+    jsonData[i] = "";
+    numSavedRuns++;
   }
   
-  File file = fs.open(JSON_PATH, FILE_APPEND);
-  file.print(jsonStr);
-  file.close();
+  UpdateSDInfo(fs);
+  
+  runCount = 0;
+}
 
-  numSavedRuns++;
+
+// Gets the number of runs saved on the SD
+void Metrics::GetSDInfo(fs::FS &fs) {
+  if (fs.exists(INFO_PATH)) {
+    String s = "";
+    File file = fs.open(INFO_PATH);
+    while (file.available()) {
+      s += file.read();
+    }
+    file.close();
+    numSavedRuns = s.toInt();
+  }
+}
+
+
+// Updates the number of runs saved on the SD
+void Metrics::UpdateSDInfo(fs::FS &fs) {
+  File file = fs.open(INFO_PATH, FILE_WRITE);
+  file.print(String(numSavedRuns));
+  file.close();
 }
