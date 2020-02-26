@@ -7,7 +7,6 @@
 #include "FS.h"
 #include "SD.h"
 #include "SPI.h"
-#include <ArduinoJson.h>
 #include <Adafruit_GPS.h>
 #include <Adafruit_MPL3115A2.h>
 #include <string>
@@ -21,9 +20,12 @@
 const int MIN_ALT_DIFF = 1;
 const float MIN_SPD_DIFF = 0.1f;
 const float MIN_SPD = 0.4f;
+const int LED_PIN = 5;
 
 uint32_t timer = millis();
 int stopCount = 0;
+bool addDataSample = false;
+bool waitWifi = false;
 
 float lastAltitude = 0.0f;
 float currentAltitude = 0.0f;
@@ -42,40 +44,11 @@ WiFiMulti wifiMulti;
 int trackCount = 0;
 int testRuns = 0;
 bool firstRun = true;
-bool waitWifi = false;
-int ledPin = 5;
 
-// testing for grabbing data
-struct Data {
-  float lat;
-  char latDir;
-  float lon;
-  float lonDir;
-  float spd;
-  float alt;
-  String time;
-
-  Data() {}
-  Data(float lat, char latDir, float lon, float lonDir, float spd, float alt, String time) {
-    this->lat = lat;
-    this->latDir = latDir;
-    this->lon = lon;
-    this->lonDir = lonDir;
-    this->spd = spd;
-    this->alt = alt;
-    this->time = time;
-  }
-};
-
-int datsSize = 1000;
-struct Data dats[1000];
-int i = 0;
-bool addDat = false;
 
 // Initialize
 void setup() {
-  // TODO: remove led
-  pinMode(ledPin, OUTPUT);
+  pinMode(LED_PIN, OUTPUT);
   Serial.begin(115200);
 
   // Init wifi
@@ -114,79 +87,40 @@ void loop() {
   // If GPS is working, runs every ~0.5 secs
   if (millis() - timer >= 500) {
     timer = millis();
-    Serial.print("Time: "); Serial.println(getTime());
-    Serial.print("Date: "); Serial.println(getDate());
-
-    // Get altitude from barometer
-    if (baro.begin()) {
-      currentAltitude = baro.getAltitude();
-      Serial.print("Altitude(m): "); Serial.println(currentAltitude);
-    }
-
-    // Send data if there are saved runs
-    if (!waitWifi) {
-      if (metrics.GetNumSavedRuns() > 0 && wifiMulti.run() == WL_CONNECTED) {
-        Serial.println("Sending http request...");
-        sendData();
-        printDats();
-        //while(1);
-      }
-
-      waitWifi = true;
-    }
-    else {
-      waitWifi = false;
-    }
+    readBaro();
+    uploadData();
 
     if (GPS.fix) {
       // Convert speed from knots to m/s
       currentSpeed = GPS.speed / 1.944f;
-      
-      Serial.print("Num Satellites: "); Serial.println((int)GPS.satellites);
-      Serial.print("Speed (m/s): "); Serial.println(currentSpeed);
-      Serial.print("Latitude: "); Serial.print(GPS.latitude); Serial.println(GPS.lat);
-      Serial.print("Longitude: "); Serial.print(GPS.longitude); Serial.println(GPS.lon);
 
-      // TODO: remove below
+      // TODO: remove below used for testing without moving
 //      if (firstRun && testRuns < 1) {
-//        Serial.println("--RUN START--");
-//        metrics.StartRun(getDate(), getTime(), currentAltitude, GPS.latitude, GPS.lat, GPS.longitude, GPS.lon);
+//        startRun();
 //        firstRun = false;
 //      }
 
-      if (!metrics.IsRunOngoing()) {
-        if (checkRunStart()) {
-          digitalWrite(ledPin, HIGH);
-          metrics.StartRun(getDate(), getTime(), currentAltitude, GPS.latitude, GPS.lat, GPS.longitude, GPS.lon);
-          Serial.println("--RUN START--");
-        }
+      if (!metrics.IsRunOngoing() && checkRunStart()) {
+        startRun();
       }
       else {
+        addDataSamples();
+        
         if (checkRunStop()) {
           stopCount++;
 
           if (stopCount >= 4) {
-            if (!SD.begin()) {
-              Serial.println("Failed to mount SD before finish run");
-            }
-            digitalWrite(ledPin, LOW);
-            metrics.FinishRun(getTime(), currentAltitude, GPS.latitude, GPS.lat, GPS.longitude, GPS.lon, SD);
-            stopCount = 0;
-            Serial.println("--RUN STOP--");
+            finishRun();
           }
         }
         else {
           stopCount = 0;
         }
-
-        metrics.AddSpeedSample(currentSpeed);
-
-        // TODO: remove below
-        addDats();
+        
+        // TODO: remove below used for testing without moving
 //        trackCount += 1;
 //        if (trackCount >= 20) {
-//          Serial.println("--RUN STOP--");
-//          metrics.FinishRun(getTime(), currentAltitude, GPS.latitude, GPS.lat, GPS.longitude, GPS.lon);
+//          finishRun();
 //          trackCount = 0;
 //          testRuns++;
 //          firstRun = true;
@@ -195,17 +129,57 @@ void loop() {
 
       lastSpeed = currentSpeed;
     }
-    else {
-      if (!SD.begin()) {
-        Serial.println("Failed to mount SD before finish run");
-      }
-      metrics.FinishRun(getTime(), currentAltitude, GPS.latitude, GPS.lat, GPS.longitude, GPS.lon, SD);
-      Serial.println("Waiting for GPS satellites...");
+    // If run is ongoing and GPS connection is lost, end run
+    else if (metrics.IsRunOngoing()) {
+      finishRun();
     }
     
     lastAltitude = currentAltitude;
-    Serial.println();
+    printMetrics(GPS.fix);
   }
+}
+
+
+// Get altitude from barometer
+void readBaro() {
+  if (baro.begin()) {
+    currentAltitude = baro.getAltitude();
+  }
+}
+
+
+// Send data if there are saved runs
+void uploadData() {
+  if (!waitWifi && metrics.GetNumSavedRuns() > 0 && wifiMulti.run() == WL_CONNECTED) {
+    Serial.println("Sending http request...");
+    sendData();
+    // TODO: remove while
+    //while(1);
+    waitWifi = true;
+  }
+  else {
+    waitWifi = false;
+  }
+}
+
+
+// Prints the current metrics
+void printMetrics(bool gpsFix) {
+  Serial.print("Time: "); Serial.println(getTime());
+  Serial.print("Date: "); Serial.println(getDate());
+  Serial.print("Altitude(m): "); Serial.println(currentAltitude);
+
+  if (gpsFix) {
+    Serial.print("Num Satellites: "); Serial.println((int)GPS.satellites);
+    Serial.print("Speed (m/s): "); Serial.println(currentSpeed);
+    Serial.print("Latitude: "); Serial.print(GPS.latitude); Serial.println(GPS.lat);
+    Serial.print("Longitude: "); Serial.print(GPS.longitude); Serial.println(GPS.lon);
+  }
+  else {
+    Serial.println("Waiting for GPS satellites...");
+  }
+
+  Serial.println();
 }
 
 
@@ -233,6 +207,30 @@ String getTime() {
   time += " UTC";
 
   return time;
+}
+
+
+// Starts the run
+void startRun() {
+  metrics.StartRun(getDate(), getTime(), currentAltitude, GPS.latitude, GPS.lat, GPS.longitude, GPS.lon);
+  
+  digitalWrite(LED_PIN, HIGH);
+  Serial.println("--RUN START--");
+}
+
+
+// Ends the run
+void finishRun() {
+  stopCount = 0;
+  
+  bool useSD = SD.begin();
+  if (!useSD) {
+    Serial.println("Failed to mount SD before finish run");
+  }
+  metrics.FinishRun(getTime(), currentAltitude, GPS.latitude, GPS.lat, GPS.longitude, GPS.lon, SD, useSD);
+
+  digitalWrite(LED_PIN, LOW);
+  Serial.println("--RUN STOP--");
 }
 
 
@@ -268,26 +266,37 @@ bool checkRunStop() {
 }
 
 
+// Adds metrics data samples
+void addDataSamples() {
+  metrics.AddSpeedSample(currentSpeed);
+  // Add data sample every other run
+  if (addDataSample) {
+    metrics.AddDataSample(GPS.latitude, GPS.lat, GPS.longitude, GPS.lon, currentSpeed, currentAltitude, getTime());
+    addDataSample = false;
+  }
+  else {
+    addDataSample = true;
+  }
+}
+
+
 // Sends the saved JSON data to the API
 void sendData() {
-  HTTPClient http;
-
-  if (!SD.begin()) {
+  bool useSD = SD.begin();
+  if (!useSD) {
     Serial.println("Failed to mount SD before sending http");
-    return;
   }
 
+  HTTPClient http;
   http.begin("https://webhook.site/000d8382-1952-49f9-a79e-bf4de40e88ac");
-  
-  String jsonStr = metrics.GetJsonStr(SD);
-
   http.setUserAgent("Wearable");
   http.addHeader("Content-Type", "application/json");
-  int response = http.POST(jsonStr);
 
+  String jsonStr = metrics.GetJsonStr(SD, useSD);
+  int response = http.POST(jsonStr);
   if (response > 0) {
     if (response == HTTP_CODE_OK) {
-      metrics.ClearJson(SD);
+      metrics.ClearJson(SD, useSD);
     }
   }
   else {
@@ -295,25 +304,4 @@ void sendData() {
   }
 
   http.end();
-}
-
-void printDats() {
-  for (int j = 0; j < i; j++) {
-    Serial.print("Time: "); Serial.println(dats[j].time);
-    Serial.print("Lat: "); Serial.print(dats[j].lat); Serial.print(dats[j].latDir); Serial.print(" | Lon: "); Serial.print(dats[j].lon); Serial.println(dats[j].lonDir);
-    Serial.print("Spd: "); Serial.println(dats[j].spd);
-    Serial.print("Alt: "); Serial.println(dats[j].alt);
-    Serial.println();
-  }
-}
-
-void addDats() {
-  if (addDat && i < datsSize) {
-    dats[i] = Data(GPS.latitude, GPS.lat, GPS.longitude, GPS.lon, currentSpeed, currentAltitude, getTime());
-    i++;
-    addDat = false;
-  }
-  else {
-    addDat = true;
-  }
 }
