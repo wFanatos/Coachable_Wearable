@@ -8,6 +8,7 @@
 #include "FS.h"
 #include "SD.h"
 #include "SPI.h"
+#include "SPIFFS.h"
 #include <string>
 
 #define NUM_RUNS 100
@@ -21,11 +22,11 @@ public:
   ~Metrics();
   
   void StartRun(String date, String time, float altitude, float lat, char latDir, float lon, char lonDir);
-  void FinishRun(String time, float altitude, float lat, char latDir, float lon, char lonDir, fs::FS &fs, bool useSD);
+  void FinishRun(String time, float altitude, float lat, char latDir, float lon, char lonDir, fs::FS &fs, bool isSD);
   void AddSpeedSample(float speed);
   void AddDataSample(float lat, char latDir, float lon, float lonDir, float spd, float alt, String time);
-  void ClearJson(fs::FS &fs, bool useSD);
-  String GetJsonStr(fs::FS &fs, bool useSD);
+  void ClearJson(fs::FS &sd, bool useSD, fs::FS &spiffs);
+  String GetJsonStr(fs::FS &sd, bool useSD, fs::FS &spiffs);
   int GetNumSavedRuns();
   bool IsRunOngoing();
   
@@ -34,16 +35,20 @@ public:
 private:
   float DegToRad(float deg);
   float CalcDistance(float lat1, float lon1, float lat2, float lon2);
-  void SaveData(fs::FS &fs);
-  void GetSDInfo(fs::FS &fs);
-  void UpdateSDInfo(fs::FS &fs);
+  void SaveData(fs::FS &fs, bool isSD);
+  int GetInfo(fs::FS &fs);
+  void UpdateInfo(fs::FS &fs, int numSavedRuns);
+  void ReadInfo(fs::FS &fs, bool isSD);
+  String ReadFile(fs::FS &fs, const char* path);
+  void WriteFile(fs::FS &fs, const char* path, const char* method, const char* data);
   
-  String jsonData[NUM_RUNS];
+  String jsonData;
   String incrementalData;
   
   bool sdInfoRead;
-  int runCount;
-  int numSavedRuns;
+  bool spiffsInfoRead;
+  int numSavedRunsSD;
+  int numSavedRunsSpiffs;
   String date;
   String startTime;
   float startAltitude;

@@ -1,5 +1,5 @@
 /*
- * PROGRAMMER:  William Bicknell
+ * PROGRAMMER:    William Bicknell
  * FIRST VERSION: Feb 19, 2020
  * DESCRIPTION:   Keeps track of skiing metrics
  */
@@ -7,10 +7,11 @@
 #include "Metrics.h"
 
 Metrics::Metrics() {
-  runCount = 0;
-  numSavedRuns = 0;
+  numSavedRunsSD = 0;
+  numSavedRunsSpiffs = 0;
   date = "";
   startTime = "";
+  jsonData = "";
   startAltitude = 0.0f;
   sumSpeed = 0.0f;
   numSamples = 0;
@@ -19,6 +20,7 @@ Metrics::Metrics() {
   startMillis = 0;
   runOngoing = false;
   sdInfoRead = false;
+  spiffsInfoRead = false;
 }
 
 Metrics::~Metrics() {}
@@ -53,7 +55,7 @@ void Metrics::StartRun(String date, String time, float altitude, float lat, char
 
 
 // Store end of run data
-void Metrics::FinishRun(String time, float altitude, float lat, char latDir, float lon, char lonDir, fs::FS &fs, bool useSD) {
+void Metrics::FinishRun(String time, float altitude, float lat, char latDir, float lon, char lonDir, fs::FS &fs, bool isSD) {
   if (!runOngoing) {
     return;
   }
@@ -73,23 +75,19 @@ void Metrics::FinishRun(String time, float altitude, float lat, char latDir, flo
     lon *= -1.0f;
   }
   
-  // jsonData[runCount] = "{\"RunNumber\": " + String(runCount + 1) + ",";
-  jsonData[runCount] += "{\"Duration\": " + String(duration) + ",";
-  jsonData[runCount] += "\"Date\": " + date + ",";
-  jsonData[runCount] += "\"StartTime\": " + startTime + ",";
-  jsonData[runCount] += "\"EndTime\": " + time + ",";
-  jsonData[runCount] += "\"StartAltitude\": " + String(startAltitude) + ",";
-  jsonData[runCount] += "\"EndAltitude\": " + String(altitude) + ",";
-  jsonData[runCount] += "\"AvgSpeed\": " + String(sumSpeed / numSamples) + ",";
-  jsonData[runCount] += "\"Distance\": " + String(CalcDistance(startLat, startLon, lat, lon)) + ",";
-  jsonData[runCount] += "\"Data\": [" + incrementalData + "]}";
+  jsonData = "{\"Duration\": " + String(duration) + ",";
+  jsonData += "\"Date\": " + date + ",";
+  jsonData += "\"StartTime\": " + startTime + ",";
+  jsonData += "\"EndTime\": " + time + ",";
+  jsonData += "\"StartAltitude\": " + String(startAltitude) + ",";
+  jsonData += "\"EndAltitude\": " + String(altitude) + ",";
+  jsonData += "\"AvgSpeed\": " + String(sumSpeed / numSamples) + ",";
+  jsonData += "\"Distance\": " + String(CalcDistance(startLat, startLon, lat, lon)) + ",";
+  jsonData += "\"Data\": [" + incrementalData + "]}";
 
-  runCount++;
   runOngoing = false;
   
-  if (useSD) {
-    SaveData(fs);
-  }
+  SaveData(fs, isSD);
 }
 
 
@@ -123,49 +121,55 @@ void Metrics::AddDataSample(float lat, char latDir, float lon, float lonDir, flo
 
 
 // Clears all json data
-void Metrics::ClearJson(fs::FS &fs, bool useSD) {
+void Metrics::ClearJson(fs::FS &sd, bool useSD, fs::FS &spiffs) {
   // Clear SD
   if (useSD) {
-    fs.remove(JSON_PATH);
-    numSavedRuns = 0;
-    UpdateSDInfo(fs);
+    sd.remove(JSON_PATH);
+    numSavedRunsSD = 0;
+    UpdateInfo(sd, numSavedRunsSD);
   }
-  
-  // Clear memory
-  for (int i = 0; i < runCount; i++) {
-    jsonData[i] = "";  
-  }
-  
-  runCount = 0;
+
+  spiffs.remove(JSON_PATH);
+  numSavedRunsSpiffs = 0;
+  UpdateInfo(spiffs, numSavedRunsSpiffs);
 }
 
 
 // Returns the JSON string
-String Metrics::GetJsonStr(fs::FS &fs, bool useSD) {
+String Metrics::GetJsonStr(fs::FS &sd, bool useSD, fs::FS &spiffs) {
   String jsonStr = "{ \"Runs\": [";
-  
+  int numRuns = 0;
+
+  // Get data from SD
   if (useSD) {
-    if (!sdInfoRead) {
-      GetSDInfo(fs);
-      sdInfoRead = true;
-    }
+    ReadInfo(sd, true);
+    numRuns += numSavedRunsSD;
     
-    if (numSavedRuns > 0) {
-      File file = fs.open(JSON_PATH);
-      while (file.available()) {
-        jsonStr += file.read();
-      }
-      file.close();
+    if (numSavedRunsSD > 0) {
+      jsonStr += ReadFile(sd, JSON_PATH);
     }
   }
   
-  for (int i = 0; i < runCount; i++) {
-    if (i != 0 || numSavedRuns > 0) {
+  // Get data from SPIFFS
+  ReadInfo(spiffs, false);
+
+  if (numSavedRunsSpiffs > 0) {
+    if (numRuns > 0) {
       jsonStr += ",";
     }
-    jsonStr += jsonData[i];
+    jsonStr += ReadFile(spiffs, JSON_PATH);
   }
+ 
+  numRuns += numSavedRunsSpiffs;
   
+  // Get string data if not saved
+  if (jsonData != "") {
+    if (numRuns > 0) {
+      jsonStr += ",";
+    }
+    jsonStr += jsonData;
+  }
+ 
   jsonStr += "]}";
   
   return jsonStr;
@@ -174,7 +178,7 @@ String Metrics::GetJsonStr(fs::FS &fs, bool useSD) {
 
 // Returns number of saved runs
 int Metrics::GetNumSavedRuns() {
-  return numSavedRuns + runCount;
+  return numSavedRunsSD + numSavedRunsSpiffs;
 }
 
 
@@ -208,49 +212,88 @@ float Metrics::CalcDistance(float lat1, float lon1, float lat2, float lon2) {
 
 
 // Saves the current JSON data to the json data file
-void Metrics::SaveData(fs::FS &fs) {
-  if (!sdInfoRead) {
-    GetSDInfo(fs);
-    sdInfoRead = true;
+void Metrics::SaveData(fs::FS &fs, bool isSD) {
+  int numRuns = 0;
+  
+  ReadInfo(fs, isSD);
+  if (isSD) {
+    numRuns = numSavedRunsSD;
+  }
+  else {
+    numRuns = numSavedRunsSpiffs;
   }
   
-  for (int i = 0; i < runCount; i++) {
-    File file = fs.open(JSON_PATH, FILE_APPEND);
-    
-    if (numSavedRuns != 0) {
-      file.print(",\n");
-    }
-    
-    file.print(jsonData[i]);
-    file.close();
-    
-    jsonData[i] = "";
-    numSavedRuns++;
+  String str = "";
+  if (numRuns != 0) {
+    str += ",\n";
+  }
+  str += jsonData;
+  WriteFile(fs, JSON_PATH, FILE_WRITE, str.c_str());
+  
+  numRuns++;
+  if (isSD) {
+    numSavedRunsSD++;
+  }
+  else {
+    numSavedRunsSpiffs++;
   }
   
-  UpdateSDInfo(fs);
-  
-  runCount = 0;
+  jsonData = "";
+  UpdateInfo(fs, numRuns);
 }
 
 
 // Gets the number of runs saved on the SD
-void Metrics::GetSDInfo(fs::FS &fs) {
-  if (fs.exists(INFO_PATH)) {
-    String s = "";
-    File file = fs.open(INFO_PATH);
-    while (file.available()) {
-      s += file.read();
-    }
-    file.close();
-    numSavedRuns = s.toInt();
-  }
+int Metrics::GetInfo(fs::FS &fs) {
+  int numSavedRuns = 0;
+  String s = ReadFile(fs, INFO_PATH);
+  numSavedRuns = s.toInt();
+
+  return numSavedRuns;
 }
 
 
 // Updates the number of runs saved on the SD
-void Metrics::UpdateSDInfo(fs::FS &fs) {
-  File file = fs.open(INFO_PATH, FILE_WRITE);
-  file.print(String(numSavedRuns));
+void Metrics::UpdateInfo(fs::FS &fs, int numSavedRuns) {
+  WriteFile(fs, INFO_PATH, FILE_WRITE, String(numSavedRuns).c_str());
+}
+
+
+// Gets info for spiffs and sd
+void Metrics::ReadInfo(fs::FS &fs, bool isSD) {
+  if (isSD) {
+    if (!sdInfoRead) {
+      numSavedRunsSD = GetInfo(fs);
+      sdInfoRead = true;
+    }
+  }
+  else {
+    if (!spiffsInfoRead) {
+      numSavedRunsSpiffs = GetInfo(fs);
+      spiffsInfoRead = true;
+    }
+  }
+}
+
+
+// Reads all data from a file
+String Metrics::ReadFile(fs::FS &fs, const char* path) {
+  String str = "";
+  if (fs.exists(path)) {
+    File file = fs.open(path);
+    while (file.available()) {
+      str += String(file.readStringUntil('\n'));
+    }
+    file.close();
+  }
+
+  return str;
+}
+
+
+// Writes a string to a file
+void Metrics::WriteFile(fs::FS &fs, const char* path, const char* method, const char* data) {
+  File file = fs.open(path, method);
+  file.println(data);
   file.close();
 }
