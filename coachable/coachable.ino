@@ -7,6 +7,7 @@
 #include "FS.h"
 #include "SD.h"
 #include "SPI.h"
+#include "SPIFFS.h"
 #include <Adafruit_GPS.h>
 #include <Adafruit_MPL3115A2.h>
 #include <string>
@@ -26,6 +27,7 @@ uint32_t timer = millis();
 int stopCount = 0;
 bool addDataSample = false;
 bool waitWifi = false;
+bool useSD = false;
 
 float lastAltitude = 0.0f;
 float currentAltitude = 0.0f;
@@ -55,8 +57,14 @@ void setup() {
   wifiMulti.addAP(ssid, password);
 
   // Init SD
-  if (!SD.begin()) {
+  bool useSD = SD.begin();
+  if (!useSD) {
     Serial.println("Initial SD mount failed!");
+  }
+
+  // Init SPIFFS
+  if(!SPIFFS.begin()){
+    Serial.println("SPIFFS Mount Failed");
   }
   
   // Init GPS
@@ -84,7 +92,7 @@ void loop() {
     timer = millis();
   }
 
-  // If GPS is working, runs every ~0.5 secs
+  // Runs every ~0.5 secs
   if (millis() - timer >= 500) {
     timer = millis();
     readBaro();
@@ -95,10 +103,10 @@ void loop() {
       currentSpeed = GPS.speed / 1.944f;
 
       // TODO: remove below used for testing without moving
-//      if (firstRun && testRuns < 1) {
-//        startRun();
-//        firstRun = false;
-//      }
+      if (firstRun && testRuns < 3) {
+        startRun();
+        firstRun = false;
+      }
 
       if (!metrics.IsRunOngoing() && checkRunStart()) {
         startRun();
@@ -106,25 +114,25 @@ void loop() {
       else {
         addDataSamples();
         
-        if (checkRunStop()) {
-          stopCount++;
-
-          if (stopCount >= 4) {
-            finishRun();
-          }
-        }
-        else {
-          stopCount = 0;
-        }
+//        if (checkRunStop()) {
+//          stopCount++;
+//
+//          if (stopCount >= 4) {
+//            finishRun();
+//          }
+//        }
+//        else {
+//          stopCount = 0;
+//        }
         
         // TODO: remove below used for testing without moving
-//        trackCount += 1;
-//        if (trackCount >= 20) {
-//          finishRun();
-//          trackCount = 0;
-//          testRuns++;
-//          firstRun = true;
-//        }
+        trackCount += 1;
+        if (trackCount >= 20) {
+          finishRun();
+          trackCount = 0;
+          testRuns++;
+          firstRun = true;
+        }
       }
 
       lastSpeed = currentSpeed;
@@ -154,7 +162,8 @@ void uploadData() {
     Serial.println("Sending http request...");
     sendData();
     // TODO: remove while
-    //while(1);
+    Serial.println(metrics.GetJsonStr(SD, useSD, SPIFFS));
+    while(1);
     waitWifi = true;
   }
   else {
@@ -223,11 +232,12 @@ void startRun() {
 void finishRun() {
   stopCount = 0;
   
-  bool useSD = SD.begin();
   if (!useSD) {
-    Serial.println("Failed to mount SD before finish run");
+    metrics.FinishRun(getTime(), currentAltitude, GPS.latitude, GPS.lat, GPS.longitude, GPS.lon, SPIFFS, useSD);
   }
-  metrics.FinishRun(getTime(), currentAltitude, GPS.latitude, GPS.lat, GPS.longitude, GPS.lon, SD, useSD);
+  else {
+    metrics.FinishRun(getTime(), currentAltitude, GPS.latitude, GPS.lat, GPS.longitude, GPS.lon, SD, useSD);
+  }
 
   digitalWrite(LED_PIN, LOW);
   Serial.println("--RUN STOP--");
@@ -282,21 +292,16 @@ void addDataSamples() {
 
 // Sends the saved JSON data to the API
 void sendData() {
-  bool useSD = SD.begin();
-  if (!useSD) {
-    Serial.println("Failed to mount SD before sending http");
-  }
-
   HTTPClient http;
   http.begin("https://webhook.site/000d8382-1952-49f9-a79e-bf4de40e88ac");
   http.setUserAgent("Wearable");
   http.addHeader("Content-Type", "application/json");
 
-  String jsonStr = metrics.GetJsonStr(SD, useSD);
+  String jsonStr = metrics.GetJsonStr(SD, useSD, SPIFFS);
   int response = http.POST(jsonStr);
   if (response > 0) {
     if (response == HTTP_CODE_OK) {
-      metrics.ClearJson(SD, useSD);
+      metrics.ClearJson(SD, useSD, SPIFFS);
     }
   }
   else {
