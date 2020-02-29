@@ -15,6 +15,7 @@
 #include <WiFi.h>
 #include <WiFiMulti.h>
 #include <Metrics.h>
+#include <Test.h>
 
 #define GPSSerial Serial2
 
@@ -22,6 +23,7 @@ const int MIN_ALT_DIFF = 1;
 const float MIN_SPD_DIFF = 0.1f;
 const float MIN_SPD = 0.4f;
 const int LED_PIN = 5;
+const int CS_PIN = 33;
 
 uint32_t timer = millis();
 int stopCount = 0;
@@ -57,7 +59,7 @@ void setup() {
   wifiMulti.addAP(ssid, password);
 
   // Init SD
-  bool useSD = SD.begin();
+  useSD = SD.begin(CS_PIN, SPI, 1000000, "/sd");
   if (!useSD) {
     Serial.println("Initial SD mount failed!");
   }
@@ -66,7 +68,7 @@ void setup() {
   if(!SPIFFS.begin()){
     Serial.println("SPIFFS Mount Failed");
   }
-  
+
   // Init GPS
   GPS.begin(9600);
   GPS.sendCommand(PMTK_SET_NMEA_OUTPUT_RMCGGA);
@@ -162,7 +164,6 @@ void uploadData() {
     Serial.println("Sending http request...");
     sendData();
     // TODO: remove while
-    Serial.println(metrics.GetJsonStr(SD, useSD, SPIFFS));
     while(1);
     waitWifi = true;
   }
