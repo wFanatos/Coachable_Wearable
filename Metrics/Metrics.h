@@ -30,8 +30,6 @@ public:
   int GetNumSavedRuns();
   bool IsRunOngoing();
   
-  float sumSpeed;
-  
 private:
   float DegToRad(float deg);
   float CalcDistance(float lat1, float lon1, float lat2, float lon2);
@@ -49,10 +47,11 @@ private:
   bool spiffsInfoRead;
   int numSavedRunsSD;
   int numSavedRunsSpiffs;
+  
   String date;
   String startTime;
   float startAltitude;
-  
+  float sumSpeed;
   int numSamples;
   float startLat;
   float startLon;

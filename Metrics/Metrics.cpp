@@ -228,7 +228,7 @@ void Metrics::SaveData(fs::FS &fs, bool isSD) {
     str += ",\n";
   }
   str += jsonData;
-  WriteFile(fs, JSON_PATH, FILE_WRITE, str.c_str());
+  WriteFile(fs, JSON_PATH, FILE_APPEND, str.c_str());
   
   numRuns++;
   if (isSD) {
