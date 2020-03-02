@@ -18,5 +18,13 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
+Route::get('/athlete', 'AthleteController@index')->name('athlete');
+Route::get('/parent', 'ParentController@index')->name('parent');
+Route::get('/coach', 'CoachController@index')->name('coach');
+Route::get('/head', 'HeadCoachController@index')->name('head');
+
+
+
+
 Route::get('/users/logout', 'Auth\LoginController@userLogout')->name('user.logout');
 Route::get('/dashboard', 'DashboardController@index');
