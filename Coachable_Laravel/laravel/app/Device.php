@@ -10,6 +10,6 @@ class Device extends Model
 
 
     protected $fillable = [
-        'device_name'
+        'device_name', 'user_id'
     ];
 }

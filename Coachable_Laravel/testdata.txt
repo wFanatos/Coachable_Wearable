@@ -14,17 +14,8 @@ $data = new App\Role
 $data->type_name= 'Head Coach'
 $data->save();
 
-$data = new App\Device
-$data->device_name = 'NONE'
-$data->save();
-
-$data = new App\Device
-$data->device_name = 'ABC123'
-$data->save();
-
 $data = new App\User
 $data->user_type_id = 1
-$data->device_id = 2
 $data->name= "Blake Ribble"
 $data->email= "blakeribble99@outlook.com"
 $data->password = Hash::make('password')
@@ -32,7 +23,6 @@ $data->save();
 
 $data = new App\User
 $data->user_type_id = 2
-$data->device_id = 1
 $data->name= "Dylan M"
 $data->email= "dylan@dylan.com"
 $data->password = Hash::make('password')
@@ -40,7 +30,6 @@ $data->save();
 
 $data = new App\User
 $data->user_type_id = 3
-$data->device_id = 1
 $data->name= "Justin"
 $data->email= "justin@justin.com"
 $data->password = Hash::make('password')
@@ -48,10 +37,19 @@ $data->save();
 
 $data = new App\User
 $data->user_type_id = 4
-$data->device_id = 1
 $data->name= "Rick"
 $data->email= "rick@rick.com"
 $data->password = Hash::make('password')
+$data->save();
+
+$data = new App\Device
+$data->device_name = 'ABC123'
+$data->user_id = 1
+$data->save();
+
+$data = new App\Device
+$data->device_name = 'DAD111'
+$data->user_id = null
 $data->save();
 
 $data = new App\ParentAthlete

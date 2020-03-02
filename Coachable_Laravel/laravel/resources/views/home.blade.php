@@ -20,11 +20,11 @@
                             <p> {{$event}} </p>
                         @endforeach
 
-                        <p> Your parent is: {{$parentUser->name}} </p>
+                        {{-- <p> Your parent is: {{$parentUser->name}} </p> --}}
 
-                        @foreach($runs as $run)
+                        {{-- @foreach($runs as $run)
                             <p> {{$run}} </p>
-                        @endforeach
+                        @endforeach --}}
                     @endif
 
                     @if($user->user_type_id == 2)
