@@ -20,8 +20,8 @@
 #define GPSSerial Serial2
 
 const int MIN_ALT_DIFF = 1;
-const float MIN_SPD_DIFF = 0.1f;
-const float MIN_SPD = 0.4f;
+const float MIN_SPD_DIFF = 0.3f;
+const float MIN_SPD = 1.0f;
 const int LED_PIN = 5;
 const int CS_PIN = 33;
 
@@ -105,36 +105,38 @@ void loop() {
       currentSpeed = GPS.speed / 1.944f;
 
       // TODO: remove below used for testing without moving
-      if (firstRun && testRuns < 3) {
-        startRun();
-        firstRun = false;
-      }
+//      if (firstRun && testRuns < 3) {
+//        startRun();
+//        firstRun = false;
+//      }
 
-      if (!metrics.IsRunOngoing() && checkRunStart()) {
-        startRun();
+      if (!metrics.IsRunOngoing()) {
+        if (checkRunStart()) {
+          startRun();
+        }
       }
       else {
         addDataSamples();
         
-//        if (checkRunStop()) {
-//          stopCount++;
-//
-//          if (stopCount >= 4) {
-//            finishRun();
-//          }
-//        }
-//        else {
-//          stopCount = 0;
-//        }
+        if (checkRunStop()) {
+          stopCount++;
+
+          if (stopCount >= 4) {
+            finishRun();
+          }
+        }
+        else {
+          stopCount = 0;
+        }
         
         // TODO: remove below used for testing without moving
-        trackCount += 1;
-        if (trackCount >= 20) {
-          finishRun();
-          trackCount = 0;
-          testRuns++;
-          firstRun = true;
-        }
+//        trackCount += 1;
+//        if (trackCount >= 20) {
+//          finishRun();
+//          trackCount = 0;
+//          testRuns++;
+//          firstRun = true;
+//        }
       }
 
       lastSpeed = currentSpeed;
@@ -164,7 +166,7 @@ void uploadData() {
     Serial.println("Sending http request...");
     sendData();
     // TODO: remove while
-    while(1);
+    //while(1);
     waitWifi = true;
   }
   else {
@@ -263,11 +265,6 @@ bool checkRunStart() {
 
 // Check if start of run conditions met
 bool checkRunStop() {
-  // Using altitude
-  if (lastAltitude - currentAltitude < MIN_ALT_DIFF) {
-    return true;
-  }
-
   // Using speed
   if (currentSpeed < MIN_SPD) {
     return true;
