@@ -23,7 +23,8 @@ class CreatesRunsTable extends Migration
             $table->string('end_time');
             $table->string('start_altitude');
             $table->string('end_altitude');
-            $table->string('extra_data');
+			$table->string('avg_speed');
+            $table->string('distance');
 
             $table->foreign('user_id')->references('id')->on('users');
             $table->foreign('event_id')->references('id')->on('events');

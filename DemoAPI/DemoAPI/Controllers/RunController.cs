@@ -15,31 +15,6 @@ namespace DemoAPI.Controllers
     /// </summary>
     public class RunController : ApiController
     {
-        /// <summary>
-        /// This method gets the basic run information
-        /// http://localhost:51825/Run/GetBasicRuns/userID
-        /// </summary>
-        /// <param name="userID"></param>
-        /// <returns>run information or error</returns>
-        [HttpGet]
-        [Route("Run/GetBasicRuns/{userID}")]
-        public object GetBasicRuns(int userID)
-        {
-            return new RunList().GetBasicRuns(userID);
-        }
-
-        /// <summary>
-        /// This method gets all run details for one run
-        /// http://localhost:51825/Run/GetRunDetails/runID
-        /// </summary>
-        /// <param name="runID"></param>
-        /// <returns>run information or error</returns>
-        [HttpGet]
-        [Route("Run/GetRunDetails/{runID}")]
-        public object GetRunDetails(int runID)
-        {
-            return new RunList().GetRunDetails(runID);
-        }
 
         /// <summary>
         /// This method adds a new run

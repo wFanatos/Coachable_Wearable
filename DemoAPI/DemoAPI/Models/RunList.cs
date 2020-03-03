@@ -27,95 +27,7 @@ namespace DemoAPI.Models
         {
             myConnection = ConfigurationManager.ConnectionStrings["UserString"].ConnectionString;
             conn = new SqlConnection(myConnection);
-        }
-
-        /// <summary>
-        /// Method that retrieves basic run information
-        /// </summary>
-        /// <param name="userID"></param>
-        /// <returns>All runs or null</returns>
-        public object GetBasicRuns(int userID)
-        {
-            using (var myConn = new SqlConnection(myConnection))
-            {
-                // Query to retrieve data
-                const string runQuery = @" 
-                   SELECT Run_ID, Run_Date FROM Run WHERE [User_ID] = @id";
-
-                // Create the command
-                var runCommand = new SqlCommand(runQuery, myConn);
-
-                //Fill in the parameter
-                runCommand.Parameters.AddWithValue("id", userID);
-
-                // Open the connection
-                myConn.Open();
-
-                try
-                {
-                    // Execute the reader which returns all rows into reader
-                    var reader = runCommand.ExecuteReader();
-
-                    // Create a new DataTable
-                    DataTable data = new DataTable();
-
-                    // Load the reader results into the datatable
-                    data.Load(reader);
-
-                    return data;
-                }
-
-                catch(Exception)
-                {
-                    return null;
-                }
-               
-            }
-        }
-
-        /// <summary>
-        /// Method that retrieves all information for one specific run
-        /// </summary>
-        /// <param name="runID"></param>
-        /// <returns>All details or null</returns>
-        public object GetRunDetails(int runID)
-        {
-            using (var myConn = new SqlConnection(myConnection))
-            {
-                // Query to retrieve data
-                const string runQuery = @" 
-                   SELECT * from Run WHERE Run_ID = @id";
-
-                // Create the command
-                var runCommand = new SqlCommand(runQuery, myConn);
-
-                //Fill in the parameter
-                runCommand.Parameters.AddWithValue("id", runID);
-
-                // Open the connection
-                myConn.Open();
-
-                try
-                {
-                    // Execute the reader which returns all rows into reader
-                    var reader = runCommand.ExecuteReader();
-
-                    // Create a new DataTable
-                    DataTable data = new DataTable();
-
-                    // Load the reader results into the datatable
-                    data.Load(reader);
-
-                    return data;
-                }
-
-                catch (Exception)
-                {
-                    return null;
-                }
-
-            }
-        }
+        }      
 
         /// <summary>
         /// Method that adds a new run
@@ -124,6 +36,16 @@ namespace DemoAPI.Models
         /// <returns>Successful or not</returns>
         public string Insert(Run newRun)
         {
+            //LIST OF QUERIES NEEDED. ALSO CHANGE EVERYTHING TO MYSQL NOT SQLSERVER
+
+            //WITH DEVICE NAME, FIND THE USER ID ATTACHED
+            //WITH THAT USER ID, FIND LIST OF EVENTS
+            //MATCH THE DATE OF THE RUN TO THE EVENT
+            //SET THE EVENT_ID WITH PREV RESULT
+            //INSERT INTO DB
+
+
+
             try
             {
                 // Query to retrieve data

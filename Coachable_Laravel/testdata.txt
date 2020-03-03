@@ -139,7 +139,8 @@ $data->start_time = "2:50:01"
 $data->end_time = "2:57:01"
 $data->start_altitude = "333"
 $data->end_altitude = "555"
-$data->extra_data = "STRING FOR NOW"
+$data->avg_speed = "100"
+$data->distance = "100"
 $data->save();
 
 

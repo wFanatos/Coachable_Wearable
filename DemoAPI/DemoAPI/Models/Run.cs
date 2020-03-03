@@ -11,42 +11,33 @@ namespace DemoAPI.Models
     /// Run class which contains run information
     /// </summary>
     public class Run
-    {
-        /// <summary>
-        /// ID that identifies run
-        /// </summary>
-        public int RunID { get; set; }
-
+    {     
         /// <summary>
         /// User ID belonging to a run
         /// </summary>
         public int UserID { get; set; }
 
         /// <summary>
-        /// Date when the run took place
+        /// User ID belonging to a run
         /// </summary>
-        public string Run_Date { get; set; }
+        public string DeviceName { get; set; }
 
-        /// <summary>
-        /// Speed metric
-        /// </summary>
-        public float Speed { get; set; }
+        public int EventID { get; set; }
 
-        /// <summary>
-        /// Distance the user skied
-        /// </summary>
-        public float Distance { get; set; }
+        public string Duration { get; set; }
 
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        public Run()
-        {
-            RunID = -1;
-            UserID = -1;
-            Run_Date = "";
-            Speed = -1;
-            Distance = -1;
-        }
+        public string Date { get; set; }
+
+        public string StartTime { get; set; }
+
+        public string EndTime { get; set; }
+
+        public string StartAltitude { get; set; }
+
+        public string EndAltitude { get; set; }
+
+        public string AverageSpeed { get; set; }
+
+        public string Distance { get; set; }
     }
 }
