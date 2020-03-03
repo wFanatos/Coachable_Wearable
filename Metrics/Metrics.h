@@ -22,7 +22,7 @@ public:
   ~Metrics();
   
   void StartRun(String date, String time, float altitude, float lat, char latDir, float lon, char lonDir);
-  void FinishRun(String time, float altitude, float lat, char latDir, float lon, char lonDir, fs::FS &fs, bool isSD);
+  void FinishRun(String deviceID, String time, float altitude, float lat, char latDir, float lon, char lonDir, fs::FS &fs, bool isSD);
   void AddSpeedSample(float speed);
   void AddDataSample(float lat, char latDir, float lon, float lonDir, float spd, float alt, String time);
   void ClearJson(fs::FS &sd, bool useSD, fs::FS &spiffs);

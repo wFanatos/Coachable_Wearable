@@ -55,7 +55,7 @@ void Metrics::StartRun(String date, String time, float altitude, float lat, char
 
 
 // Store end of run data
-void Metrics::FinishRun(String time, float altitude, float lat, char latDir, float lon, char lonDir, fs::FS &fs, bool isSD) {
+void Metrics::FinishRun(String deviceID, String time, float altitude, float lat, char latDir, float lon, char lonDir, fs::FS &fs, bool isSD) {
   if (!runOngoing) {
     return;
   }
@@ -75,10 +75,13 @@ void Metrics::FinishRun(String time, float altitude, float lat, char latDir, flo
     lon *= -1.0f;
   }
   
-  jsonData = "{\"Duration\": " + String(duration) + ",";
-  jsonData += "\"Date\": " + date + ",";
-  jsonData += "\"StartTime\": " + startTime + ",";
-  jsonData += "\"EndTime\": " + time + ",";
+  jsonData = "{\"DeviceID\": \"" + deviceID + "\",";
+  jsonData += "\"UserID\": 0,";
+  jsonData += "\"EventID\": 0,";
+  jsonData += "\"Duration\": " + String(duration) + ",";
+  jsonData += "\"Date\": \"" + date + "\",";
+  jsonData += "\"StartTime\": \"" + startTime + "\",";
+  jsonData += "\"EndTime\": \"" + time + "\",";
   jsonData += "\"StartAltitude\": " + String(startAltitude) + ",";
   jsonData += "\"EndAltitude\": " + String(altitude) + ",";
   jsonData += "\"AvgSpeed\": " + String(sumSpeed / numSamples) + ",";
@@ -116,7 +119,7 @@ void Metrics::AddDataSample(float lat, char latDir, float lon, float lonDir, flo
   incrementalData += "\"Longitude\": " + String(lon) + ",";
   incrementalData += "\"Speed\": " + String(spd) + ",";
   incrementalData += "\"Altitude\": " + String(alt) + ",";
-  incrementalData += "\"Time\": " + time + "}";
+  incrementalData += "\"Time\": \"" + time + "\"}";
 }
 
 
