@@ -19,6 +19,7 @@
 
 #define GPSSerial Serial2
 
+const String DEVICE_ID = "ABC123";
 const int MIN_ALT_DIFF = 1;
 const float MIN_SPD_DIFF = 0.3f;
 const float MIN_SPD = 1.0f;
@@ -105,7 +106,7 @@ void loop() {
       currentSpeed = GPS.speed / 1.944f;
 
       // TODO: remove below used for testing without moving
-//      if (firstRun && testRuns < 3) {
+//      if (firstRun && testRuns < 1) {
 //        startRun();
 //        firstRun = false;
 //      }
@@ -236,10 +237,10 @@ void finishRun() {
   stopCount = 0;
   
   if (!useSD) {
-    metrics.FinishRun(getTime(), currentAltitude, GPS.latitude, GPS.lat, GPS.longitude, GPS.lon, SPIFFS, useSD);
+    metrics.FinishRun(DEVICE_ID, getTime(), currentAltitude, GPS.latitude, GPS.lat, GPS.longitude, GPS.lon, SPIFFS, useSD);
   }
   else {
-    metrics.FinishRun(getTime(), currentAltitude, GPS.latitude, GPS.lat, GPS.longitude, GPS.lon, SD, useSD);
+    metrics.FinishRun(DEVICE_ID, getTime(), currentAltitude, GPS.latitude, GPS.lat, GPS.longitude, GPS.lon, SD, useSD);
   }
 
   digitalWrite(LED_PIN, LOW);
