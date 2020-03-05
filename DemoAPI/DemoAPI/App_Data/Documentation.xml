@@ -481,49 +481,12 @@
             </summary>
             <param name="documentPath">The physical path to XML document.</param>
         </member>
-        <member name="T:DemoAPI.Controllers.CustomerController">
-            <summary>
-            Class that controls the customer
-            </summary>
-        </member>
-        <member name="M:DemoAPI.Controllers.CustomerController.CheckCustomer(System.String)">
-            <summary>
-            This method checks to see if the customer is in the DB
-            http://localhost:51825/Customer/CheckCustomer/username
-            </summary>
-            <param name="username"></param>
-            <returns>-1 or users ID</returns>
-        </member>
-        <member name="M:DemoAPI.Controllers.CustomerController.Post(DemoAPI.Models.Customer)">
-            <summary>
-            This method adds the user into the DB
-            http://localhost:51825/Customer POST
-            </summary>
-            <param name="cust"></param>
-            <returns>successful or error</returns>
-        </member>
         <member name="T:DemoAPI.Controllers.RunController">
             <summary>
             Class that controls the run
             </summary>
         </member>
-        <member name="M:DemoAPI.Controllers.RunController.GetBasicRuns(System.Int32)">
-            <summary>
-            This method gets the basic run information
-            http://localhost:51825/Run/GetBasicRuns/userID
-            </summary>
-            <param name="userID"></param>
-            <returns>run information or error</returns>
-        </member>
-        <member name="M:DemoAPI.Controllers.RunController.GetRunDetails(System.Int32)">
-            <summary>
-            This method gets all run details for one run
-            http://localhost:51825/Run/GetRunDetails/runID
-            </summary>
-            <param name="runID"></param>
-            <returns>run information or error</returns>
-        </member>
-        <member name="M:DemoAPI.Controllers.RunController.Post(DemoAPI.Models.Run)">
+        <member name="M:DemoAPI.Controllers.RunController.Post(System.Collections.Generic.List{DemoAPI.Models.Run})">
             <summary>
             This method adds a new run
             http://localhost:51825/Run POST
@@ -532,63 +495,9 @@
             <returns>Successful or not</returns>
             
         </member>
-        <member name="T:DemoAPI.Models.Customer">
-            <summary>
-            Customer class which contains information
-            </summary>
-        </member>
-        <member name="P:DemoAPI.Models.Customer.ID">
-            <summary>
-            Customer's ID
-            </summary>
-        </member>
-        <member name="P:DemoAPI.Models.Customer.UserName">
-            <summary>
-            Customers Username
-            </summary>
-        </member>
-        <member name="P:DemoAPI.Models.Customer.Password">
-            <summary>
-            Customers Password
-            </summary>
-        </member>
-        <member name="M:DemoAPI.Models.Customer.#ctor">
-            <summary>
-            Constructor for Customer
-            </summary>
-        </member>
-        <member name="T:DemoAPI.Models.CustomerList">
-            <summary>
-            Class for accessing the DB for customer information
-            </summary>
-        </member>
-        <member name="M:DemoAPI.Models.CustomerList.#ctor">
-            <summary>
-            Constructor for setting up connection
-            </summary>
-        </member>
-        <member name="M:DemoAPI.Models.CustomerList.GetCustomer(System.String)">
-            <summary>
-            Method checks to see if the customer is in the DB
-            </summary>
-            <param name="userName"></param>
-            <returns> -1 or user's ID</returns>
-        </member>
-        <member name="M:DemoAPI.Models.CustomerList.Insert(DemoAPI.Models.Customer)">
-            <summary>
-            Method to insert the customer in the DB
-            </summary>
-            <param name="customer"></param>
-            <returns>Successful or not</returns>
-        </member>
         <member name="T:DemoAPI.Models.Run">
             <summary>
             Run class which contains run information
-            </summary>
-        </member>
-        <member name="P:DemoAPI.Models.Run.RunID">
-            <summary>
-            ID that identifies run
             </summary>
         </member>
         <member name="P:DemoAPI.Models.Run.UserID">
@@ -596,24 +505,59 @@
             User ID belonging to a run
             </summary>
         </member>
-        <member name="P:DemoAPI.Models.Run.Run_Date">
+        <member name="P:DemoAPI.Models.Run.DeviceName">
             <summary>
-            Date when the run took place
+            Devices name
             </summary>
         </member>
-        <member name="P:DemoAPI.Models.Run.Speed">
+        <member name="P:DemoAPI.Models.Run.EventID">
             <summary>
-            Speed metric
+            Event ID belonging to run
+            </summary>
+        </member>
+        <member name="P:DemoAPI.Models.Run.Duration">
+            <summary>
+            Duration for run
+            </summary>
+        </member>
+        <member name="P:DemoAPI.Models.Run.Date">
+            <summary>
+            Date of the run
+            </summary>
+        </member>
+        <member name="P:DemoAPI.Models.Run.StartTime">
+            <summary>
+            When the run started
+            </summary>
+        </member>
+        <member name="P:DemoAPI.Models.Run.EndTime">
+            <summary>
+            When the run ended
+            </summary>
+        </member>
+        <member name="P:DemoAPI.Models.Run.StartAltitude">
+            <summary>
+            The starting altitude
+            </summary>
+        </member>
+        <member name="P:DemoAPI.Models.Run.EndAltitude">
+            <summary>
+            The ending altitude
+            </summary>
+        </member>
+        <member name="P:DemoAPI.Models.Run.AvgSpeed">
+            <summary>
+            The average speed
             </summary>
         </member>
         <member name="P:DemoAPI.Models.Run.Distance">
             <summary>
-            Distance the user skied
+            The distance between start and end
             </summary>
         </member>
-        <member name="M:DemoAPI.Models.Run.#ctor">
+        <member name="P:DemoAPI.Models.Run.Data">
             <summary>
-            Constructor
+            Extra data
             </summary>
         </member>
         <member name="T:DemoAPI.Models.RunList">
@@ -621,30 +565,26 @@
             Class for accessing the DB for run information
             </summary>
         </member>
+        <member name="P:DemoAPI.Models.RunList.ConnectionString">
+            <summary>
+            String for connecting to the DB
+            </summary>
+        </member>
+        <member name="P:DemoAPI.Models.RunList.conn">
+            <summary>
+            Connection instance to DB
+            </summary>
+        </member>
         <member name="M:DemoAPI.Models.RunList.#ctor">
             <summary>
             Constructor
             </summary>
         </member>
-        <member name="M:DemoAPI.Models.RunList.GetBasicRuns(System.Int32)">
+        <member name="M:DemoAPI.Models.RunList.Insert(System.Collections.Generic.List{DemoAPI.Models.Run})">
             <summary>
-            Method that retrieves basic run information
+            Method that adds runs to the DB
             </summary>
-            <param name="userID"></param>
-            <returns>All runs or null</returns>
-        </member>
-        <member name="M:DemoAPI.Models.RunList.GetRunDetails(System.Int32)">
-            <summary>
-            Method that retrieves all information for one specific run
-            </summary>
-            <param name="runID"></param>
-            <returns>All details or null</returns>
-        </member>
-        <member name="M:DemoAPI.Models.RunList.Insert(DemoAPI.Models.Run)">
-            <summary>
-            Method that adds a new run
-            </summary>
-            <param name="newRun"></param>
+            <param name="runs"></param>
             <returns>Successful or not</returns>
         </member>
     </members>

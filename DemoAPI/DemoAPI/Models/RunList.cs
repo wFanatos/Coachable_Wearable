@@ -6,9 +6,10 @@
 */
 
 using System;
+using System.Collections.Generic;
 using System.Configuration;
-using System.Data;
 using MySql.Data.MySqlClient;
+using Newtonsoft.Json;
 
 namespace DemoAPI.Models
 {
@@ -25,7 +26,7 @@ namespace DemoAPI.Models
         /// <summary>
         /// Connection instance to DB
         /// </summary>
-        public MySqlConnection conn { get; set; }
+        public MySqlConnection Conn { get; set; }
 
         /// <summary>
         /// Constructor
@@ -33,66 +34,74 @@ namespace DemoAPI.Models
         public RunList()
         {
             ConnectionString = ConfigurationManager.ConnectionStrings["CoachableString"].ConnectionString;
-            conn = new MySqlConnection(ConnectionString);
+            Conn = new MySqlConnection(ConnectionString);
         }      
 
         /// <summary>
-        /// Method that adds a new run
+        /// Method that adds runs to the DB
         /// </summary>
-        /// <param name="newRun"></param>
+        /// <param name="runs"></param>
         /// <returns>Successful or not</returns>
-        public string Insert(Run newRun)
+        public string Insert(List<Run> runs)
         {
-            using (conn)
-            {            
-                //ADD TRY CATCHES, TEST TO MAKE SURE IT WORKS, MAYBE CHANGE SOME SCALARS TO READERS (LIKE LIST OF TEAMS INSTEAD OF JUST ONE TEAM)
+            using (Conn)
+            {
+                // Although this code works, we should add try catches, proper validation, and encryption of data
+                try
+                {
+                    Conn.Open();
 
-                conn.Open();
+                    // Loop through each run sent
+                    foreach (Run newRun in runs)
+                    {
+                        // Create and execute query for finding the users id using the device name
+                        const string findUserQuery = @"SELECT user_id FROM Devices WHERE Device_Name = @name";
+                        var userCommand = new MySqlCommand(findUserQuery, Conn);
+                        userCommand.Parameters.AddWithValue("@name", newRun.DeviceName);
+                        var userID = userCommand.ExecuteScalar();
+                        newRun.UserID = int.Parse(userID.ToString());
 
-                // Create and execute query for finding the devices id using its name
-                const string findDeviceQuery = @"SELECT id FROM Devices WHERE Device_Name = @name";
-                var deviceCommand = new MySqlCommand(findDeviceQuery, conn);
-                deviceCommand.Parameters.AddWithValue("@name", newRun.DeviceName);
-                var deviceID = deviceCommand.ExecuteScalar();
+                        // Create and execute query for finding the users team based on their id
+                        const string findTeamQuery = @"SELECT team_id FROM UserTeams WHERE user_id = @userID";
+                        var teamCommand = new MySqlCommand(findTeamQuery, Conn);
+                        teamCommand.Parameters.AddWithValue("@userID", newRun.UserID);
+                        var teamID = userCommand.ExecuteScalar();
 
-                // Create and execute query for finding the users id based on device ID
-                const string findUserQuery = @"SELECT id FROM Users WHERE Device_ID = @deviceID";
-                var userCommand = new MySqlCommand(findUserQuery, conn);
-                userCommand.Parameters.AddWithValue("@deviceID", deviceID);
-                var userID = userCommand.ExecuteScalar();
-                newRun.UserID = int.Parse(userID.ToString());
+                        // Create and execute query for finding an event that matches the date provided by device
+                        const string findEventQuery = @"SELECT id FROM Events WHERE team_id = @teamID AND Event_Date = @date";
+                        var eventCommand = new MySqlCommand(findEventQuery, Conn);
+                        eventCommand.Parameters.AddWithValue("@teamID", teamID);
+                        eventCommand.Parameters.AddWithValue("@userID", newRun.Date);
+                        var eventID = userCommand.ExecuteScalar();
+                        newRun.EventID = int.Parse(eventID.ToString());
 
-                // Create and execute query for finding the users team based on users id
-                const string findTeamQuery = @"SELECT team_id FROM UserTeams WHERE user_id = @userID";
-                var teamCommand = new MySqlCommand(findTeamQuery, conn);
-                teamCommand.Parameters.AddWithValue("@userID", newRun.UserID);
-                var teamID = userCommand.ExecuteScalar();
+                        //Create and execute query for inserting the run into the DB
+                        const string insertQuery = @"INSERT INTO Runs(user_id, event_id, duration, date, start_time, end_time, start_altitude, end_altitude, avg_speed, distance, other_data) VALUES
+                                                 (@userID, @eventid, @duration, @date, @startTime, @endTime, @startAltitude, @endAltitude, @AvgSpeed, @distance, @data)";
+                        var insertCommand = new MySqlCommand(insertQuery, Conn);
+                        insertCommand.Parameters.AddWithValue("@userID", newRun.UserID);
+                        insertCommand.Parameters.AddWithValue("@eventid", newRun.EventID);
+                        insertCommand.Parameters.AddWithValue("@duration", newRun.Duration);
+                        insertCommand.Parameters.AddWithValue("@date", newRun.Date);
+                        insertCommand.Parameters.AddWithValue("@startTime", newRun.StartTime);
+                        insertCommand.Parameters.AddWithValue("@endTime", newRun.EndTime);
+                        insertCommand.Parameters.AddWithValue("@startAltitude", newRun.StartAltitude);
+                        insertCommand.Parameters.AddWithValue("@endAltitude", newRun.EndAltitude);
+                        insertCommand.Parameters.AddWithValue("@AvgSpeed", newRun.AvgSpeed);
+                        insertCommand.Parameters.AddWithValue("@distance", newRun.Distance);
 
-                // Create and execute query for finding an event that matches the date provided by device
-                const string findEventQuery = @"SELECT id FROM Events WHERE team_id = @teamID AND Event_Date = @date";
-                var eventCommand = new MySqlCommand(findEventQuery, conn);
-                eventCommand.Parameters.AddWithValue("@teamID", teamID);
-                eventCommand.Parameters.AddWithValue("@userID", newRun.Date);
-                var eventID = userCommand.ExecuteScalar();
-                newRun.EventID = int.Parse(eventID.ToString());
+                        //Serialize the data field and fill in
+                        string dataString = JsonConvert.SerializeObject(newRun.Data);
+                        insertCommand.Parameters.AddWithValue("@data", dataString);
+                        insertCommand.ExecuteNonQuery();
+                    }
 
-                //Create and execute query for inserting the run into the DB
-                const string insertQuery = @"INSERT INTO Runs(user_id, event_id, duration, date, start_time, end_time, start_altitude, end_altitude, avg_speed, distance) VALUES
-                                            (@userID, @eventid, @duration, @date, @startTime, @endTime, @startAltitude, @endAltitude, @AvgSpeed, @distance)";         
-                var insertCommand = new MySqlCommand(insertQuery, conn);
-                insertCommand.Parameters.AddWithValue("@userID", newRun.UserID);
-                insertCommand.Parameters.AddWithValue("@eventid", newRun.EventID);
-                insertCommand.Parameters.AddWithValue("@duration", newRun.Duration);
-                insertCommand.Parameters.AddWithValue("@date", newRun.Date);
-                insertCommand.Parameters.AddWithValue("@startTime", newRun.StartTime);
-                insertCommand.Parameters.AddWithValue("@endTime", newRun.EndTime );
-                insertCommand.Parameters.AddWithValue("@startAltitude", newRun.StartAltitude);
-                insertCommand.Parameters.AddWithValue("@endAltitude", newRun.EndAltitude);
-                insertCommand.Parameters.AddWithValue("@AvgSpeed", newRun.AverageSpeed);
-                insertCommand.Parameters.AddWithValue("@distance", newRun.Distance);
-                insertCommand.ExecuteNonQuery();
-
-                return "SUCCESSFUL";
+                    return "Runs have been added!";
+                }
+                catch(Exception e)
+                {
+                    return "Error: " + e.Message;
+                }          
             }            
         }
     }

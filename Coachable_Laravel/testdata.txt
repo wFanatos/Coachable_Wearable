@@ -121,28 +121,28 @@ $data->save();
 $data = new App\Event
 $data->team_id = 1
 $data->event_name = "Slope A Race"
-$data->event_date = "01/01/2021"
+$data->event_date = "2020-03-04"
 $data->save();
 
 $data = new App\Event
 $data->team_id = 2
 $data->event_name = "Slope C Race"
-$data->event_date = "01/02/2021"
+$data->event_date = "2020-03-04"
 $data->save();
 
 $data = new App\Run
 $data->user_id = 1
 $data->event_id = 1
 $data->duration = "00:50:50"
-$data->date = "01/01/2020"
+$data->date = "2020-03-04"
 $data->start_time = "2:50:01"
 $data->end_time = "2:57:01"
 $data->start_altitude = "333"
 $data->end_altitude = "555"
 $data->avg_speed = "100"
 $data->distance = "100"
+$data->other_data = "JSON"
 $data->save();
-
 
 
 

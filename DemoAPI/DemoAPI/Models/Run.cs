@@ -5,6 +5,8 @@
 *DESCRIPTION : The file contains class definition for Runs
 */
 
+using System.Collections.Generic;
+
 namespace DemoAPI.Models
 {
     /// <summary>
@@ -60,11 +62,16 @@ namespace DemoAPI.Models
         /// <summary>
         /// The average speed
         /// </summary>
-        public string AverageSpeed { get; set; }
+        public string AvgSpeed { get; set; }
 
         /// <summary>
         /// The distance between start and end
         /// </summary>
         public string Distance { get; set; }
+
+        /// <summary>
+        /// Extra data
+        /// </summary>
+        public List<Data> Data { get; set; }
     }
 }

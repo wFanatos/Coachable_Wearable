@@ -25,6 +25,7 @@ class CreatesRunsTable extends Migration
             $table->string('end_altitude');
 			$table->string('avg_speed');
             $table->string('distance');
+			$table->longtext('other_data');
 
             $table->foreign('user_id')->references('id')->on('users');
             $table->foreign('event_id')->references('id')->on('events');

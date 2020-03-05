@@ -6,6 +6,7 @@
 */
 
 using DemoAPI.Models;
+using System.Collections.Generic;
 using System.Web.Http;
 
 namespace DemoAPI.Controllers
@@ -23,9 +24,9 @@ namespace DemoAPI.Controllers
         /// <param name="newRun"></param>
         /// <returns>Successful or not</returns>
         /// 
-        public string Post([FromBody]Run newRun)
+        public string Post([FromBody]List<Run> newRuns)
         {
-            return new RunList().Insert(newRun);
+            return new RunList().Insert(newRuns);
         }      
     }
 }
