@@ -10,21 +10,41 @@
 #include "SPI.h"
 #include "SPIFFS.h"
 #include <string>
+#include <vector>
+#include <cmath>
 
 #define NUM_RUNS 100
 #define MIN_DURATION 5
 #define JSON_PATH "/runs.json"
 #define INFO_PATH "/info.dat"
 
+struct IncrementalData {
+  float lat;
+  float lon;
+  float spd;
+  float alt;
+  String time;
+  
+  IncrementalData(float lat, float lon, float spd, float alt, String time) {
+    this->lat = lat;
+    this->lon = lon;
+    this->spd = spd;
+    this->alt = alt;
+    this->time = time;
+  }
+};
+
 class Metrics {
 public:
   Metrics();
   ~Metrics();
   
-  void StartRun(String date, String time, float altitude, float lat, char latDir, float lon, char lonDir);
-  void FinishRun(String deviceID, String time, float altitude, float lat, char latDir, float lon, char lonDir, fs::FS &fs, bool isSD);
+  void Init(fs::FS &sd, bool useSD, fs::FS &spiffs);
+  
+  void StartRun(String date, String time, float altitude, float lat, float lon);
+  void FinishRun(String deviceName, String time, float altitude, float lat, float lon, fs::FS &fs, bool isSD);
   void AddSpeedSample(float speed);
-  void AddDataSample(float lat, char latDir, float lon, float lonDir, float spd, float alt, String time);
+  void AddDataSample(float lat, float lon, float spd, float alt, String time);
   void ClearJson(fs::FS &sd, bool useSD, fs::FS &spiffs);
   String GetJsonStr(fs::FS &sd, bool useSD, fs::FS &spiffs);
   int GetNumSavedRuns();
@@ -39,9 +59,12 @@ private:
   void ReadInfo(fs::FS &fs, bool isSD);
   String ReadFile(fs::FS &fs, const char* path);
   void WriteFile(fs::FS &fs, const char* path, const char* method, const char* data);
+  String GetIncrementalDataJson(float duration);
   
   String jsonData;
-  String incrementalData;
+  std::vector<IncrementalData> data;
+  
+  int num;
   
   bool sdInfoRead;
   bool spiffsInfoRead;

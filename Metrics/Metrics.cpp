@@ -26,8 +26,17 @@ Metrics::Metrics() {
 Metrics::~Metrics() {}
 
 
+// Check SPIFFS and SD for data
+void Metrics::Init(fs::FS &sd, bool useSD, fs::FS &spiffs) {
+  if (useSD) {
+    ReadInfo(sd, useSD);
+  }
+  ReadInfo(spiffs, false);
+}
+
+
 // Stores start of run info
-void Metrics::StartRun(String date, String time, float altitude, float lat, char latDir, float lon, char lonDir) {
+void Metrics::StartRun(String date, String time, float altitude, float lat, float lon) {
   if (runOngoing) {
     return;
   }
@@ -37,17 +46,10 @@ void Metrics::StartRun(String date, String time, float altitude, float lat, char
   startAltitude = altitude;
   sumSpeed = 0.0f;
   numSamples = 0;
-  incrementalData = "";
+  data.clear();
   
   startLat = lat;
-  if (latDir == 'S') {
-    startLat *= -1.0f;
-  }
-  
   startLon = lon;
-  if (lonDir == 'W') {
-    startLon *= -1.0f;
-  }
 
   startMillis = millis();
   runOngoing = true;
@@ -55,7 +57,7 @@ void Metrics::StartRun(String date, String time, float altitude, float lat, char
 
 
 // Store end of run data
-void Metrics::FinishRun(String deviceID, String time, float altitude, float lat, char latDir, float lon, char lonDir, fs::FS &fs, bool isSD) {
+void Metrics::FinishRun(String deviceName, String time, float altitude, float lat, float lon, fs::FS &fs, bool isSD) {
   if (!runOngoing) {
     return;
   }
@@ -67,15 +69,7 @@ void Metrics::FinishRun(String deviceID, String time, float altitude, float lat,
     return;
   }
   
-  if (latDir == 'S') {
-    lat *= -1.0f;
-  }
-  
-  if (lonDir == 'W') {
-    lon *= -1.0f;
-  }
-  
-  jsonData = "{\"DeviceID\": \"" + deviceID + "\",";
+  jsonData = "{\"DeviceName\": \"" + deviceName + "\",";
   jsonData += "\"UserID\": 0,";
   jsonData += "\"EventID\": 0,";
   jsonData += "\"Duration\": " + String(duration) + ",";
@@ -86,7 +80,7 @@ void Metrics::FinishRun(String deviceID, String time, float altitude, float lat,
   jsonData += "\"EndAltitude\": " + String(altitude) + ",";
   jsonData += "\"AvgSpeed\": " + String(sumSpeed / numSamples) + ",";
   jsonData += "\"Distance\": " + String(CalcDistance(startLat, startLon, lat, lon)) + ",";
-  jsonData += "\"Data\": [" + incrementalData + "]}";
+  jsonData += "\"Data\": [" + GetIncrementalDataJson(duration) + "], \"Num\": " + String(num) + "}";
 
   runOngoing = false;
   
@@ -102,24 +96,8 @@ void Metrics::AddSpeedSample(float speed) {
 
 
 // Adds a data sample
-void Metrics::AddDataSample(float lat, char latDir, float lon, float lonDir, float spd, float alt, String time) {
-  if (incrementalData != "") {
-    incrementalData += ",";
-  }
-  
-  if (latDir == 'S') {
-    lat *= -1.0f;
-  }
-  
-  if (lonDir == 'W') {
-    lon *= -1.0f;
-  }
-  
-  incrementalData += "{\"Latitude\": " + String(lat) + ",";
-  incrementalData += "\"Longitude\": " + String(lon) + ",";
-  incrementalData += "\"Speed\": " + String(spd) + ",";
-  incrementalData += "\"Altitude\": " + String(alt) + ",";
-  incrementalData += "\"Time\": \"" + time + "\"}";
+void Metrics::AddDataSample(float lat, float lon, float spd, float alt, String time) {
+  data.push_back(IncrementalData(lat, lon, spd, alt, time));
 }
 
 
@@ -140,7 +118,7 @@ void Metrics::ClearJson(fs::FS &sd, bool useSD, fs::FS &spiffs) {
 
 // Returns the JSON string
 String Metrics::GetJsonStr(fs::FS &sd, bool useSD, fs::FS &spiffs) {
-  String jsonStr = "{ \"Runs\": [";
+  String jsonStr = "[";
   int numRuns = 0;
 
   // Get data from SD
@@ -164,16 +142,7 @@ String Metrics::GetJsonStr(fs::FS &sd, bool useSD, fs::FS &spiffs) {
   }
  
   numRuns += numSavedRunsSpiffs;
-  
-  // Get string data if not saved
-  if (jsonData != "") {
-    if (numRuns > 0) {
-      jsonStr += ",";
-    }
-    jsonStr += jsonData;
-  }
- 
-  jsonStr += "]}";
+  jsonStr += "]";
   
   return jsonStr;
 }
@@ -299,4 +268,31 @@ void Metrics::WriteFile(fs::FS &fs, const char* path, const char* method, const 
   File file = fs.open(path, method);
   file.println(data);
   file.close();
+}
+
+
+// Returns the json for the incremental data
+String Metrics::GetIncrementalDataJson(float duration) {
+  String json = "";
+  num = 1;
+  
+  if (duration >= 10) {
+    num = round(duration / (10.0f + 5.0f * (duration / 30.0f)));
+  }
+  
+  for (int i = 0; i < data.size(); i++) {
+    if (i % num == 0 || i == data.size() - 1) {
+      if (json != "") {
+        json += ",";
+      }
+    
+      json += "{\"Latitude\": " + String(data[i].lat, 7) + ",";
+      json += "\"Longitude\": " + String(data[i].lon, 7) + ",";
+      json += "\"Speed\": " + String(data[i].spd) + ",";
+      json += "\"Altitude\": " + String(data[i].alt) + ",";
+      json += "\"Time\": \"" + data[i].time + "\"}";
+    }
+  }
+  
+  return json;
 }
