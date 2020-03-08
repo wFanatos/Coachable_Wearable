@@ -19,9 +19,8 @@
 
 #define GPSSerial Serial2
 
-const String DEVICE_ID = "ABC123";
+const String DEVICE_NAME = "ABC123";
 const int MIN_ALT_DIFF = 1;
-const float MIN_SPD_DIFF = 0.3f;
 const float MIN_SPD = 1.0f;
 const int LED_PIN = 5;
 const int CS_PIN = 33;
@@ -70,6 +69,8 @@ void setup() {
     Serial.println("SPIFFS Mount Failed");
   }
 
+  metrics.Init(SD, useSD, SPIFFS);
+
   // Init GPS
   GPS.begin(9600);
   GPS.sendCommand(PMTK_SET_NMEA_OUTPUT_RMCGGA);
@@ -99,7 +100,10 @@ void loop() {
   if (millis() - timer >= 500) {
     timer = millis();
     readBaro();
-    uploadData();
+
+    if (!metrics.IsRunOngoing()) {
+      uploadData();
+    }
 
     if (GPS.fix) {
       // Convert speed from knots to m/s
@@ -132,7 +136,7 @@ void loop() {
         
         // TODO: remove below used for testing without moving
 //        trackCount += 1;
-//        if (trackCount >= 20) {
+//        if (trackCount >= 120) {
 //          finishRun();
 //          trackCount = 0;
 //          testRuns++;
@@ -185,8 +189,8 @@ void printMetrics(bool gpsFix) {
   if (gpsFix) {
     Serial.print("Num Satellites: "); Serial.println((int)GPS.satellites);
     Serial.print("Speed (m/s): "); Serial.println(currentSpeed);
-    Serial.print("Latitude: "); Serial.print(GPS.latitude); Serial.println(GPS.lat);
-    Serial.print("Longitude: "); Serial.print(GPS.longitude); Serial.println(GPS.lon);
+    Serial.print("Latitude: "); Serial.println(String(GPS.latitudeDegrees, 7));
+    Serial.print("Longitude: "); Serial.println(String(GPS.longitudeDegrees, 7));
   }
   else {
     Serial.println("Waiting for GPS satellites...");
@@ -225,7 +229,7 @@ String getTime() {
 
 // Starts the run
 void startRun() {
-  metrics.StartRun(getDate(), getTime(), currentAltitude, GPS.latitude, GPS.lat, GPS.longitude, GPS.lon);
+  metrics.StartRun(getDate(), getTime(), currentAltitude, GPS.latitudeDegrees, GPS.longitudeDegrees);
   
   digitalWrite(LED_PIN, HIGH);
   Serial.println("--RUN START--");
@@ -237,10 +241,10 @@ void finishRun() {
   stopCount = 0;
   
   if (!useSD) {
-    metrics.FinishRun(DEVICE_ID, getTime(), currentAltitude, GPS.latitude, GPS.lat, GPS.longitude, GPS.lon, SPIFFS, useSD);
+    metrics.FinishRun(DEVICE_NAME, getTime(), currentAltitude, GPS.latitudeDegrees, GPS.longitudeDegrees, SPIFFS, useSD);
   }
   else {
-    metrics.FinishRun(DEVICE_ID, getTime(), currentAltitude, GPS.latitude, GPS.lat, GPS.longitude, GPS.lon, SD, useSD);
+    metrics.FinishRun(DEVICE_NAME, getTime(), currentAltitude, GPS.latitudeDegrees, GPS.longitudeDegrees, SD, useSD);
   }
 
   digitalWrite(LED_PIN, LOW);
@@ -256,7 +260,7 @@ bool checkRunStart() {
   }
 
   // Using speed
-  if (currentSpeed - lastSpeed >= MIN_SPD_DIFF) {
+  if (currentSpeed >= MIN_SPD) {
     return true;
   }
 
@@ -280,7 +284,7 @@ void addDataSamples() {
   metrics.AddSpeedSample(currentSpeed);
   // Add data sample every other run
   if (addDataSample) {
-    metrics.AddDataSample(GPS.latitude, GPS.lat, GPS.longitude, GPS.lon, currentSpeed, currentAltitude, getTime());
+    metrics.AddDataSample(GPS.latitudeDegrees, GPS.longitudeDegrees, currentSpeed, currentAltitude, getTime());
     addDataSample = false;
   }
   else {
