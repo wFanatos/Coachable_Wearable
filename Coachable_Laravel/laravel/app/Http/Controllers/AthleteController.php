@@ -35,11 +35,12 @@ class AthleteController extends Controller
 
         // Get the logged in user's basic information
         $user = User::Select(
-            'user_type_id')->where('id', $id)->first();
+            'name', 'email', 'user_type_id')->where('id', $id)->first();
 
         // Get the users type
         $typeID = $user->user_type_id;
 
+        // Ensure the current user is actually an athlete
         if($typeID != 1)
         {
             return redirect()->back();
@@ -77,10 +78,10 @@ class AthleteController extends Controller
         {
             $temp = array();
             $run = Run::where('user_id', $id)->where('event_id', $event->id)->get();
-            array_push($temp, $run);
+            array_push($temp, $event, $run);
             array_push($runArray, $temp);
         }
-        //dd($runArray);
+
         // Get a list of parents associated with user
         $parents = ParentAthlete::where('athlete_id', $id)->get('parent_id');
 
@@ -94,8 +95,10 @@ class AthleteController extends Controller
         }
 
         // Get the users device
-        //$collection = collect([$user, $device, $team, $season, $org, $events, $parentArray, $runArray]);
+        $collection = collect([$user, $device, $team, $season, $org, $parentArray, $runArray]);
 
-        return view('home', compact('user', 'device', 'team', 'season', 'org', 'events', 'parentArray', 'runArray'));
+        //dd($collection);
+
+        return view('athlete', compact('collection'));
     }
 }

@@ -33,17 +33,18 @@ class HeadCoachController extends Controller
         // Get the id of current user logged in
         $id = Auth::id();
 
-                // Get the logged in user's basic information
-                $user = User::Select(
-                    'user_type_id')->where('id', $id)->first();
+        // Get the logged in user's basic information
+        $user = User::Select(
+            'name', 'email', 'user_type_id')->where('id', $id)->first();
         
-                // Get the users type
-                $typeID = $user->user_type_id;
+        // Get the users type
+        $typeID = $user->user_type_id;
         
-                if($typeID != 4)
-                {
-                    return redirect()->back();
-                }
+        // Ensure the current user is actually a head coach
+        if($typeID != 4)
+        {
+            return redirect()->back();
+        }
 
         $teamArray = array();
 
@@ -61,13 +62,14 @@ class HeadCoachController extends Controller
             $team = Team::where('season_id', $season->id)->first();
             $events = Event::where('id', $team->id)->get();
 
-            array_push($temp, $team, $events);
+            array_push($temp, $season, $team, $events);
             array_push($teamArray, $temp);
         }
 
-        $collection = collect([$teamArray]);
+        $collection = collect([$user, $org, $teamArray]);
+
         //dd($collection);
 
-        return view('home', compact('user', 'org', 'seasons', 'teamArray'));
+        return view('head', compact('collection'));
     }
 }

@@ -33,17 +33,18 @@ class ParentController extends Controller
         // Get the id of current user logged in
         $id = Auth::id();
 
-               // Get the logged in user's basic information
-               $user = User::Select(
-                'user_type_id')->where('id', $id)->first();
+        // Get the logged in user's basic information
+        $user = User::Select(
+            'name', 'email', 'user_type_id')->where('id', $id)->first();
     
-            // Get the users type
-            $typeID = $user->user_type_id;
+        // Get the users type
+        $typeID = $user->user_type_id;
     
-            if($typeID != 2)
-            {
-                return redirect()->back();
-            }
+        // Ensure the current user is actually a parent/guardian
+        if($typeID != 2)
+        {
+            return redirect()->back();
+        }
 
         // Array for storing child information
         $childArray = array();
@@ -57,7 +58,7 @@ class ParentController extends Controller
         // Loop through each child and get their information
         foreach($children as $child)
         {
-            $temp = array();
+            $temp2 = array();
 
             $childInfo = User::Select('name')->where('id', $child->athlete_id)->first();
             $userTeam = UserTeam::where('user_id', $child->athlete_id)->first('team_id');
@@ -69,19 +70,20 @@ class ParentController extends Controller
             // Loop through each event and grab a list of runs attached to user
             foreach($events as $event)
             {
+                $temp = array();
                 $run = Run::where('user_id', $child->athlete_id)->where('event_id', $event->id)->get();
-                array_push($runArray, $run);
+                array_push($temp, $event, $run);
+                array_push($runArray, $temp);                
             }
            
-            array_push($temp, $team, $season, $runArray);
-            array_push($childArray, $temp);
+            array_push($temp2, $childInfo, $team, $season, $runArray);
+            array_push($childArray, $temp2);
         }
-        
-        //dd($childArray);
 
-        $collection = collect([$childArray]);    
+        $collection = collect([$user, $childArray]);
+        
         //dd($collection);
 
-        return view('home', compact('user', 'childArray'));
+        return view('parent', compact('collection'));
     }
 }
