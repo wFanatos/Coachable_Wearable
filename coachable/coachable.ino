@@ -8,22 +8,27 @@
 #include "SD.h"
 #include "SPI.h"
 #include "SPIFFS.h"
+#include "BluetoothSerial.h"
 #include <Adafruit_GPS.h>
 #include <Adafruit_MPL3115A2.h>
-#include <string>
 #include <HTTPClient.h>
 #include <WiFi.h>
-#include <WiFiMulti.h>
 #include <Metrics.h>
-#include <Test.h>
 
 #define GPSSerial Serial2
 
 const String DEVICE_NAME = "ABC123";
 const int MIN_ALT_DIFF = 1;
-const float MIN_SPD = 1.0f;
+const int MIN_SPD = 2;
 const int LED_PIN = 5;
 const int CS_PIN = 33;
+const char MESSAGE_END_CHAR = '\0';
+const String SSID_MSG = "SSID|";
+const String PASS_MSG = "PASS|";
+const int VALID_MSG_LEN = 11;
+const uint8_t VALID_MSG[VALID_MSG_LEN] = "INFO_VALID";
+const int INVALID_MSG_LEN = 13;
+const uint8_t INVALID_MSG[INVALID_MSG_LEN] = "INFO_INVALID";
 
 uint32_t timer = millis();
 int stopCount = 0;
@@ -31,32 +36,24 @@ bool addDataSample = false;
 bool waitWifi = false;
 bool useSD = false;
 
-float lastAltitude = 0.0f;
 float currentAltitude = 0.0f;
-float lastSpeed = 0.0f;
 float currentSpeed = 0.0f;
 
 Metrics metrics = Metrics();
 Adafruit_GPS GPS(&GPSSerial);
 Adafruit_MPL3115A2 baro = Adafruit_MPL3115A2();
 
-const char* ssid = "";
-const char* password = "";
-WiFiMulti wifiMulti;
-
-// TODO: remove below
-int trackCount = 0;
-int testRuns = 0;
-bool firstRun = true;
+String ssid = "";
+String password = "";
+String btIn = "";
+BluetoothSerial SerialBT;
 
 
 // Initialize
 void setup() {
   pinMode(LED_PIN, OUTPUT);
   Serial.begin(115200);
-
-  // Init wifi
-  wifiMulti.addAP(ssid, password);
+  SerialBT.begin("Wearable");
 
   // Init SD
   useSD = SD.begin(CS_PIN, SPI, 1000000, "/sd");
@@ -96,6 +93,36 @@ void loop() {
     timer = millis();
   }
 
+  // Listen for wifi ssid and password through bluetooth
+  if (SerialBT.available()) {
+    char t = SerialBT.read();
+    if (t != MESSAGE_END_CHAR) {
+      btIn += t;
+    }
+    else {
+      if (btIn.startsWith(SSID_MSG)) {
+        ssid = btIn.substring(SSID_MSG.length());
+      }
+      else if (btIn.startsWith(PASS_MSG)) {
+        password = btIn.substring(PASS_MSG.length());
+      }
+
+      // Send response
+      if (ssid != "" && password != "") {
+        // Init wifi
+        WiFi.begin(ssid.c_str(), password.c_str());
+        if (WiFi.status() == WL_CONNECTED) {
+          SerialBT.write(VALID_MSG, VALID_MSG_LEN);
+        }
+        else {
+          SerialBT.write(INVALID_MSG, INVALID_MSG_LEN);
+        }
+      }
+      
+      btIn = "";
+    }
+  }
+
   // Runs every ~0.5 secs
   if (millis() - timer >= 500) {
     timer = millis();
@@ -106,14 +133,8 @@ void loop() {
     }
 
     if (GPS.fix) {
-      // Convert speed from knots to m/s
-      currentSpeed = GPS.speed / 1.944f;
-
-      // TODO: remove below used for testing without moving
-//      if (firstRun && testRuns < 1) {
-//        startRun();
-//        firstRun = false;
-//      }
+      // Convert speed from knots to km/h
+      currentSpeed = GPS.speed * 1.852f;
 
       if (!metrics.IsRunOngoing()) {
         if (checkRunStart()) {
@@ -133,25 +154,13 @@ void loop() {
         else {
           stopCount = 0;
         }
-        
-        // TODO: remove below used for testing without moving
-//        trackCount += 1;
-//        if (trackCount >= 120) {
-//          finishRun();
-//          trackCount = 0;
-//          testRuns++;
-//          firstRun = true;
-//        }
       }
-
-      lastSpeed = currentSpeed;
     }
     // If run is ongoing and GPS connection is lost, end run
     else if (metrics.IsRunOngoing()) {
       finishRun();
     }
-    
-    lastAltitude = currentAltitude;
+
     printMetrics(GPS.fix);
   }
 }
@@ -167,11 +176,9 @@ void readBaro() {
 
 // Send data if there are saved runs
 void uploadData() {
-  if (!waitWifi && metrics.GetNumSavedRuns() > 0 && wifiMulti.run() == WL_CONNECTED) {
+  if (!waitWifi && metrics.GetNumSavedRuns() > 0 && WiFi.status() == WL_CONNECTED) {
     Serial.println("Sending http request...");
     sendData();
-    // TODO: remove while
-    //while(1);
     waitWifi = true;
   }
   else {
@@ -188,7 +195,8 @@ void printMetrics(bool gpsFix) {
 
   if (gpsFix) {
     Serial.print("Num Satellites: "); Serial.println((int)GPS.satellites);
-    Serial.print("Speed (m/s): "); Serial.println(currentSpeed);
+    Serial.print("Speed (km/h): "); Serial.println(currentSpeed);
+    Serial.print("Speed (knots): "); Serial.println(String(GPS.speed, 5));
     Serial.print("Latitude: "); Serial.println(String(GPS.latitudeDegrees, 7));
     Serial.print("Longitude: "); Serial.println(String(GPS.longitudeDegrees, 7));
   }
@@ -254,11 +262,6 @@ void finishRun() {
 
 // Check if start of run conditions met
 bool checkRunStart() {
-  // Using altitude
-  if (lastAltitude - currentAltitude >= MIN_ALT_DIFF) {
-    return true;
-  }
-
   // Using speed
   if (currentSpeed >= MIN_SPD) {
     return true;
