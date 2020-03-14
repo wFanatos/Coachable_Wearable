@@ -80,7 +80,7 @@ void Metrics::FinishRun(String deviceName, String time, float altitude, float la
   jsonData += "\"EndAltitude\": " + String(altitude) + ",";
   jsonData += "\"AvgSpeed\": " + String(sumSpeed / numSamples) + ",";
   jsonData += "\"Distance\": " + String(CalcDistance(startLat, startLon, lat, lon)) + ",";
-  jsonData += "\"Data\": [" + GetIncrementalDataJson(duration) + "], \"Num\": " + String(num) + "}";
+  jsonData += "\"Data\": [" + GetIncrementalDataJson(duration) + "]}";
 
   runOngoing = false;
   
@@ -274,7 +274,7 @@ void Metrics::WriteFile(fs::FS &fs, const char* path, const char* method, const 
 // Returns the json for the incremental data
 String Metrics::GetIncrementalDataJson(float duration) {
   String json = "";
-  num = 1;
+  int num = 1;
   
   if (duration >= 10) {
     num = round(duration / (10.0f + 5.0f * (duration / 30.0f)));

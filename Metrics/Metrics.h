@@ -9,7 +9,6 @@
 #include "SD.h"
 #include "SPI.h"
 #include "SPIFFS.h"
-#include <string>
 #include <vector>
 #include <cmath>
 
@@ -63,8 +62,6 @@ private:
   
   String jsonData;
   std::vector<IncrementalData> data;
-  
-  int num;
   
   bool sdInfoRead;
   bool spiffsInfoRead;

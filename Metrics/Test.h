@@ -3,7 +3,6 @@
 #include "SD.h"
 #include "SPI.h"
 #include "SPIFFS.h"
-#include <string>
 
 class Test {
 public:
