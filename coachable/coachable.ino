@@ -26,9 +26,9 @@ const char MESSAGE_END_CHAR = '\0';
 const String SSID_MSG = "SSID|";
 const String PASS_MSG = "PASS|";
 const int VALID_MSG_LEN = 11;
-const uint8_t VALID_MSG[VALID_MSG_LEN] = "INFO_VALID";
+const uint8_t VALID_MSG[VALID_MSG_LEN] = "INFO_VALID@";
 const int INVALID_MSG_LEN = 13;
-const uint8_t INVALID_MSG[INVALID_MSG_LEN] = "INFO_INVALID";
+const uint8_t INVALID_MSG[INVALID_MSG_LEN] = "INFO_INVALID@";
 
 uint32_t timer = millis();
 int stopCount = 0;
