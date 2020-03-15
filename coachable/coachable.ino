@@ -23,11 +23,12 @@ const int MIN_SPD = 2;
 const int LED_PIN = 5;
 const int CS_PIN = 33;
 const char MESSAGE_END_CHAR = '\0';
+const String CLEAR_MSG = "CLEAR_WIFI";
 const String SSID_MSG = "SSID|";
 const String PASS_MSG = "PASS|";
-const int VALID_MSG_LEN = 11;
+const int VALID_MSG_LEN = 12;
 const uint8_t VALID_MSG[VALID_MSG_LEN] = "INFO_VALID@";
-const int INVALID_MSG_LEN = 13;
+const int INVALID_MSG_LEN = 14;
 const uint8_t INVALID_MSG[INVALID_MSG_LEN] = "INFO_INVALID@";
 
 uint32_t timer = millis();
@@ -53,7 +54,7 @@ BluetoothSerial SerialBT;
 void setup() {
   pinMode(LED_PIN, OUTPUT);
   Serial.begin(115200);
-  SerialBT.begin("Wearable");
+  SerialBT.begin("ESP32");
 
   // Init SD
   useSD = SD.begin(CS_PIN, SPI, 1000000, "/sd");
@@ -100,7 +101,12 @@ void loop() {
       btIn += t;
     }
     else {
-      if (btIn.startsWith(SSID_MSG)) {
+      if (btIn == CLEAR_MSG) {
+        WiFi.disconnect();
+        ssid = "";
+        password = "";
+      }
+      else if (btIn.startsWith(SSID_MSG)) {
         ssid = btIn.substring(SSID_MSG.length());
       }
       else if (btIn.startsWith(PASS_MSG)) {
@@ -111,6 +117,7 @@ void loop() {
       if (ssid != "" && password != "") {
         // Init wifi
         WiFi.begin(ssid.c_str(), password.c_str());
+        delay(1000);
         if (WiFi.status() == WL_CONNECTED) {
           SerialBT.write(VALID_MSG, VALID_MSG_LEN);
         }
