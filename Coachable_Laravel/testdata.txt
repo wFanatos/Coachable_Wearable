@@ -17,7 +17,7 @@ $data->save();
 $data = new App\User
 $data->user_type_id = 1
 $data->name= "Blake Ribble"
-$data->email= "blakeribble99@outlook.com"
+$data->email= "blake@blake.com"
 $data->password = Hash::make('password')
 $data->save();
 

@@ -16,7 +16,6 @@ namespace DemoAPI.Controllers
     /// </summary>
     public class RunController : ApiController
     {
-
         /// <summary>
         /// This method adds a new run
         /// http://localhost:51825/Run POST

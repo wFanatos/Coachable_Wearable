@@ -570,7 +570,7 @@
             String for connecting to the DB
             </summary>
         </member>
-        <member name="P:DemoAPI.Models.RunList.conn">
+        <member name="P:DemoAPI.Models.RunList.Conn">
             <summary>
             Connection instance to DB
             </summary>

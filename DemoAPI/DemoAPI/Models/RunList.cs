@@ -55,20 +55,20 @@ namespace DemoAPI.Models
                     foreach (Run newRun in runs)
                     {
                         // Create and execute query for finding the users id using the device name
-                        const string findUserQuery = @"SELECT user_id FROM Devices WHERE Device_Name = @name";
+                        const string findUserQuery = @"SELECT user_id FROM devices WHERE device_name = @name";
                         var userCommand = new MySqlCommand(findUserQuery, Conn);
                         userCommand.Parameters.AddWithValue("@name", newRun.DeviceName);
                         var userID = userCommand.ExecuteScalar();
                         newRun.UserID = int.Parse(userID.ToString());
 
                         // Create and execute query for finding the users team based on their id
-                        const string findTeamQuery = @"SELECT team_id FROM UserTeams WHERE user_id = @userID";
+                        const string findTeamQuery = @"SELECT team_id FROM user_teams WHERE user_id = @userID";
                         var teamCommand = new MySqlCommand(findTeamQuery, Conn);
                         teamCommand.Parameters.AddWithValue("@userID", newRun.UserID);
                         var teamID = userCommand.ExecuteScalar();
 
                         // Create and execute query for finding an event that matches the date provided by device
-                        const string findEventQuery = @"SELECT id FROM Events WHERE team_id = @teamID AND Event_Date = @date";
+                        const string findEventQuery = @"SELECT id FROM events WHERE team_id = @teamID AND event_date = @date";
                         var eventCommand = new MySqlCommand(findEventQuery, Conn);
                         eventCommand.Parameters.AddWithValue("@teamID", teamID);
                         eventCommand.Parameters.AddWithValue("@userID", newRun.Date);
@@ -76,7 +76,7 @@ namespace DemoAPI.Models
                         newRun.EventID = int.Parse(eventID.ToString());
 
                         //Create and execute query for inserting the run into the DB
-                        const string insertQuery = @"INSERT INTO Runs(user_id, event_id, duration, date, start_time, end_time, start_altitude, end_altitude, avg_speed, distance, other_data) VALUES
+                        const string insertQuery = @"INSERT INTO runs(user_id, event_id, duration, date, start_time, end_time, start_altitude, end_altitude, avg_speed, distance, other_data) VALUES
                                                  (@userID, @eventid, @duration, @date, @startTime, @endTime, @startAltitude, @endAltitude, @AvgSpeed, @distance, @data)";
                         var insertCommand = new MySqlCommand(insertQuery, Conn);
                         insertCommand.Parameters.AddWithValue("@userID", newRun.UserID);
