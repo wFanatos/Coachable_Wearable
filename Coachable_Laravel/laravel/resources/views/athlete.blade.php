@@ -39,11 +39,33 @@
                        <!-- Loop through each event/run pairing -->
                        @for($i = 0; $i < count($collection[6]); $i++)
                             <h2> Event: </h2>
-                            <p>{{$collection[6][$i][0]}} </p>
+                            <p>{{$collection[6][$i][0]->event_name}} </p>
+                            <p>Date: {{$collection[6][$i][0]->event_date}} </p>
 
                             @foreach($collection[6][$i][1] as $run)
+                                <!-- PULL OUT RUN DETAILS HERE-->
                                 <h2> Run: </h2>
-                                <p> {{$run}} </p>
+                                <p> Length of run: {{$run->duration}} </p>
+                                <p> Run started: {{$run->start_time}} </p>
+                                <p> Run ended: {{$run->end_time}} </p>
+                                <p> Start altitude: {{$run->start_altitude}} </p>
+                                <p> End altitude: {{$run->end_altitude}} </p>
+                                <p> Average speed: {{$run->avg_speed}} </p>
+                                <p> Distance from start to end: {{$run->distance}} </p>
+                              
+                                <!-- DECODE JSON AND PUT ALL INFO INTO GRAPH -->
+                                @php
+                                    $dataObj = json_decode($run->other_data);                               
+                                @endphp
+                                
+                                @foreach($dataObj as $dataEntry)
+                                    <h3> Other Data </h3>
+                                    <p> Latitude: {{$dataEntry->Latitude}} </p>
+                                    <p> Longitude: {{$dataEntry->Longitude}} </p>
+                                    <p> Speed: {{$dataEntry->Speed}} </p>
+                                    <p> Altitude: {{$dataEntry->Altitude}} </p>
+                                    <p> Time: {{$dataEntry->Time}} </p>
+                                @endforeach                            
                             @endforeach
                        @endfor                              
                 </div>

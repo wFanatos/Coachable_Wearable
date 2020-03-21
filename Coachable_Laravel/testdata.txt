@@ -16,29 +16,36 @@ $data->save();
 
 $data = new App\User
 $data->user_type_id = 1
-$data->name= "Blake Ribble"
-$data->email= "blake@blake.com"
+$data->name= "Jacob Funes"
+$data->email= "jfunes@conestogac.on.ca"
+$data->password = Hash::make('password')
+$data->save();
+
+$data = new App\User
+$data->user_type_id = 1
+$data->name= "Moises Diaz"
+$data->email= "mdiaz@conestogac.on.ca"
 $data->password = Hash::make('password')
 $data->save();
 
 $data = new App\User
 $data->user_type_id = 2
-$data->name= "Dylan M"
-$data->email= "dylan@dylan.com"
+$data->name= "Blake Ribble"
+$data->email= "bribble@conestogac.on.ca"
 $data->password = Hash::make('password')
 $data->save();
 
 $data = new App\User
 $data->user_type_id = 3
-$data->name= "Justin"
-$data->email= "justin@justin.com"
+$data->name= "Firas Ariebi"
+$data->email= "fariebi@conestogac.on.ca"
 $data->password = Hash::make('password')
 $data->save();
 
 $data = new App\User
 $data->user_type_id = 4
-$data->name= "Rick"
-$data->email= "rick@rick.com"
+$data->name= "William Bicknell"
+$data->email= "wbicknell@conestogac.on.ca"
 $data->password = Hash::make('password')
 $data->save();
 
@@ -48,28 +55,33 @@ $data->user_id = 1
 $data->save();
 
 $data = new App\Device
-$data->device_name = 'DAD111'
+$data->device_name = 'FUN111'
 $data->user_id = null
 $data->save();
 
 $data = new App\ParentAthlete
-$data->parent_id = 2
+$data->parent_id = 3
 $data->athlete_id = 1
 $data->save();
 
-
-$data = new App\Organization
-$data->org_name= 'Blakes org'
+$data = new App\ParentAthlete
+$data->parent_id = 3
+$data->athlete_id = 2
 $data->save();
 
 
 $data = new App\Organization
-$data->org_name= 'Bass org'
+$data->org_name= 'Coachable 1'
+$data->save();
+
+
+$data = new App\Organization
+$data->org_name= 'Coachable 2'
 $data->save();
 
 $data = new App\UserOrg
 $data->org_id = 1
-$data->user_id = 4
+$data->user_id = 5
 $data->save();
 
 
@@ -114,6 +126,11 @@ $data->team_id = 1
 $data->save();
 
 $data = new App\UserTeam
+$data->user_id = 2
+$data->team_id = 1
+$data->save();
+
+$data = new App\UserTeam
 $data->user_id = 3
 $data->team_id = 1
 $data->save();
@@ -122,6 +139,12 @@ $data = new App\Event
 $data->team_id = 1
 $data->event_name = "Slope A Race"
 $data->event_date = "2020-03-04"
+$data->save();
+
+$data = new App\Event
+$data->team_id = 1
+$data->event_name = "Slope B Race"
+$data->event_date = "2020-03-07"
 $data->save();
 
 $data = new App\Event
@@ -135,13 +158,41 @@ $data->user_id = 1
 $data->event_id = 1
 $data->duration = "00:50:50"
 $data->date = "2020-03-04"
-$data->start_time = "2:50:01"
-$data->end_time = "2:57:01"
-$data->start_altitude = "333"
-$data->end_altitude = "555"
-$data->avg_speed = "100"
-$data->distance = "100"
-$data->other_data = "JSON"
+$data->start_time = "16:53:59 UTC"
+$data->end_time = "16:54:08 UTC"
+$data->start_altitude = "343.19"
+$data->end_altitude = "342.81"
+$data->avg_speed = "0.54"
+$data->distance = "0.28"
+$data->other_data = '[{"Latitude":"4308.38","Longitude":"-8044.61","Speed":"0.68","Altitude":"343.06","Time":"16:53:59 UTC"}, {"Latitude":"4308.38","Longitude":"-8044.61","Speed":"0.68","Altitude":"343.06","Time":"16:53:59 UTC"}]'
+$data->save();
+
+$data = new App\Run
+$data->user_id = 1
+$data->event_id = 2
+$data->duration = "00:50:50"
+$data->date = "2020-03-04"
+$data->start_time = "16:53:59 UTC"
+$data->end_time = "16:54:08 UTC"
+$data->start_altitude = "343.19"
+$data->end_altitude = "342.81"
+$data->avg_speed = "0.54"
+$data->distance = "0.28"
+$data->other_data = '[{"Latitude":"4308.38","Longitude":"-8044.61","Speed":"0.68","Altitude":"343.06","Time":"16:53:59 UTC"}]'
+$data->save();
+
+$data = new App\Run
+$data->user_id = 2
+$data->event_id = 1
+$data->duration = "00:50:50"
+$data->date = "2020-03-04"
+$data->start_time = "16:53:59 UTC"
+$data->end_time = "16:54:08 UTC"
+$data->start_altitude = "343.19"
+$data->end_altitude = "342.81"
+$data->avg_speed = "0.54"
+$data->distance = "0.28"
+$data->other_data = '[{"Latitude":"4308.38","Longitude":"-8044.61","Speed":"0.68","Altitude":"343.06","Time":"16:53:59 UTC"}]'
 $data->save();
 
 

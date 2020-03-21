@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<parameters>
+  <parameter name="CoachableString-Web.config Connection String" description="CoachableString Connection String used in web.config by the application to access the database." defaultValue="server=test01.czdgyppgcgzz.us-east-1.rds.amazonaws.com;user id=master; password=abcd1234; database=Coachable;SslMode=none" tags="SqlConnectionString">
+    <parameterEntry kind="XmlFile" scope="C:\\Users\\wethr\\Documents\\GitHub\\Coachable_Wearable\\DemoAPI\\DemoAPI\\obj\\Release\\Package\\PackageTmp\\Web\.config$" match="/configuration/connectionStrings/add[@name='CoachableString']/@connectionString" />
+  </parameter>
+</parameters>

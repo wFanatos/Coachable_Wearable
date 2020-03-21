@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title>Laravel</title>
+        <title>Coachable</title>
 
         <!-- Fonts -->
         <link href="https://fonts.googleapis.com/css?family=Nunito:200,600" rel="stylesheet">
@@ -70,31 +70,38 @@
                     @auth
                         <a href="{{ url('/home') }}">Home</a>
                     @else
-                        <a href="{{ route('login') }}">Login</a>
-
-                        @if (Route::has('register'))
-                            <a href="{{ route('register') }}">Register</a>
-                        @endif
+                        <a href="{{ route('login') }}">Login</a>                       
                     @endauth
                 </div>
             @endif
 
-            <div class="content">
-                <div class="title m-b-md">
-                    Laravel
-                </div>
-
-                <div class="links">
-                    <a href="https://laravel.com/docs">Docs</a>
-                    <a href="https://laracasts.com">Laracasts</a>
-                    <a href="https://laravel-news.com">News</a>
-                    <a href="https://blog.laravel.com">Blog</a>
-                    <a href="https://nova.laravel.com">Nova</a>
-                    <a href="https://forge.laravel.com">Forge</a>
-                    <a href="https://vapor.laravel.com">Vapor</a>
-                    <a href="https://github.com/laravel/laravel">GitHub</a>
-                </div>
-            </div>
+            <div class="container">
+                <div class="title m-b-md content"> Coachable </div>
+                    <p> This website was created by the Stardust Crusaders team for the purpose of presenting visualized data. </p>
+                    <p> By clicking the login button in the top right corner, you are asked to provide your credentials. </p>
+                    <p> Here is a list of different scenarios and their outcomes: </p>
+                    <ul>
+                        <li> User logs in with athlete credentials 
+                            <ul> 
+                                <li>User is brought to the /athlete screen where they are presented with information such as personal info, run info, org info, etc.</li>
+                            </ul>
+                        </li>
+                        <li> User logs in with parent credentials 
+                            <ul> 
+                                <li>User is brought to the /parent screen where they are presented with information such as personal info and child info. </li>
+                            </ul>
+                        </li>
+                        <li> User logs in with coach credentials 
+                            <ul> 
+                                <li>User is brought to the /coach screen where they are presented with information such as personal info and info about team members on current team (runs, events, etc.). </li>
+                            </ul>
+                        </li>
+                        <li> User logs in with head coach credentials
+                            <ul> 
+                                <li>User is brought to the /head screen where they are presented with information such as personal info and all team info for teams in org. </li>
+                            </ul> 
+                        </li>
+                    </ul>             
         </div>
     </body>
 </html>
