@@ -14,12 +14,17 @@
 #include <HTTPClient.h>
 #include <WiFi.h>
 #include <Metrics.h>
+#include <vector>
+#include <cmath>
 
 #define GPSSerial Serial2
+#define MAX_WIFI_CONNECT_DELAYS 10
 
+const String SSID_SEP = "-SSID-";
+const String PASSWORD_SEP = "-PWORD-";
 const String DEVICE_NAME = "ABC123";
 const int MIN_ALT_DIFF = 1;
-const int MIN_SPD = 2;
+const int MIN_SPD = 3;
 const int LED_PIN = 5;
 const int CS_PIN = 33;
 const char MESSAGE_END_CHAR = '\0';
@@ -44,9 +49,9 @@ Metrics metrics = Metrics();
 Adafruit_GPS GPS(&GPSSerial);
 Adafruit_MPL3115A2 baro = Adafruit_MPL3115A2();
 
+String btIn = "";
 String ssid = "";
 String password = "";
-String btIn = "";
 BluetoothSerial SerialBT;
 
 
@@ -54,7 +59,6 @@ BluetoothSerial SerialBT;
 void setup() {
   pinMode(LED_PIN, OUTPUT);
   Serial.begin(115200);
-  SerialBT.begin("ESP32");
 
   // Init SD
   useSD = SD.begin(CS_PIN, SPI, 1000000, "/sd");
@@ -63,11 +67,13 @@ void setup() {
   }
 
   // Init SPIFFS
-  if(!SPIFFS.begin()){
+  if(!SPIFFS.begin(true)){
     Serial.println("SPIFFS Mount Failed");
   }
 
   metrics.Init(SD, useSD, SPIFFS);
+
+  SerialBT.begin("ESP32");
 
   // Init GPS
   GPS.begin(9600);
@@ -76,6 +82,8 @@ void setup() {
   GPS.sendCommand(PGCMD_ANTENNA);
   delay(1000);
   GPSSerial.println(PMTK_Q_RELEASE);
+  
+  delay(3000);
 }
 
 
@@ -88,56 +96,67 @@ void loop() {
       return;
     }
   }
+
+  if (!metrics.IsRunOngoing()) {
+    // Get wifi info
+    while (SerialBT.available()) {
+      char t = SerialBT.read();
+      if (t != MESSAGE_END_CHAR) {
+        btIn += t;
+      }
+      else {
+        if (btIn == CLEAR_MSG) {
+          Serial.println("Clear wifi info");
+          ssid = "";
+          password = "";
+        }
+        else if (btIn.startsWith(SSID_MSG)) {
+          ssid = btIn.substring(SSID_MSG.length());
+        }
+        else if (btIn.startsWith(PASS_MSG)) {
+          password = btIn.substring(PASS_MSG.length());
+        }
+  
+        // Send response
+        if (ssid != "" && password != "") {
+          Serial.println("Test wifi");
+          WiFi.begin(ssid.c_str(), password.c_str());
+          int count = 0;
+          while (WiFi.status() != WL_CONNECTED) {
+            if (count == MAX_WIFI_CONNECT_DELAYS) {
+              break;
+            }
+            
+            count++;
+            delay(2000);
+          }
+  
+          if (WiFi.status() == WL_CONNECTED) {
+            SerialBT.write(VALID_MSG, VALID_MSG_LEN);
+          }
+          else {
+            SerialBT.write(INVALID_MSG, INVALID_MSG_LEN);
+          }
+        }
+        
+        btIn = "";
+      }
+    }
+
+    if (ssid != "" && password != "") {
+      uploadData();
+    }
+  }
   
   // Catch when millis wraps and reset timer
   if (millis() < timer) {
     timer = millis();
   }
 
-  // Listen for wifi ssid and password through bluetooth
-  if (SerialBT.available()) {
-    char t = SerialBT.read();
-    if (t != MESSAGE_END_CHAR) {
-      btIn += t;
-    }
-    else {
-      if (btIn == CLEAR_MSG) {
-        WiFi.disconnect();
-        ssid = "";
-        password = "";
-      }
-      else if (btIn.startsWith(SSID_MSG)) {
-        ssid = btIn.substring(SSID_MSG.length());
-      }
-      else if (btIn.startsWith(PASS_MSG)) {
-        password = btIn.substring(PASS_MSG.length());
-      }
-
-      // Send response
-      if (ssid != "" && password != "") {
-        // Init wifi
-        WiFi.begin(ssid.c_str(), password.c_str());
-        delay(1000);
-        if (WiFi.status() == WL_CONNECTED) {
-          SerialBT.write(VALID_MSG, VALID_MSG_LEN);
-        }
-        else {
-          SerialBT.write(INVALID_MSG, INVALID_MSG_LEN);
-        }
-      }
-      
-      btIn = "";
-    }
-  }
-
   // Runs every ~0.5 secs
   if (millis() - timer >= 500) {
     timer = millis();
     readBaro();
-
-    if (!metrics.IsRunOngoing()) {
-      uploadData();
-    }
 
     if (GPS.fix) {
       // Convert speed from knots to km/h
@@ -184,9 +203,14 @@ void readBaro() {
 // Send data if there are saved runs
 void uploadData() {
   if (!waitWifi && metrics.GetNumSavedRuns() > 0 && WiFi.status() == WL_CONNECTED) {
+    delay(2000);
+    SerialBT.end();
+    delay(5000);
     Serial.println("Sending http request...");
     sendData();
     waitWifi = true;
+    SerialBT.begin("ESP32");
+    delay(2000);
   }
   else {
     waitWifi = false;
@@ -306,7 +330,8 @@ void addDataSamples() {
 // Sends the saved JSON data to the API
 void sendData() {
   HTTPClient http;
-  http.begin("https://webhook.site/000d8382-1952-49f9-a79e-bf4de40e88ac");
+  http.begin("https://webhook.site/61bc7ed7-97e3-4d80-badd-fba6fdccfe0f");
+  //http.begin("https://coachablecapstoneapi.azurewebsites.net/run/");
   http.setUserAgent("Wearable");
   http.addHeader("Content-Type", "application/json");
 
