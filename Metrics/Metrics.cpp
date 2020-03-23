@@ -275,9 +275,14 @@ void Metrics::WriteFile(fs::FS &fs, const char* path, const char* method, const 
 String Metrics::GetIncrementalDataJson(float duration) {
   String json = "";
   int num = 1;
+  const int max = 25;
   
-  if (duration >= 10) {
-    num = round(duration / (10.0f + 5.0f * (duration / 30.0f)));
+  if (duration >= 5) {
+    num = round(duration / (5.0f + (duration / 30.0f)));
+  }
+  
+  if (num > max) {
+    num = max;
   }
   
   for (int i = 0; i < data.size(); i++) {
