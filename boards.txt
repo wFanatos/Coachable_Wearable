@@ -15,7 +15,7 @@ menu.Revision=Board Revision
 esp32.name=ESP32 Dev Module
 
 esp32.upload.tool=esptool_py
-esp32.upload.maximum_size=1703936
+esp32.upload.maximum_size=1966080
 esp32.upload.maximum_data_size=327680
 esp32.upload.wait_for_upload_port=true
 
@@ -40,7 +40,7 @@ esp32.menu.PSRAM.disabled.build.defines=
 esp32.menu.PSRAM.enabled=Enabled
 esp32.menu.PSRAM.enabled.build.defines=-DBOARD_HAS_PSRAM -mfix-esp32-psram-cache-issue
 
-esp32.menu.PartitionScheme.wearable=4MB with spiffs(1.7MB APP/0.7MB SPIFFS)
+esp32.menu.PartitionScheme.wearable=4MB with spiffs(1.7MB APP/0.6MB SPIFFS)
 esp32.menu.PartitionScheme.wearable.build.partitions=wearable
 esp32.menu.PartitionScheme.default=Default 4MB with spiffs (1.2MB APP/1.5MB SPIFFS)
 esp32.menu.PartitionScheme.default.build.partitions=default
