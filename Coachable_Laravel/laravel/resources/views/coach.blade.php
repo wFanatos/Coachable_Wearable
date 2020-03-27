@@ -22,8 +22,8 @@
                     <p> Start of Season: {{$collection[2]->season_start}}</p>
                     <p> End of Season: {{$collection[2]->season_end}}</p>
 
-                    @foreach($collection[3] as $member)
-                        
+                    @foreach($collection[3] as $member)                       
+
                         <h2> Team Member Info </h2>
 
                         <h3> User </h3>
@@ -31,7 +31,13 @@
                         <p> Email: {{$member[1]->email}}</p>
 
                         <h3> Device Info </h3>
-                        <p> Device in use: {{$member[0]->device_name}}</p>
+
+                        @if($member[0] == null)
+                            <p> No device connected to user</p>
+                        @else
+                            <p> Device in use: {{$member[0]->device_name}}</p>
+                        @endif
+                        
                    
                         @for($i = 0; $i < count($member[2]); $i++)
                             <h2> Event: </h2>

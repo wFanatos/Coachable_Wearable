@@ -23,6 +23,10 @@ Route::get('/parent', 'ParentController@index')->name('parent');
 Route::get('/coach', 'CoachController@index')->name('coach');
 Route::get('/head', 'HeadCoachController@index')->name('head');
 
+Route::get('/settings', 'SettingsController@index')->name('settings');
+Route::post('/settings', 'SettingsController@manageDevice');
+
+
 
 
 

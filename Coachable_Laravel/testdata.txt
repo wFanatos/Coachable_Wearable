@@ -131,7 +131,7 @@ $data->team_id = 1
 $data->save();
 
 $data = new App\UserTeam
-$data->user_id = 3
+$data->user_id = 4
 $data->team_id = 1
 $data->save();
 
