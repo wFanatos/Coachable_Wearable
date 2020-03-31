@@ -6,89 +6,89 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
-                <div class="card-header">Dashboard</div>
-
+                <div class="card-header">Home</div>
                 <div class="card-body">
+                    
+                    <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="pills-overview-tab" data-toggle="pill" href="#pills-overview" role="tab" aria-controls="pills-overview" aria-selected="true">Overview</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="pills-roster-tab" data-toggle="pill" href="#pills-roster" role="tab" aria-controls="pills-roster" aria-selected="false">Roster</a>
+                        </li>                        
+                    </ul>
 
-                       <h1> User Info </h1>
-                       <p> Name: {{$collection[0]->name}}</p>
-                       <p> Email: {{$collection[0]->email}}</p>
+                    <div class="tab-content" id="pills-tabContent">
+                        <div class="tab-pane fade show active" id="pills-overview" role="tabpanel" aria-labelledby="pills-overview-tab">
+                            <div class="accordion" id="accordionExample">
+                                @for($i = 0; $i < count($collection[0]); $i++)      
+                                    <div class="card text-center">
+                                        <div class="card-header" id="heading{{$i}}">
+                                            <h2 class="mb-0">
+                                                <button type="button" class="btn btn-link" data-toggle="collapse" data-target="#collapse{{$i}}">
+                                                    <h2> Event: {{$collection[0][$i][0][0]->event_name}} </h2>
+                                                    <p>Date: {{$collection[0][$i][0][0]->event_date}} </p>
+                                                </button>                                       								
+                                            </h2>
+                                        </div>
+                                        <div id="collapse{{$i}}" class="collapse" aria-labelledby="heading{{$i}}" data-parent="#accordionExample">
+                                            <div class="card-body">
+                                                <div class ="accordion" id="runExample">
+                                                    @for($j = 0; $j < count($collection[0][0][0][1]); $j++)
+                                                    <div class="card text-center">
+                                                        <div class="card header" id="heading2{{$j}}">
+                                                            <h2 class="mb-0">
+                                                                <button type="button" class="btn btn-link" data-toggle="collapse" data-target= "#collapse2{{$j}}">
+                                                                    <h2> Summary of Run {{$j + 1}} </h2>
+                                                                </button>
+                                                            </h2>
+                                                        </div>
 
-                       <h1> Device Info </h1>
+                                                        <div id="collapse2{{$j}}" class="collapse" aria-labelledby="heading2{{$j}}" data-parent="#runExample">
+                                                            <div class="card-body">
+                                                                @php
+                                                                    $curRun = $collection[0][0][0][1][$j];
+                                                                @endphp
 
-                       @if($collection[1] == null)
-                            <p> No device connected to user</p>
-                        @else
-                            <p> Device in use: {{$collection[1]->device_name}}</p>
-                        @endif
-
-                       <h1> Team Info </h1>
-                       <p> Apart of team: {{$collection[2]->name}}</p>
-
-                       <h1> Season Info </h1>
-                       <p> Current Season: {{$collection[3]->season_name}}</p>
-                       <p> Description: {{$collection[3]->season_description}}</p>
-                       <p> Start of Season: {{$collection[3]->season_start}}</p>
-                       <p> End of Season: {{$collection[3]->season_end}}</p>
-
-                       <h1> Org Info </h1>
-                       <p> Organization: {{$collection[4]->org_name}}</p>
-
-                       <h1> Parent Info </h1>
-                       @foreach($collection[5] as $items)
-                            @foreach($items as $parent)
-                                <p> Parent: {{$parent->name}} </p>
-                            @endforeach
-                       @endforeach
-
-                       <h1> Event Info </h1>
-
-                       <div class="accordion" id="accordionExample">
-                       <!-- Loop through each event/run pairing -->
-                       @for($i = 0; $i < count($collection[6]); $i++)                      
-                            <div class="card">
-                                <div class="card-header" id="heading{{$i}}">
-                                    <h2 class="mb-0">
-                                        <button type="button" class="btn btn-link" data-toggle="collapse" data-target="#collapse{{$i}}">
-                                            <h2> Event: </h2>
-                                            <p>{{$collection[6][$i][0]->event_name}} </p>
-                                            <p>Date: {{$collection[6][$i][0]->event_date}} </p>
-                                        </button>									
-                                    </h2>
-                                </div>
-                                <div id="collapse{{$i}}" class="collapse" aria-labelledby="heading{{$i}}" data-parent="#accordionExample">
-                                    <div class="card-body">
-                                        @foreach($collection[6][$i][1] as $run)
-                                            <!-- PULL OUT RUN DETAILS HERE-->
-                                            <h2> Run: </h2>
-                                            <p> Length of run: {{$run->duration}} </p>
-                                            <p> Run started: {{$run->start_time}} </p>
-                                            <p> Run ended: {{$run->end_time}} </p>
-                                            <p> Start altitude: {{$run->start_altitude}} </p>
-                                            <p> End altitude: {{$run->end_altitude}} </p>
-                                            <p> Average speed: {{$run->avg_speed}} </p>
-                                            <p> Distance from start to end: {{$run->distance}} </p>
-                              
-                                            <!-- DECODE JSON AND PUT ALL INFO INTO GRAPH -->
-                                            @php
-                                                $dataObj = json_decode($run->other_data);                               
-                                            @endphp
-                                
-                                            @foreach($dataObj as $dataEntry)
-                                                <h3> Other Data </h3>
-                                                <p> Latitude: {{$dataEntry->Latitude}} </p>
-                                                <p> Longitude: {{$dataEntry->Longitude}} </p>
-                                                <p> Speed: {{$dataEntry->Speed}} </p>
-                                                <p> Altitude: {{$dataEntry->Altitude}} </p>
-                                                <p> Time: {{$dataEntry->Time}} </p>
-                                            @endforeach                            
-                                        @endforeach
+                                                                <h2>Summary of Run </h2>
+                                                                <p>Distance Travelled: {{$curRun->distance}}km </p>
+                                                                <p>Average Speed: {{$curRun->avg_speed}}km/h
+                                                                <p>Duration: {{$curRun->duration}} </p>                                                   
+                                                                <button class="btn btn-primary">Detailed Info </button>
+                                                            </div>
+                                                        </div>                 
+                                                    </div>  
+                                                    @endfor 
+                                                </div>                                  
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
+                                @endfor
                             </div>
                         </div>
-
-                        @endfor                                                                                                                                                                                                  
+                        <div class="tab-pane fade" id="pills-roster" role="tabpanel" aria-labelledby="pills-roster-tab">
+                            <div class="accordion" id="rosterExample">
+                                @for($k = 0; $k < count($collection[1]); $k++)                      
+                                    <div class="card text-center">
+                                        <div class="card-header" id="heading3{{$i}}">
+                                            <h2 class="mb-0">
+                                                <button type="button" class="btn btn-link" data-toggle="collapse" data-target="#collapse3{{$i}}">
+                                                    <h2> {{$collection[1][$k][0]->name}} </h2>
+                                                </button>                                       								
+                                            </h2>
+                                        </div>
+                                        <div id="collapse3{{$i}}" class="collapse" aria-labelledby="heading3{{$i}}" data-parent="#rosterExample">
+                                            <div class="card-body">
+                                                @foreach($collection[1][$k][1] as $user)
+                                                    <p>{{$user->name}} - {{$user->user_type_id}} </p>                                                                                      
+                                                @endforeach                                       
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endfor
+                            </div>
+                        </div>
+                    </div>  
                 </div>
             </div>
         </div>

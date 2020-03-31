@@ -26,6 +26,10 @@ Route::get('/head', 'HeadCoachController@index')->name('head');
 Route::get('/settings', 'SettingsController@index')->name('settings');
 Route::post('/settings', 'SettingsController@manageDevice');
 
+Route::get('/run/{userid}/{runid}', 'RunController@index')->name('run');
+
+Route::get('/event/{eventid}/{userid}', 'RunController@index')->name('event');
+
 
 
 

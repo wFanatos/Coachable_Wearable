@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Auth;
 use App\Device;
+use App\User;
 
 
 class SettingsController extends Controller
@@ -22,12 +23,33 @@ class SettingsController extends Controller
 
     public function index()
     { 
+        // Get the id of current user logged in
         $id = Auth::id();
+
+        // Get the logged in user's basic information
+        $user = User::Select('user_type_id')->where('id', $id)->first();
+
+        // Get the users type
+        $typeID = $user->user_type_id;
+
+        $flag = 0;
+
+        // Ensure the current user is actually an athlete
+        if($typeID == 1)
+        {
+           // Get device name attached to users id
+            $device = Device::where('user_id', $id)->first('device_name');
+            $flag = 1;
+        }
+        else
+        {
+            $device = null;
+        }       
 
         // Get device name attached to users id
         $device = Device::where('user_id', $id)->first('device_name');
         
-        return view('settings', compact('device'));
+        return view('settings', compact('device', 'flag'));
     }
 
     public function manageDevice(Request $request)
@@ -41,7 +63,7 @@ class SettingsController extends Controller
             $this->addDevice($request);
         }
         
-        return redirect()->route('home');
+        return redirect()->route('settings');
     }
 
     public function removeDevice(Request $request)
