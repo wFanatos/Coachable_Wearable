@@ -19,12 +19,14 @@
 
 #define GPSSerial Serial2
 #define MAX_WIFI_CONNECT_DELAYS 10
+#define uS_TO_S_FACTOR 1000000ULL  /* Conversion factor for micro seconds to seconds */
+#define TIME_TO_SLEEP  10
 
 const String SSID_SEP = "-SSID-";
 const String PASSWORD_SEP = "-PWORD-";
 const String DEVICE_NAME = "ABC123";
 const int MIN_ALT_DIFF = 1;
-const int MIN_SPD = 3;
+const int MIN_SPD = 4;
 const int LED_PIN = 5;
 const int CS_PIN = 33;
 const char MESSAGE_END_CHAR = '\0';
@@ -43,6 +45,7 @@ bool waitWifi = false;
 bool useSD = false;
 
 float currentAltitude = 0.0f;
+float lastAltitude = 0.0f;
 float currentSpeed = 0.0f;
 
 Metrics metrics = Metrics();
@@ -53,13 +56,22 @@ String btIn = "";
 String ssid = "";
 String password = "";
 BluetoothSerial SerialBT;
-
+int btnPin = 25;
 
 // Initialize
 void setup() {
-  pinMode(LED_PIN, OUTPUT);
   Serial.begin(115200);
+  pinMode(btnPin, INPUT);
+  pinMode(LED_PIN, OUTPUT);
 
+  esp_sleep_enable_timer_wakeup(TIME_TO_SLEEP * uS_TO_S_FACTOR);
+  int buttonState = digitalRead(btnPin);
+  if (buttonState == LOW) {
+    Serial.println("Sleeping...");
+    Serial.flush();
+    esp_deep_sleep_start();
+  }
+  
   // Init SD
   useSD = SD.begin(CS_PIN, SPI, 1000000, "/sd");
   if (!useSD) {
@@ -89,6 +101,14 @@ void setup() {
 
 // Main loop, runs repeatedly
 void loop() {
+  // Check for deep sleep
+  int buttonState = digitalRead(btnPin);
+  if (buttonState == LOW) {
+    Serial.println("Sleeping...");
+    Serial.flush();
+    esp_deep_sleep_start();
+  }
+  
   // Get new GPS data
   char c = GPS.read();
   if (GPS.newNMEAreceived()) {
@@ -195,6 +215,7 @@ void loop() {
 // Get altitude from barometer
 void readBaro() {
   if (baro.begin()) {
+    lastAltitude = currentAltitude;
     currentAltitude = baro.getAltitude();
   }
 }
@@ -294,7 +315,7 @@ void finishRun() {
 // Check if start of run conditions met
 bool checkRunStart() {
   // Using speed
-  if (currentSpeed >= MIN_SPD) {
+  if (currentSpeed >= MIN_SPD || lastAltitude - currentAltitude >= MIN_ALT_DIFF) {
     return true;
   }
 
@@ -329,22 +350,54 @@ void addDataSamples() {
 
 // Sends the saved JSON data to the API
 void sendData() {
+  // SD
+  if (useSD) {
+    int count = 0;
+    for (int i = 0; i < metrics.GetNumJsonFiles(true); i++) {
+      Serial.println("Sending sd file " + String(count));
+      String jsonStr = metrics.GetJsonStr(SD, true, 0);
+      if (sendHttp(jsonStr)) {
+        metrics.ClearJson(SD, true, 0);
+        count++;
+      }
+      delay(500);
+    }
+  }
+
+  // SPIFFS
+  int count = 0;
+  for (int i = 0; i < metrics.GetNumJsonFiles(false); i++) {
+    Serial.println("Sending spiffs file " + String(count));
+    String jsonStr = metrics.GetJsonStr(SPIFFS, false, 0);
+    if (sendHttp(jsonStr)) {
+      metrics.ClearJson(SPIFFS, false, 0);
+      count++;
+    }
+    delay(500);
+  }
+}
+
+// Sends an http request
+bool sendHttp(String jsonStr) {
+  bool success = false;
   HTTPClient http;
-  http.begin("https://webhook.site/61bc7ed7-97e3-4d80-badd-fba6fdccfe0f");
-  //http.begin("https://coachablecapstoneapi.azurewebsites.net/run/");
+  //http.begin("https://webhook.site/61bc7ed7-97e3-4d80-badd-fba6fdccfe0f");
+  http.begin("https://coachablecapstoneapi.azurewebsites.net/run/");
   http.setUserAgent("Wearable");
   http.addHeader("Content-Type", "application/json");
 
-  String jsonStr = metrics.GetJsonStr(SD, useSD, SPIFFS);
   int response = http.POST(jsonStr);
   if (response > 0) {
     if (response == HTTP_CODE_OK) {
-      metrics.ClearJson(SD, useSD, SPIFFS);
+      success = true;
+      Serial.println("SUCCESS");
     }
   }
   else {
     Serial.println("HTTP error: " + http.errorToString(response));
   }
-
+  
   http.end();
+
+  return success;
 }
