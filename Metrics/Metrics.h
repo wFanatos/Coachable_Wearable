@@ -12,9 +12,10 @@
 #include <vector>
 #include <cmath>
 
-#define NUM_RUNS 100
 #define MIN_DURATION 5
-#define JSON_PATH "/runs.json"
+#define RUNS_PER_FILE 5
+#define JSON_PATH "/runs"
+#define JSON_PATH_EXT ".json"
 #define INFO_PATH "/info.dat"
 
 struct IncrementalData {
@@ -44,9 +45,10 @@ public:
   void FinishRun(String deviceName, String time, float altitude, float lat, float lon, fs::FS &fs, bool isSD);
   void AddSpeedSample(float speed);
   void AddDataSample(float lat, float lon, float spd, float alt, String time);
-  void ClearJson(fs::FS &sd, bool useSD, fs::FS &spiffs);
-  String GetJsonStr(fs::FS &sd, bool useSD, fs::FS &spiffs);
+  void ClearJson(fs::FS &fs, bool useSD, int fileIndex);
+  String GetJsonStr(fs::FS &fs, bool useSD, int fileIndex);
   int GetNumSavedRuns();
+  int GetNumJsonFiles(bool useSD);
   bool IsRunOngoing();
   
 private:

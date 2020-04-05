@@ -62,17 +62,27 @@ void Metrics::FinishRun(String deviceName, String time, float altitude, float la
     return;
   }
   
-  float duration = (millis() - startMillis) / 1000.0f;
+  float totalSec = (millis() - startMillis) / 1000.0f;
+  int min = ((int)totalSec / 60);
+  float sec = ((int)totalSec % 60);
+  sec += (totalSec - (min * 60) - sec);
+  String textDuration = "";
+  if (totalSec < 60) {
+    textDuration = "00:" + String(totalSec);
+  }
+  else {
+    textDuration = String(min) + ":" + String(sec);
+  }
   
-  if (duration < MIN_DURATION) {
+  if (totalSec < MIN_DURATION /*|| startAltitude < altitude*/) {
     runOngoing = false;
     return;
   }
   
   jsonData = "{\"DeviceName\": \"" + deviceName + "\",";
-  jsonData += "\"UserID\": 0,";
+  jsonData += "\"UserID\": 1,";
   jsonData += "\"EventID\": 0,";
-  jsonData += "\"Duration\": " + String(duration) + ",";
+  jsonData += "\"Duration\": \"" + String(textDuration) + "\",";
   jsonData += "\"Date\": \"" + date + "\",";
   jsonData += "\"StartTime\": \"" + startTime + "\",";
   jsonData += "\"EndTime\": \"" + time + "\",";
@@ -80,7 +90,7 @@ void Metrics::FinishRun(String deviceName, String time, float altitude, float la
   jsonData += "\"EndAltitude\": " + String(altitude) + ",";
   jsonData += "\"AvgSpeed\": " + String(sumSpeed / numSamples) + ",";
   jsonData += "\"Distance\": " + String(CalcDistance(startLat, startLon, lat, lon)) + ",";
-  jsonData += "\"Data\": [" + GetIncrementalDataJson(duration) + "]}";
+  jsonData += "\"Data\": [" + GetIncrementalDataJson(totalSec) + "]}";
 
   runOngoing = false;
   
@@ -102,48 +112,53 @@ void Metrics::AddDataSample(float lat, float lon, float spd, float alt, String t
 
 
 // Clears all json data
-void Metrics::ClearJson(fs::FS &sd, bool useSD, fs::FS &spiffs) {
-  // Clear SD
+void Metrics::ClearJson(fs::FS &fs, bool useSD, int fileIndex) {
+  int numFiles = 0;
+  String path = JSON_PATH + String(fileIndex) + JSON_PATH_EXT;
+  fs.remove(path.c_str());
+  
+  // Update SD
   if (useSD) {
-    sd.remove(JSON_PATH);
-    numSavedRunsSD = 0;
-    UpdateInfo(sd, numSavedRunsSD);
+    numFiles = numSavedRunsSD / RUNS_PER_FILE;
+	if (numSavedRunsSD % RUNS_PER_FILE != 0) {
+      numFiles++;
+    }
+    numSavedRunsSD -= RUNS_PER_FILE;
+    if (numSavedRunsSD < 0) {
+      numSavedRunsSD = 0;
+    }
+    UpdateInfo(fs, numSavedRunsSD);
   }
-
-  spiffs.remove(JSON_PATH);
-  numSavedRunsSpiffs = 0;
-  UpdateInfo(spiffs, numSavedRunsSpiffs);
+  // Update SPIFFS
+  else {
+    numFiles = numSavedRunsSpiffs / RUNS_PER_FILE; 
+	if (numSavedRunsSpiffs % RUNS_PER_FILE != 0) {
+      numFiles++;
+    }
+    numSavedRunsSpiffs -= RUNS_PER_FILE;
+    if (numSavedRunsSpiffs < 0) {
+      numSavedRunsSpiffs = 0;
+    }
+    UpdateInfo(fs, numSavedRunsSpiffs);
+  }
+  
+  for (int i = fileIndex + 1; i < numFiles; i++) {
+    String pathOld = JSON_PATH + String(i) + JSON_PATH_EXT;
+    String pathNew = JSON_PATH + String(i - 1) + JSON_PATH_EXT;
+    fs.rename(pathOld.c_str(), pathNew.c_str());
+  }
 }
 
 
 // Returns the JSON string
-String Metrics::GetJsonStr(fs::FS &sd, bool useSD, fs::FS &spiffs) {
+String Metrics::GetJsonStr(fs::FS &fs, bool useSD, int fileIndex) {
+  String path = JSON_PATH + String(fileIndex) + JSON_PATH_EXT;
+  ReadInfo(fs, useSD);
+  
   String jsonStr = "[";
-  int numRuns = 0;
-
-  // Get data from SD
-  if (useSD) {
-    ReadInfo(sd, true);
-    numRuns += numSavedRunsSD;
-    
-    if (numSavedRunsSD > 0) {
-      jsonStr += ReadFile(sd, JSON_PATH);
-    }
-  }
-  
-  // Get data from SPIFFS
-  ReadInfo(spiffs, false);
-
-  if (numSavedRunsSpiffs > 0) {
-    if (numRuns > 0) {
-      jsonStr += ",";
-    }
-    jsonStr += ReadFile(spiffs, JSON_PATH);
-  }
- 
-  numRuns += numSavedRunsSpiffs;
+  jsonStr += ReadFile(fs, path.c_str());
   jsonStr += "]";
-  
+
   return jsonStr;
 }
 
@@ -151,6 +166,27 @@ String Metrics::GetJsonStr(fs::FS &sd, bool useSD, fs::FS &spiffs) {
 // Returns number of saved runs
 int Metrics::GetNumSavedRuns() {
   return numSavedRunsSD + numSavedRunsSpiffs;
+}
+
+
+// Returns the number of json files there is
+int Metrics::GetNumJsonFiles(bool useSD) {
+  int numFiles = 0;
+    
+  if (useSD && numSavedRunsSD > 0) {
+    numFiles = numSavedRunsSD / RUNS_PER_FILE;
+    if (numSavedRunsSD % RUNS_PER_FILE != 0) {
+      numFiles++;
+    }
+  }
+  else if (numSavedRunsSpiffs > 0) {
+    numFiles = numSavedRunsSpiffs / RUNS_PER_FILE;
+    if (numSavedRunsSpiffs % RUNS_PER_FILE != 0) {
+      numFiles++;
+    }
+  }
+  
+  return numFiles;
 }
 
 
@@ -196,11 +232,12 @@ void Metrics::SaveData(fs::FS &fs, bool isSD) {
   }
   
   String str = "";
-  if (numRuns != 0) {
+  if (numRuns != 0 && numRuns % RUNS_PER_FILE != 0) {
     str += ",\n";
   }
   str += jsonData;
-  WriteFile(fs, JSON_PATH, FILE_APPEND, str.c_str());
+  String path = JSON_PATH + String(numRuns / RUNS_PER_FILE) + JSON_PATH_EXT;
+  WriteFile(fs, path.c_str(), FILE_APPEND, str.c_str());
   
   numRuns++;
   if (isSD) {
@@ -254,7 +291,7 @@ String Metrics::ReadFile(fs::FS &fs, const char* path) {
   if (fs.exists(path)) {
     File file = fs.open(path);
     while (file.available()) {
-      str += String(file.readStringUntil('\n'));
+      str += file.readStringUntil('\n').c_str();
     }
     file.close();
   }
@@ -275,7 +312,7 @@ void Metrics::WriteFile(fs::FS &fs, const char* path, const char* method, const 
 String Metrics::GetIncrementalDataJson(float duration) {
   String json = "";
   int num = 1;
-  const int max = 25;
+  const int max = 20;
   
   if (duration >= 5) {
     num = round(duration / (5.0f + (duration / 30.0f)));
@@ -285,8 +322,9 @@ String Metrics::GetIncrementalDataJson(float duration) {
     num = max;
   }
   
+  int k = data.size() / num;
   for (int i = 0; i < data.size(); i++) {
-    if (i % num == 0 || i == data.size() - 1) {
+    if (i % k == 0 || i == data.size() - 1) {
       if (json != "") {
         json += ",";
       }
@@ -298,6 +336,8 @@ String Metrics::GetIncrementalDataJson(float duration) {
       json += "\"Time\": \"" + data[i].time + "\"}";
     }
   }
+  
+  data.clear();
   
   return json;
 }
