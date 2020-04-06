@@ -23,7 +23,7 @@
 		  data: {
 		    labels: timeArr,
 			datasets: [{
-              label: 'Speed(km/h) over Time(seconds)',
+              label: 'Speed over Time',
 			  data: spdArr
 			}]
 		  },
@@ -32,8 +32,18 @@
 				yAxes: [{
 					ticks: {
 						beginAtZero: true
-					}
-				}]
+					},
+          scaleLabel: {
+            display: true,
+            labelString: 'Speed (km/h)',
+          }
+				}],
+        xAxes: [{
+          scaleLabel: {
+            display: true,
+            labelString: 'Time (Seconds)',
+          }
+        }]
 			},
 		    legend: {
 			  display: true,
@@ -47,7 +57,7 @@
 		  data: {
 		    labels: timeArr,
 			datasets: [{
-              label: 'Altitude(m) over Time(seconds)',
+              label: 'Altitude over Time',
 			  data: altArr
 			}]
 		  },
@@ -59,8 +69,15 @@
 					},
 					scaleLabel: {
 						display: true,
+            labelString: 'Altitude (meters)',
 					}
-				}]
+				}],
+        xAxes: [{
+          scaleLabel: {
+            display: true,
+            labelString: 'Time (Seconds)',
+          }
+        }]
 			},
 		    legend: {
 			  display: true,
