@@ -82,7 +82,7 @@ class AthleteController extends Controller
             {
                 $tempevent2 = array();
 
-                $run = Run::Select('duration', 'avg_speed', 'distance')->where('user_id', $id)->where('event_id', $event->id)->get();
+                $run = Run::Select('id', 'duration', 'avg_speed', 'distance')->where('user_id', $id)->where('event_id', $event->id)->get();
                               
                 array_push($tempevent2, $event, $run);
                 array_push($tempEventArray, $tempevent2);
@@ -93,6 +93,6 @@ class AthleteController extends Controller
    
         $collection = collect([$eventArray, $rosterArray]);
 
-        return view('athlete', compact('collection'));
+        return view('athlete', compact('collection'), compact('id'));
     }
 }

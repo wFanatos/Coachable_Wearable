@@ -35,14 +35,14 @@ class RunController extends Controller
         // SEND RUN BACK TO VIEW FOR PARSING/DISPLAYING
 
         $id = Auth::id();
+		$run = Run::where('id',$runid)->get();
 
-        if($userid != $id)
+        if($userid != $id || $run[0]->user_id != $id)
         {
             return Redirect::back()->withErrors(['msg', 'Access Denied']);
         }
         else
         {
-            $run = Run::where('id',$runid)->get();
             if(count($run))
             { 
                 $jsonObj = json_decode($run[0]->other_data);
