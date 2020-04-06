@@ -35,16 +35,17 @@ class RunController extends Controller
         // SEND RUN BACK TO VIEW FOR PARSING/DISPLAYING
 
         $id = Auth::id();
-		$run = Run::where('id',$runid)->get();
+        $run = Run::where('id',$runid)->get();
 
-        if($userid != $id || $run[0]->user_id != $id)
-        {
-            return Redirect::back()->withErrors(['msg', 'Access Denied']);
-        }
-        else
-        {
-            if(count($run))
-            { 
+        if(count($run))
+        { 
+            if($userid != $id || $run[0]->user_id != $id)
+            {
+                return Redirect::back()->withErrors(['msg', 'Access Denied']);
+            }
+            else
+            {
+                
                 $jsonObj = json_decode($run[0]->other_data);
 
                 $timeArray = array();
@@ -66,12 +67,12 @@ class RunController extends Controller
                 $secondChart->labels($timeArray);
                 $secondChart->dataset('Altitude over Time (seconds)', 'line', $altitudeArray);
 
-                return view ('run', compact('run','firstChart', 'secondChart'));
+                return view ('run', compact('run', 'firstChart', 'secondChart'));
             }
-            else 
-            {
-                return Redirect::back()->withErrors(['msg', 'Run not in DB']); 
-            }
+        }
+        else 
+        {
+            return Redirect::back()->withErrors(['msg', 'Run not in DB']); 
         }       
     }
 }
