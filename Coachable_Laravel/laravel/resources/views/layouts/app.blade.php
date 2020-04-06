@@ -12,6 +12,64 @@
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js" charset="utf-8"></script>
+	
+	<script type="text/javascript">
+	  function createCharts(timeArr, spdArr, altArr) {
+		var ctx1 = document.getElementById('chart1').getContext('2d');
+		var ctx2 = document.getElementById('chart2').getContext('2d');
+		
+		var chart1 = new Chart(ctx1, {
+		  type: 'line',
+		  data: {
+		    labels: timeArr,
+			datasets: [{
+              label: 'Speed(km/h) over Time(seconds)',
+			  data: spdArr
+			}]
+		  },
+		  options: {
+			scales: {
+				yAxes: [{
+					ticks: {
+						beginAtZero: true
+					}
+				}]
+			},
+		    legend: {
+			  display: true,
+			  position: 'top'
+			}
+		  }
+		});
+		
+		var chart2 = new Chart(ctx2, {
+		  type: 'line',
+		  data: {
+		    labels: timeArr,
+			datasets: [{
+              label: 'Altitude(m) over Time(seconds)',
+			  data: altArr
+			}]
+		  },
+		  options: {
+		    scales: {
+				yAxes: [{
+					ticks: {
+						beginAtZero: true
+					},
+					scaleLabel: {
+						display: true,
+					}
+				}]
+			},
+		    legend: {
+			  display: true,
+			  position: 'top'
+			}
+		  }
+		});
+	  }
+	</script>
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
