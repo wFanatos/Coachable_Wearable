@@ -52,9 +52,11 @@
 
                                                                 <h2>Summary of Run </h2>
                                                                 <p>Distance Travelled: {{$curRun->distance}}km </p>
-                                                                <p>Average Speed: {{$curRun->avg_speed}}km/h
-                                                                <p>Duration: {{$curRun->duration}} </p>                                                   
-                                                                <button class="btn btn-primary">Detailed Info </button>
+                                                                <p>Average Speed: {{$curRun->avg_speed}}km/h </p>
+                                                                <p>Duration: {{$curRun->duration}} </p>
+                                                                <a class="btn btn-primary" href="{{ route('run', ['userid' => $id, 'runid' => $curRun->id]) }}">
+																	Detailed Info
+																</a>
                                                             </div>
                                                         </div>                 
                                                     </div>  
