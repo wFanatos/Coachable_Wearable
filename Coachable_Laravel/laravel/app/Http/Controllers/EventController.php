@@ -9,6 +9,8 @@ use App\User;
 use App\Event;
 use App\Run;
 use App\ParentAthlete;
+use App\UserTeam;
+use App\Team;
 
 use App\Charts;
 use App\Charts\RunChart;
@@ -31,9 +33,33 @@ class EventController extends Controller
     public function index($eventid, $userid)
     {
         $id = Auth::id();
-        $parent = ParentAthlete::where('athlete_id',$userid)->get();
+		
+        $parents = ParentAthlete::where('athlete_id', $userid)->get();
+		$isParent = false;
+		foreach($parents as $parent)
+		{
+			if ($id == $parent->parent_id)
+			{
+				$isParent = true;
+				break;
+			}
+		}
+		
+		$userTeam = UserTeam::where('user_id', $userid)->first();
+		$team = Team::where('id', $userTeam->team_id)->first();
+		$coaches = User::where('user_type_id', 3)->get();
+		$isCoach = false;
+		foreach($coaches as $coach)
+		{
+			$coachTeam = UserTeam::where('user_id', $coach->id)->first();
+			if ($team->id == $coachTeam->team_id && $id == $coach->id)
+			{
+				$isCoach = true;
+				break;
+			}
+		}
         
-        if($userid != $id && (count($parent) && $userid != $parent[0]->parent_id))
+        if($userid != $id && !$isParent && !$isCoach)
         {
             return Redirect::back()->withErrors(['msg', 'Access Denied']);
         }
