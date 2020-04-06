@@ -2,9 +2,7 @@
 
 @section('content')
 
-{{ $currentTab = 0 }}
-
-<body onload="createCharts(JSON.parse('{{ json_encode($runData[$currentTab][1]) }}'), JSON.parse('{{ json_encode($runData[$currentTab][2]) }}'), JSON.parse('{{ json_encode($runData[$currentTab][3]) }}'));"/>
+<body onload="createCharts(JSON.parse('{{ json_encode($runData[0][1]) }}'), JSON.parse('{{ json_encode($runData[0][2]) }}'), JSON.parse('{{ json_encode($runData[0][3]) }}'));"/>
 <div class="container">
   <div class="row justify-content-center" style="width:100%">
       <ul class="nav flex-column nav-pills mb-3" id="pills-tab" role="tablist">
