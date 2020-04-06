@@ -28,7 +28,7 @@ Route::post('/settings', 'SettingsController@manageDevice');
 
 Route::get('/run/{userid}/{runid}', 'RunController@index')->name('run');
 
-Route::get('/event/{eventid}/{userid}', 'RunController@index')->name('event');
+Route::get('/event/{eventid}/{userid}', 'EventController@index')->name('event');
 
 
 
