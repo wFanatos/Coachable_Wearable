@@ -34,8 +34,7 @@ class HeadCoachController extends Controller
         $id = Auth::id();
 
         // Get the logged in user's basic information
-        $user = User::Select(
-            'name', 'email', 'user_type_id')->where('id', $id)->first();
+        $user = User::Select('user_type_id')->where('id', $id)->first();
         
         // Get the users type
         $typeID = $user->user_type_id;

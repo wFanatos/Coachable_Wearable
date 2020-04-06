@@ -83,22 +83,22 @@
                     <ul>
                         <li> User logs in with athlete credentials 
                             <ul> 
-                                <li>User is brought to the /athlete screen where they are presented with information such as personal info, run info, org info, etc.</li>
+                                <li>User is brought to the /athlete screen where they are presented with a list of events they have participated in. If they click into an event, they are shown an overview and can click to view more.</li>
                             </ul>
                         </li>
                         <li> User logs in with parent credentials 
                             <ul> 
-                                <li>User is brought to the /parent screen where they are presented with information such as personal info and child info. </li>
+                                <li>User is brought to the /parent screen where they are presented with a list of children and an overview of their participated events. </li>
                             </ul>
                         </li>
                         <li> User logs in with coach credentials 
                             <ul> 
-                                <li>User is brought to the /coach screen where they are presented with information such as personal info and info about team members on current team (runs, events, etc.). </li>
+                                <li>User is brought to the /coach screen where they are presented with each team they are apart of and their events. </li>
                             </ul>
                         </li>
                         <li> User logs in with head coach credentials
                             <ul> 
-                                <li>User is brought to the /head screen where they are presented with information such as personal info and all team info for teams in org. </li>
+                                <li>User is brought to the /head screen where they are presented with each team in their organization and their events (when are they, current season, etc.). </li>
                             </ul> 
                         </li>
                     </ul>             

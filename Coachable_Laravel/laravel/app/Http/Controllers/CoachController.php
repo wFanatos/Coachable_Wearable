@@ -34,8 +34,7 @@ class CoachController extends Controller
         $id = Auth::id();
         
         // Get the logged in user's basic information
-        $user = User::Select(
-            'name', 'email', 'user_type_id')->where('id', $id)->first();
+        $user = User::Select('user_type_id')->where('id', $id)->first();
         
         // Get the users type
         $typeID = $user->user_type_id;
@@ -46,47 +45,59 @@ class CoachController extends Controller
             return redirect()->back();
         }
 
+
+        //Get list of teams that i am on
+        //For each team, get a list of events
+        // For each event, get each members runs for that event
+
+        $userTeams = UserTeam::where('user_id', $id)->get('team_id');
+
         $teamArray = array();
+        $eventArray = array();
+        
 
-        //Get team that coach is apart of - only one team rn
-        $userTeam = UserTeam::where('user_id', $id)->first('team_id');
-        $teamid = $userTeam->team_id;
-        $team = Team::where('id', $teamid)->first();
-        $season = Season::where('id', $team->season_id)->first();
-        $events = Event::where('team_id', $teamid)->get();
-        $teamMembers = UserTeam::where([
-            ['team_id', '=', $teamid],
-            ['user_id', '<>', $id],
-        ])->get('user_id');
-
-        // Loop through the list of parents and grab their information
-        foreach($teamMembers as $member)
+        foreach($userTeams as $team)
         {
-            $temp = array();
+            $teamMembers = UserTeam::where([
+                ['team_id', '=', $team->team_id],
+                ['user_id', '<>', $id],
+            ])->get('user_id');
 
-            // Array for storing run information
-            $runArray = array();
+            $teamInfo = Team::Select('name')->where('id', $team->team_id)->first();
 
-            $device = Device::where('user_id', $member->user_id)->first('device_name');
-            $userInfo = User::Select('name', 'email')->where('id', $member->user_id)->first();
+            $events = Event::where('team_id', $team->team_id)->get();
 
-            // Loop through each event and grab a list of runs attached to user
             foreach($events as $event)
             {
-                $temp2 = array();
+                $memberArray = array();
 
-                $run = Run::where('user_id', $member->user_id)->where('event_id', $event->id)->get();
-                array_push($temp2, $event, $run);
-                array_push($runArray, $temp2);    
+                foreach($teamMembers as $member)
+                {               
+                    $tempMemberArray = array();
+
+                    $name = User::Select('name')->where('id', $member->user_id)->first();
+
+                    $runs = Run::Select('distance')->where('user_id', $member->user_id)->where('event_id', $event->id)->get();
+                    $runCount = $runs->count();
+
+                    array_push($tempMemberArray, $name, $runs,$runCount);
+                    array_push($memberArray,$tempMemberArray);
+                }
+
+                $tempEventArray = array();
+
+                array_push($tempEventArray, $event, $memberArray);
+                array_push($eventArray, $tempEventArray);                
             }
 
-            array_push($temp, $device, $userInfo, $runArray);
-            array_push($teamArray, $temp);
-        }            
+            $a = array();
 
-        $collection = collect([$user,$team, $season, $teamArray]);
+            array_push($a, $teamInfo, $eventArray);
 
-        //dd($collection);
+            array_push($teamArray, $a);
+        }
+
+        $collection = collect($teamArray);
 
         return view('coach', compact('collection'));
     }

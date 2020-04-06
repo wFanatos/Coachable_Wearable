@@ -72,8 +72,6 @@ class AthleteController extends Controller
 
             array_push($rosterArray,$teamArray);        
 
-            $season = Season::Select('season_name')->where('id',$teamInfo->season_id)->first();
-
             $events = Event::where('team_id', $team->team_id)->get();
 
             $tempEventArray = array();
