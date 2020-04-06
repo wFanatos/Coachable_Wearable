@@ -75,7 +75,7 @@ class CoachController extends Controller
                 {               
                     $tempMemberArray = array();
 
-                    $name = User::Select('name')->where('id', $member->user_id)->first();
+                    $name = User::Select('id', 'name')->where('id', $member->user_id)->first();
 
                     $runs = Run::Select('distance')->where('user_id', $member->user_id)->where('event_id', $event->id)->get();
                     $runCount = $runs->count();

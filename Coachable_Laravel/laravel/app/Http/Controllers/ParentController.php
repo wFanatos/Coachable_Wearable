@@ -57,7 +57,7 @@ class ParentController extends Controller
         {
             $runArray = array();
 
-            $childInfo = User::Select('name')->where('id', $child->athlete_id)->first();
+            $childInfo = User::Select('id', 'name')->where('id', $child->athlete_id)->first();
             $userTeam = UserTeam::where('user_id', $child->athlete_id)->first('team_id');
             $teamid = $userTeam->team_id;
             $team = Team::where('id', $teamid)->first();           

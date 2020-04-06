@@ -43,7 +43,9 @@
                                                             @endforeach
                                                             <p> Total distance travelled: {{$totalDistance}} </p>
                                                             <p> Total # of Runs: {{$collection[$i][2][$j][2]}} <p>
-                                                            <button class="btn btn-primary">Detailed Info </button>
+                                                            <a class="btn btn-primary" href="{{ route('event', ['eventid' => $collection[$i][2][$j][0]->id, 'userid' => $collection[$i][0]->id]) }}">
+																Detailed Info
+															</a>
                                                         </div>
                                                     </div>
                                                 </div>
