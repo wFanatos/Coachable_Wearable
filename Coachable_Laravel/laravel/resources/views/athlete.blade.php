@@ -50,7 +50,6 @@
                                                                     $curRun = $collection[0][0][0][1][$j];
                                                                 @endphp
 
-                                                                <h2>Summary of Run </h2>
                                                                 <p>Distance Travelled: {{$curRun->distance}}km </p>
                                                                 <p>Average Speed: {{$curRun->avg_speed}}km/h </p>
                                                                 <p>Duration: {{$curRun->duration}} </p>
