@@ -7,26 +7,24 @@
             <div class="card">
                 <div class="card-header">Children Dashboard</div>
 
-                <div class="card-body">
-
                     <div class="accordion" id="childAccordion">
                         @for($i = 0; $i < count($collection); $i++)                      
                             <div class="card text-center">
-                                <div class="card-header" id="heading{{$i}}">
+                                <div class="card-header" id="heading{{$i}}" style="background-color: #6dcdeb;">
                                     <h2 class="mb-0">
-                                        <button type="button" class="btn btn-link" data-toggle="collapse" data-target="#collapse{{$i}}">
+                                        <button type="button" class="btn" data-toggle="collapse" data-target="#collapse{{$i}}">
                                             <h2> {{$collection[$i][0]->name}} </h2>
                                         </button>                                       								
                                     </h2>
                                 </div>
                                 <div id="collapse{{$i}}" class="collapse" aria-labelledby="heading{{$i}}" data-parent="#childAccordion">
-                                    <div class="card-body">
+
                                         <div class="accordion" id="eventAccordion">
                                             @for($j = 0; $j < count($collection[$i][2]); $j++)                      
                                                 <div class="card text-center">
-                                                    <div class="card-header" id="heading2{{$j}}">
+                                                    <div class="card-header" id="heading2{{$j}}" style="background-color: #0191C8;">
                                                         <h2 class="mb-0">
-                                                            <button type="button" class="btn btn-link" data-toggle="collapse" data-target="#collapse2{{$j}}">
+                                                            <button type="button" class="btn" data-toggle="collapse" data-target="#collapse2{{$j}}">
                                                                 <h2> {{$collection[$i][2][$j][0]->event_name}} </h2>
                                                             </button>                                       								
                                                         </h2>
@@ -51,12 +49,10 @@
                                                 </div>
                                             @endfor
                                         </div>
-                                    </div>
                                 </div>
                             </div>
                         @endfor
                     </div>
-                </div>
             </div>
         </div>
     </div>
