@@ -59,15 +59,7 @@ class RunController extends Controller
                     array_push($altitudeArray, $dataEntry->Altitude);
                 }
 
-                $firstChart = new RunChart;
-                $firstChart->labels($timeArray);
-                $firstChart->dataset('Speed(km/h) over Time(seconds)', 'line', $speedArray);
-            
-                $secondChart = new RunChart;
-                $secondChart->labels($timeArray);
-                $secondChart->dataset('Altitude(m) over Time(seconds)', 'line', $altitudeArray);
-
-                return view ('run', compact('run', 'firstChart', 'secondChart'));
+                return view ('run', compact('run', 'timeArray', 'speedArray', 'altitudeArray'));
             }
         }
         else 
