@@ -7,7 +7,8 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Coachable') }}</title>
+    <link rel="icon" type="image/png" href="/Img/whistle.png">
+    <title>{{ config('app.name', 'Coachable') }} </title>
 
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}" defer></script>
@@ -97,9 +98,10 @@
 </head>
 <body>
     <div id="app">
-        <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
+    <nav class="navbar navbar-expand-md navbar-dark" style="background-color: #0a4b5c;">
             <div class="container">
                 <a class="navbar-brand">
+                  <img src="/Img/whistle.png" height="15%" width="15%">
                     {{ config('app.name', 'Coachable') }}
                 </a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">

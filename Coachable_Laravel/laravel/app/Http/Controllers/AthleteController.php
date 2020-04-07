@@ -51,6 +51,9 @@ class AthleteController extends Controller
 
         $eventArray = array();
 
+        
+        $tempEventArray = array();
+
         // Loop through all teams I am on
         foreach($usersTeams as $team)
         {
@@ -74,7 +77,6 @@ class AthleteController extends Controller
 
             $events = Event::where('team_id', $team->team_id)->get();
 
-            $tempEventArray = array();
 
             foreach($events as $event)
             {
@@ -85,11 +87,16 @@ class AthleteController extends Controller
                 array_push($tempevent2, $event, $run);
                 array_push($tempEventArray, $tempevent2);
             }
+                   
 
-            array_push($eventArray,$tempEventArray);
         }
-   
+
+        array_push($eventArray,$tempEventArray);
+
+     
         $collection = collect([$eventArray, $rosterArray]);
+
+       //dd($collection);
 
         return view('athlete', compact('collection'), compact('id'));
     }

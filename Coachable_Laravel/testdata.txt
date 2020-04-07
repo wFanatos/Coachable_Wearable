@@ -126,6 +126,11 @@ $data->team_id = 1
 $data->save();
 
 $data = new App\UserTeam
+$data->user_id = 1
+$data->team_id = 2
+$data->save();
+
+$data = new App\UserTeam
 $data->user_id = 2
 $data->team_id = 1
 $data->save();
@@ -139,61 +144,69 @@ $data = new App\Event
 $data->team_id = 1
 $data->event_name = "Slope A Race"
 $data->event_date = "2020-03-04"
+$data->start_time = "16:00:00"
+$data->end_time = "20:00:00"
 $data->save();
 
 $data = new App\Event
 $data->team_id = 1
 $data->event_name = "Slope B Race"
 $data->event_date = "2020-03-07"
+$data->start_time = "10:00:00"
+$data->end_time = "13:00:00"
 $data->save();
 
 $data = new App\Event
 $data->team_id = 2
 $data->event_name = "Slope C Race"
 $data->event_date = "2020-03-04"
+$data->start_time = "17:00:00"
+$data->end_time = "19:00:00"
 $data->save();
 
 $data = new App\Run
 $data->user_id = 1
 $data->event_id = 1
-$data->duration = "00:50:50"
+$data->duration = "00:51:00"
 $data->date = "2020-03-04"
-$data->start_time = "16:53:59 UTC"
-$data->end_time = "16:54:08 UTC"
+$data->start_time = "17:00:00 UTC"
+$data->end_time = "17:00:51 UTC"
 $data->start_altitude = "343.19"
 $data->end_altitude = "342.81"
 $data->avg_speed = "0.54"
 $data->distance = "0.28"
-$data->other_data = '[{"Latitude":"4308.38","Longitude":"-8044.61","Speed":"0.68","Altitude":"343.06","Time":"16:53:59 UTC"}, {"Latitude":"4308.38","Longitude":"-8044.61","Speed":"0.68","Altitude":"343.06","Time":"16:53:59 UTC"}]'
+$data->other_data = '[{"Latitude":"4308.38","Longitude":"-8044.61","Speed":"0.68","Altitude":"343.06","Time":"17:00:25 UTC"}, {"Latitude":"4308.38","Longitude":"-8044.61","Speed":"0.68","Altitude":"343.06","Time":"17:00:48 UTC"}]'
 $data->save();
 
 $data = new App\Run
 $data->user_id = 1
 $data->event_id = 2
-$data->duration = "00:50:50"
-$data->date = "2020-03-04"
-$data->start_time = "16:53:59 UTC"
-$data->end_time = "16:54:08 UTC"
+$data->duration = "00:51.00"
+$data->date = "2020-03-07"
+$data->start_time = "10:00:00 UTC"
+$data->end_time = "10:00:51 UTC"
 $data->start_altitude = "343.19"
 $data->end_altitude = "342.81"
 $data->avg_speed = "0.54"
 $data->distance = "0.28"
-$data->other_data = '[{"Latitude":"4308.38","Longitude":"-8044.61","Speed":"0.68","Altitude":"343.06","Time":"16:53:59 UTC"}]'
+$data->other_data = '[{"Latitude":"4308.38","Longitude":"-8044.61","Speed":"0.68","Altitude":"343.06","Time":"10:26:35 UTC"}]'
 $data->save();
+
 
 $data = new App\Run
 $data->user_id = 2
 $data->event_id = 1
-$data->duration = "00:50:50"
+$data->duration = "00:51.00"
 $data->date = "2020-03-04"
-$data->start_time = "16:53:59 UTC"
-$data->end_time = "16:54:08 UTC"
+$data->start_time = "18:00:00 UTC"
+$data->end_time = "18:00:51 UTC"
 $data->start_altitude = "343.19"
 $data->end_altitude = "342.81"
 $data->avg_speed = "0.54"
 $data->distance = "0.28"
-$data->other_data = '[{"Latitude":"4308.38","Longitude":"-8044.61","Speed":"0.68","Altitude":"343.06","Time":"16:53:59 UTC"}]'
+$data->other_data = '[{"Latitude":"4308.38","Longitude":"-8044.61","Speed":"0.68","Altitude":"343.06","Time":"18:43:21 UTC"}]'
 $data->save();
+
 
 
 

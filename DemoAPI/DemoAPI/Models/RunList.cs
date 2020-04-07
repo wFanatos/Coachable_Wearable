@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data;
 using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
 
@@ -44,6 +45,9 @@ namespace DemoAPI.Models
         /// <returns>Successful or not</returns>
         public string Insert(List<Run> runs)
         {
+            DataTable teamTable = new DataTable();
+            DataTable eventTable = new DataTable();
+
             using (Conn)
             {
                 // Although this code works, we should add try catches, proper validation, and encryption of data
@@ -65,35 +69,80 @@ namespace DemoAPI.Models
                         const string findTeamQuery = @"SELECT team_id FROM user_teams WHERE user_id = @userID";
                         var teamCommand = new MySqlCommand(findTeamQuery, Conn);
                         teamCommand.Parameters.AddWithValue("@userID", newRun.UserID);
-                        var teamID = userCommand.ExecuteScalar();
 
-                        // Create and execute query for finding an event that matches the date provided by device
-                        const string findEventQuery = @"SELECT id FROM events WHERE team_id = @teamID AND event_date = @date";
-                        var eventCommand = new MySqlCommand(findEventQuery, Conn);
-                        eventCommand.Parameters.AddWithValue("@teamID", teamID);
-                        eventCommand.Parameters.AddWithValue("@userID", newRun.Date);
-                        var eventID = userCommand.ExecuteScalar();
-                        newRun.EventID = int.Parse(eventID.ToString());
+                        using (MySqlDataReader teamReader = teamCommand.ExecuteReader())
+                        {
+                            teamTable.Load(teamReader);
+                        }
 
-                        //Create and execute query for inserting the run into the DB
-                        const string insertQuery = @"INSERT INTO runs(user_id, event_id, duration, date, start_time, end_time, start_altitude, end_altitude, avg_speed, distance, other_data) VALUES
+                        int exitFlag = 0;
+
+                        foreach (DataRow teamRow in teamTable.Rows)
+                        {
+                            if(exitFlag == 1)
+                            {
+                                break;
+                            }
+
+                            string teamID = teamRow["team_id"].ToString();
+
+                            // Create and execute query for finding an event that matches the date provided by device
+                            const string findEventQuery = @"SELECT id, start_time, end_time FROM events WHERE team_id = @teamID AND event_date = @date";
+                            var eventCommand = new MySqlCommand(findEventQuery, Conn);
+                            eventCommand.Parameters.AddWithValue("@teamID", teamID);
+                            eventCommand.Parameters.AddWithValue("@date", newRun.Date);
+
+                            using (MySqlDataReader eventReader = eventCommand.ExecuteReader())
+                            {
+                                eventTable.Load(eventReader);
+                            }
+
+                            foreach (DataRow eventRow in eventTable.Rows)
+                            {
+                                string id = eventRow["id"].ToString();
+                                string event_start = eventRow["start_time"].ToString();
+                                string event_end = eventRow["end_time"].ToString();
+
+                                string run_start = newRun.StartTime.Substring(0,newRun.StartTime.IndexOf(" "));
+                                string run_end = newRun.EndTime.Substring(0,newRun.EndTime.IndexOf(" "));
+
+
+                                if ((DateTime.Parse(run_start) >= DateTime.Parse(event_start)) && (DateTime.Parse(run_end) < DateTime.Parse(event_end)) && ((DateTime.Parse(run_start) < DateTime.Parse(event_end)) && (DateTime.Parse(run_end) > DateTime.Parse(event_start))))
+                                {
+                                    exitFlag = 1;
+                                    newRun.EventID = int.Parse(id);
+                                    break;
+                                }
+                            }
+                        }
+
+                        if(exitFlag == 1)
+                        {
+                            //Create and execute query for inserting the run into the DB
+                            const string insertQuery = @"INSERT INTO runs(user_id, event_id, duration, date, start_time, end_time, start_altitude, end_altitude, avg_speed, distance, other_data) VALUES
                                                  (@userID, @eventid, @duration, @date, @startTime, @endTime, @startAltitude, @endAltitude, @AvgSpeed, @distance, @data)";
-                        var insertCommand = new MySqlCommand(insertQuery, Conn);
-                        insertCommand.Parameters.AddWithValue("@userID", newRun.UserID);
-                        insertCommand.Parameters.AddWithValue("@eventid", newRun.EventID);
-                        insertCommand.Parameters.AddWithValue("@duration", newRun.Duration);
-                        insertCommand.Parameters.AddWithValue("@date", newRun.Date);
-                        insertCommand.Parameters.AddWithValue("@startTime", newRun.StartTime);
-                        insertCommand.Parameters.AddWithValue("@endTime", newRun.EndTime);
-                        insertCommand.Parameters.AddWithValue("@startAltitude", newRun.StartAltitude);
-                        insertCommand.Parameters.AddWithValue("@endAltitude", newRun.EndAltitude);
-                        insertCommand.Parameters.AddWithValue("@AvgSpeed", newRun.AvgSpeed);
-                        insertCommand.Parameters.AddWithValue("@distance", newRun.Distance);
+                            var insertCommand = new MySqlCommand(insertQuery, Conn);
+                            insertCommand.Parameters.AddWithValue("@userID", newRun.UserID);
+                            insertCommand.Parameters.AddWithValue("@eventid", newRun.EventID);
+                            insertCommand.Parameters.AddWithValue("@duration", newRun.Duration);
+                            insertCommand.Parameters.AddWithValue("@date", newRun.Date);
+                            insertCommand.Parameters.AddWithValue("@startTime", newRun.StartTime);
+                            insertCommand.Parameters.AddWithValue("@endTime", newRun.EndTime);
+                            insertCommand.Parameters.AddWithValue("@startAltitude", newRun.StartAltitude);
+                            insertCommand.Parameters.AddWithValue("@endAltitude", newRun.EndAltitude);
+                            insertCommand.Parameters.AddWithValue("@AvgSpeed", newRun.AvgSpeed);
+                            insertCommand.Parameters.AddWithValue("@distance", newRun.Distance);
 
-                        //Serialize the data field and fill in
-                        string dataString = JsonConvert.SerializeObject(newRun.Data);
-                        insertCommand.Parameters.AddWithValue("@data", dataString);
-                        insertCommand.ExecuteNonQuery();
+                            //Serialize the data field and fill in
+                            string dataString = JsonConvert.SerializeObject(newRun.Data);
+                            insertCommand.Parameters.AddWithValue("@data", dataString);
+                            insertCommand.ExecuteNonQuery();
+                        }
+                        else
+                        {
+                            return "Cannot find event that matches specific timeframes";
+
+                        }                                 
                     }
 
                     return "Runs have been added!";

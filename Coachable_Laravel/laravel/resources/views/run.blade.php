@@ -14,15 +14,18 @@
         <p> Average speed: {{$run[0]->avg_speed}}km/h </p>
         <p> Distance from start to end: {{$run[0]->distance}}km </p>     
     </div>
-    <div class="col-sm">
-        <div>                                  
-            {!! $firstChart->container() !!}                   
-            {!! $firstChart->script() !!}                   
-        </div>
-        <div>                                  
-            {!! $secondChart->container() !!}                   
-            {!! $secondChart->script() !!}                   
-        </div>
+    <div class="col">
+      <br>
+      <div>                                  
+          {!! $firstChart->container() !!}                   
+          {!! $firstChart->script() !!}                   
+      </div>
+      <br>
+      <br>
+      <div>                                  
+          {!! $secondChart->container() !!}                   
+          {!! $secondChart->script() !!}                   
+      </div>
     </div>
   </div>
 </div>

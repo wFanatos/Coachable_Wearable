@@ -18,6 +18,8 @@ class CreatesEventsTable extends Migration
             $table->bigInteger('team_id')->unsigned();
             $table->string('event_name');
             $table->string('event_date');
+            $table->string('start_time');
+            $table->string('end_time');
 
             $table->foreign('team_id')->references('id')->on('teams');
         });
