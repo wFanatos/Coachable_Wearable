@@ -74,7 +74,7 @@ void Metrics::FinishRun(String deviceName, String time, float altitude, float la
     textDuration = String(min) + ":" + String(sec);
   }
   
-  if (totalSec < MIN_DURATION /*|| startAltitude < altitude*/) {
+  if (totalSec < MIN_DURATION || startAltitude < altitude) {
     runOngoing = false;
     return;
   }
