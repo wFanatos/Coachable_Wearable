@@ -12,8 +12,8 @@
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js" charset="utf-8"></script>
-    
-    <script type="text/javascript">
+	
+	<script type="text/javascript">
       function createCharts(timeArr, spdArr, altArr) {
         var ctx1 = document.getElementById('chart1').getContext('2d');
         var ctx2 = document.getElementById('chart2').getContext('2d');
@@ -107,7 +107,7 @@
 </head>
 <body>
     <div id="app">
-        <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
+        <nav class="navbar navbar-expand-md navbar-dark" style="background-color: #0a4b5c;">
             <div class="container">
                 <a class="navbar-brand">
                     {{ config('app.name', 'Coachable') }}

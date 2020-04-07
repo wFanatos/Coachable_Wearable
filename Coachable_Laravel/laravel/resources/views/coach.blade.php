@@ -15,7 +15,7 @@
                                     <h2 class="mb-0">
                                         <button type="button" class="btn btn-link" data-toggle="collapse" data-target="#collapse{{$i}}">
                                             <h2> {{$collection[$i][0]->name}} </h2>
-                                        </button>                                       								
+                                        </button>                                                                       
                                     </h2>
                                 </div>
                                 <div id="collapse{{$i}}" class="collapse" aria-labelledby="heading{{$i}}" data-parent="#teamAccordion">
@@ -56,8 +56,8 @@
                                                                                 <p> Total distance travelled: {{$totalDistance}} </p>
                                                                                 <p> Total # of Runs: {{$collection[$i][1][$j][1][$k][2]}} <p>
                                                                                 <a class="btn btn-primary" href="{{ route('event', ['eventid' => $collection[$i][1][$j][0]->id, 'userid' => $collection[$i][1][$j][1][$k][0]->id]) }}">
-																					Detailed Info
-																				</a>
+                                                                                    Detailed Info
+                                                                                </a>
                                                                             </div>
                                                                         </div>                 
                                                                     </div>  
