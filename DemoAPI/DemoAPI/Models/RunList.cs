@@ -121,7 +121,7 @@ namespace DemoAPI.Models
                                 const string insertQuery = @"INSERT INTO events(team_id, event_name, event_date, start_time, end_time) VALUES
                                                              (@teamID, @eventName, @eventDate, @startTime, @endTime)";
 
-                                string name = "Training " + newRun.Date;
+                                string name = "Training " + DateTime.Parse(newRun.Date).ToString("MMMM dd, yyyy");
 
                                 var insertCmd = new MySqlCommand(insertQuery, Conn);
                                 insertCmd.Parameters.AddWithValue("@teamID", teamID);
