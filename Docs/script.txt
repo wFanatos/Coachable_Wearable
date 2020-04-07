@@ -1,0 +1,41 @@
+Slide 1:
+Welcome back everyone, we are the Stardust Crusaders and we are here to give you an update video on the progress we've made on the Coachable Wearable.
+
+Slide 2:
+Our group hasn't changed since the last time you've seen us! We've all learnt a lot due to the process of getting the capstone up and running, on the hardware development side, we have William Bicknell, Firas Areibi and Moises Diaz. On the web development side, we have Blake Ribble and Jacob Funes! 
+
+Slide 3: 
+Who is coachable?
+Coachable is a web application that is focused on the personal development of athletes of all ages, they allow the athletes to give feedback on training, like how they were feeling that day, without a coach having to spend one on one time with them, this allows the athlete to give feedback with no pressure, and full honesty. Unfortunately, Coachable does not have the ability to track the metrics for each run at each training event. But this is where we come in {transition to slide 4}!
+
+Slide 4:
+Coachable doesn't have the ability to track metrics, our device will allow the athlete to attach a discrete device to their boot where it is allows for them to wear during competition and training and track their statistics such as distance skiied, avg speed, number of runs, altititude, etc. 
+
+In conjecture with the original Coachable platform, they now have a powerful tool at their disposal to see the effects their training has on them or vice-versa. But what does this wearable consist of, you ask? {transition to slide 5}
+
+Slide 5:
+The current hardware we have chosen has changed a little bit, we have decided on the ESP32 Thing with attached motion shield (for GPS tracking), and appropriate sensors. There are going to be a few hurdles we will have to deal with, such as the effect that the location will have on the device (will the device work on a real mountain?) and how accurate is the GPS sensor actually?
+
+Thankfully, we have the support of Coachable, they will contribute code reviews (on our db, website, etc) and overall feedback.
+
+Slide 6:
+Current progress:
+	We have achieved data collection on the hardware, the backend and a portion of the front end finished on the website.
+
+	What has changed the most?
+		We have changed the purpose of the website, from just a way to view user data, to having different user roles with specific data that can be viewed depending on the relationships of the users. (Such as a guardian viewing data of athletes that they are guardians of, to a coach being able to view teams that they are associated with and all the events and runs of these athletes)
+
+		--- you might want to expand on this more maybe
+
+Slide 7:
+Early March is when we have our feature freeze, we won't have the ability to add more things to the project and instead we have to work on what we currently have at the time. Mid-March is our integration phase, where we must integrate the website API and the hardware. The hardware must have the ability to send data to the API through blue-tooth tethering or wi-fi.
+
+April - We must have a working prototype for the capstone event at the end of april. This is our final deadline, where there is no longer code being added to the project, and instead we are debugging and fixing issues that spring up.
+
+Slide 8:
+To complete this task, we will use a combination of agile and lean methodologies to cut down the features that are not needed, and the things that will be useful and mandatory. To meet this demand, we will use project tracking platforms such as Slack + Pivotal Tracker and will use GitHub for project organization. Development tools such as Visual Studio, Laravel and Vue will be used alongside our hardware tools like the ESP32 Thing.
+
+Slide 9:
+So, why do we care? We care about this project because it allows us to venture into a field that we have a bit of experience with but also provides a challenge for ourselves. We strive to produce quality applications for our consumers as we believe that our team is well equipped to handle realistic tasks that we may come across in a timely manner. In the end, we want to have fun building a successful product for you, the customer. And who knows, even expand into different sporting activities in the future!
+
+Thanks for listening

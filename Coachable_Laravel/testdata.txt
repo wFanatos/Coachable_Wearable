@@ -1,0 +1,214 @@
+$data = new App\Role
+$data->type_name= 'Athlete'
+$data->save();
+
+$data = new App\Role
+$data->type_name= 'Parent'
+$data->save();
+
+$data = new App\Role
+$data->type_name= 'Coach'
+$data->save();
+
+$data = new App\Role
+$data->type_name= 'Head Coach'
+$data->save();
+
+$data = new App\User
+$data->user_type_id = 1
+$data->name= "Jacob Funes"
+$data->email= "jfunes@conestogac.on.ca"
+$data->password = Hash::make('password')
+$data->save();
+
+$data = new App\User
+$data->user_type_id = 1
+$data->name= "Moises Diaz"
+$data->email= "mdiaz@conestogac.on.ca"
+$data->password = Hash::make('password')
+$data->save();
+
+$data = new App\User
+$data->user_type_id = 2
+$data->name= "Blake Ribble"
+$data->email= "bribble@conestogac.on.ca"
+$data->password = Hash::make('password')
+$data->save();
+
+$data = new App\User
+$data->user_type_id = 3
+$data->name= "Firas Ariebi"
+$data->email= "fariebi@conestogac.on.ca"
+$data->password = Hash::make('password')
+$data->save();
+
+$data = new App\User
+$data->user_type_id = 4
+$data->name= "William Bicknell"
+$data->email= "wbicknell@conestogac.on.ca"
+$data->password = Hash::make('password')
+$data->save();
+
+$data = new App\Device
+$data->device_name = 'ABC123'
+$data->user_id = 1
+$data->save();
+
+$data = new App\Device
+$data->device_name = 'FUN111'
+$data->user_id = null
+$data->save();
+
+$data = new App\ParentAthlete
+$data->parent_id = 3
+$data->athlete_id = 1
+$data->save();
+
+$data = new App\ParentAthlete
+$data->parent_id = 3
+$data->athlete_id = 2
+$data->save();
+
+
+$data = new App\Organization
+$data->org_name= 'Coachable 1'
+$data->save();
+
+
+$data = new App\Organization
+$data->org_name= 'Coachable 2'
+$data->save();
+
+$data = new App\UserOrg
+$data->org_id = 1
+$data->user_id = 5
+$data->save();
+
+
+$data = new App\Season
+$data->org_id = 1
+$data->season_name = "Spring 2020"
+$data->season_description = "Ski times in the spring"
+$data->season_start = "Early 2020"
+$data->season_end = "Late 2020"
+$data->save();
+
+$data = new App\Season
+$data->org_id = 1
+$data->season_name = "Winter 2020"
+$data->season_description = "Ski times in the winter"
+$data->season_start = "Late 2020"
+$data->season_end = "Early 2021"
+$data->save();
+
+
+$data = new App\Season
+$data->org_id = 2
+$data->season_name = "Winter 2020"
+$data->season_description = "Ski times in the winter"
+$data->season_start = "Late 2020"
+$data->season_end = "Early 2021"
+$data->save();
+
+$data = new App\Team
+$data->season_id = 1
+$data->name = "Team Alpha"
+$data->save();
+
+$data = new App\Team
+$data->season_id = 2
+$data->name = "Conestoga Skiers"
+$data->save();
+
+$data = new App\UserTeam
+$data->user_id = 1
+$data->team_id = 1
+$data->save();
+
+$data = new App\UserTeam
+$data->user_id = 1
+$data->team_id = 2
+$data->save();
+
+$data = new App\UserTeam
+$data->user_id = 2
+$data->team_id = 1
+$data->save();
+
+$data = new App\UserTeam
+$data->user_id = 4
+$data->team_id = 1
+$data->save();
+
+$data = new App\Event
+$data->team_id = 1
+$data->event_name = "Slope A Race"
+$data->event_date = "2020-03-04"
+$data->start_time = "16:00:00"
+$data->end_time = "20:00:00"
+$data->save();
+
+$data = new App\Event
+$data->team_id = 1
+$data->event_name = "Slope B Race"
+$data->event_date = "2020-03-07"
+$data->start_time = "10:00:00"
+$data->end_time = "13:00:00"
+$data->save();
+
+$data = new App\Event
+$data->team_id = 2
+$data->event_name = "Slope C Race"
+$data->event_date = "2020-03-04"
+$data->start_time = "17:00:00"
+$data->end_time = "19:00:00"
+$data->save();
+
+$data = new App\Run
+$data->user_id = 1
+$data->event_id = 1
+$data->duration = "00:51:00"
+$data->date = "2020-03-04"
+$data->start_time = "17:00:00 UTC"
+$data->end_time = "17:00:51 UTC"
+$data->start_altitude = "343.19"
+$data->end_altitude = "342.81"
+$data->avg_speed = "0.54"
+$data->distance = "0.28"
+$data->other_data = '[{"Latitude":"4308.38","Longitude":"-8044.61","Speed":"0.68","Altitude":"343.06","Time":"17:00:25 UTC"}, {"Latitude":"4308.38","Longitude":"-8044.61","Speed":"0.68","Altitude":"343.06","Time":"17:00:48 UTC"}]'
+$data->save();
+
+$data = new App\Run
+$data->user_id = 1
+$data->event_id = 2
+$data->duration = "00:51.00"
+$data->date = "2020-03-07"
+$data->start_time = "10:00:00 UTC"
+$data->end_time = "10:00:51 UTC"
+$data->start_altitude = "343.19"
+$data->end_altitude = "342.81"
+$data->avg_speed = "0.54"
+$data->distance = "0.28"
+$data->other_data = '[{"Latitude":"4308.38","Longitude":"-8044.61","Speed":"0.68","Altitude":"343.06","Time":"10:26:35 UTC"}]'
+$data->save();
+
+
+$data = new App\Run
+$data->user_id = 2
+$data->event_id = 1
+$data->duration = "00:51.00"
+$data->date = "2020-03-04"
+$data->start_time = "18:00:00 UTC"
+$data->end_time = "18:00:51 UTC"
+$data->start_altitude = "343.19"
+$data->end_altitude = "342.81"
+$data->avg_speed = "0.54"
+$data->distance = "0.28"
+$data->other_data = '[{"Latitude":"4308.38","Longitude":"-8044.61","Speed":"0.68","Altitude":"343.06","Time":"18:43:21 UTC"}]'
+$data->save();
+
+
+
+
+
+
