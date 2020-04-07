@@ -15,79 +15,89 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js" charset="utf-8"></script>
 	
 	<script type="text/javascript">
-	  function createCharts(timeArr, spdArr, altArr) {
-		var ctx1 = document.getElementById('chart1').getContext('2d');
-		var ctx2 = document.getElementById('chart2').getContext('2d');
-		
-		var chart1 = new Chart(ctx1, {
-		  type: 'line',
-		  data: {
-		    labels: timeArr,
-			datasets: [{
+      function createCharts(timeArr, spdArr, altArr) {
+        var ctx1 = document.getElementById('chart1').getContext('2d');
+        var ctx2 = document.getElementById('chart2').getContext('2d');
+        
+        var chart1 = new Chart(ctx1, {
+          type: 'line',
+          data: {
+            labels: timeArr,
+            datasets: [{
               label: 'Speed over Time',
-			  data: spdArr
-			}]
-		  },
-		  options: {
-			scales: {
-				yAxes: [{
-					ticks: {
-						beginAtZero: true
-					},
-          scaleLabel: {
-            display: true,
-            labelString: 'Speed (km/h)',
+              data: spdArr
+            }]
+          },
+          options: {
+			  maintainAspectRatio: false,
+            legend: {
+              display: false
+            },
+            scales: {
+              yAxes: [{
+                ticks: {
+                  beginAtZero: true
+                },
+                scaleLabel: {
+                  display: true,
+                  labelString: 'Speed (km/h)',
+                }
+              }],
+              xAxes: [{
+                scaleLabel: {
+                  display: true,
+                  labelString: 'Time (Seconds)',
+                }
+              }]
+            },
+            title: {
+              display: true,
+              text: 'Speed over Time',
+              fontSize: 20
+            }
           }
-				}],
-        xAxes: [{
-          scaleLabel: {
-            display: true,
-            labelString: 'Time (Seconds)',
-          }
-        }]
-			},
-		    legend: {
-			  display: true,
-			  position: 'top'
-			}
-		  }
-		});
-		
-		var chart2 = new Chart(ctx2, {
-		  type: 'line',
-		  data: {
-		    labels: timeArr,
-			datasets: [{
+        });
+        
+        var chart2 = new Chart(ctx2, {
+          type: 'line',
+          data: {
+            labels: timeArr,
+            datasets: [{
               label: 'Altitude over Time',
-			  data: altArr
-			}]
-		  },
-		  options: {
-		    scales: {
-				yAxes: [{
-					ticks: {
-						beginAtZero: true
-					},
-					scaleLabel: {
-						display: true,
-            labelString: 'Altitude (meters)',
-					}
-				}],
-        xAxes: [{
-          scaleLabel: {
-            display: true,
-            labelString: 'Time (Seconds)',
+              data: altArr
+            }]
+          },
+          options: {
+			  maintainAspectRatio: false,
+            legend: {
+              display: false
+            },
+            scales: {
+              yAxes: [{
+                ticks: {
+                  beginAtZero: true
+                },
+                scaleLabel: {
+                  display: true,
+                  labelString: 'Altitude (meters)',
+                }
+              }],
+              xAxes: [{
+                scaleLabel: {
+                  display: true,
+                  labelString: 'Time (Seconds)',
+                }
+              }]
+            },
+            title: {
+              display: true,
+              text: 'Altitude over Time',
+              fontSize: 20
+            }
           }
-        }]
-			},
-		    legend: {
-			  display: true,
-			  position: 'top'
-			}
-		  }
-		});
-	  }
-	</script>
+        });
+      }
+    </script>
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
@@ -98,7 +108,7 @@
 </head>
 <body>
     <div id="app">
-    <nav class="navbar navbar-expand-md navbar-dark" style="background-color: #0a4b5c;">
+        <nav class="navbar navbar-expand-md navbar-dark" style="background-color: #0a4b5c;">
             <div class="container">
                 <a class="navbar-brand">
                   <img src="/Img/whistle.png" height="15%" width="15%">

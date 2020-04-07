@@ -12,9 +12,7 @@
           </li>
         @endfor
       </ul>
-      <div class="card" style="width:75%">
-      <div class="card-body">
-      <div class="tab-content" id="v-pills-tabContent">
+      <div class="tab-content" id="v-pills-tabContent" style="width:80%">
         @for($i = 0; $i < count($runData); $i++)
           <div class="tab-pane fade @if($i == 0) show active @endif" id="pills-run{{$i}}" role="tabpanel" aria-labelledby="pills-run{{$i}}-tab">
             <div class="column">
@@ -31,16 +29,12 @@
               </div>
           </div>
         @endfor
-		<div class="col-sm">
-			<div>
-				<canvas id="chart1"></canvas>
-			</div>
-			<div>
-				<canvas id="chart2"></canvas>
-			</div>
-		</div>
-      </div>
-      </div>
+		<hr/>
+        <div class="col-sm" style="height:300px">
+            <canvas id="chart1"></canvas>
+			<hr/>
+            <canvas id="chart2"></canvas>
+        </div>
       </div>
   </div>
 </div>

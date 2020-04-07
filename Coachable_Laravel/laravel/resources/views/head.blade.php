@@ -1,40 +1,57 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
+
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
-                <div class="card-header">Dashboard</div>
+                <div class="card-header">Organization: {{$collection[1]->org_name}}</div>
 
-                <div class="card-body">
+                        <div class="tab-content" id="pills-tabContent" style="background-color: #6dcdeb;">
+                            <div class="tab-pane fade show active" id="pills-overview" role="tabpanel" aria-labelledby="pills-overview-tab">
+                                <div class="accordion" id="accordionExample">
+                                    @for($i = 0; $i < count($collection[2]); $i++)    
+                                        <div class="card text-center">
+                                            <div class="card-header" id="heading{{$i}}" style="background-color: #6dcdeb;">
+                                                <h2 class="mb-0">
+                                                    <button type="button" class="btn" data-toggle="collapse" data-target="#collapse{{$i}}" >
+                                                        <h2>{{$collection[2][$i][1]->name}} - {{$collection[2][$i][0]->season_name}} </h2>
+                                                        <p> {{$collection[2][$i][0]->season_start}} - {{$collection[2][$i][0]->season_end}}</p> 
+                                                    </button>                                       								
+                                                </h2>
+                                            </div>
+                                        </div>
 
-                <h1> User Info </h1>                   
-                <p> Name: {{$collection[0]->name}}</p>
-                <p> Email: {{$collection[0]->email}}</p>
+                                        <div id="collapse{{$i}}" class="collapse" aria-labelledby="heading{{$i}}" data-parent="#accordionExample">
+                                                <div class ="accordion" id="runExample">
 
-                <h1> Org Info </h1>
-                <p> Apart of org: {{$collection[1]->org_name}}</p>
+                                                    @for($j = 0; $j < count($collection[2][$i][2]); $j++)
+                                                        <div class="card text-center">
+                                                                <div class="card header" id="heading2{{$j}}" style="background-color: #0191C8;">
+                                                                    <h2 class="mb-0">
+                                                                        <button type="button" class="btn" data-toggle="collapse" data-target= "#collapse2{{$j}}">
+                                                                            <h2> Current Events: {{$collection[2][$j][2][0]->event_name}}</h2>
+                                                                        </button>
+                                                                    </h2>
+                                                                </div>
 
-                @foreach($collection[2] as $orgs)
-                    <h2> Team Info </h2>
-                    <p> Name: {{$orgs[1]->name}}</p>
+                                                            <div id="collapse2{{$j}}" class="collapse" aria-labelledby="heading2{{$j}}" data-parent="#runExample">
+                                                                <div class="card-body">
+                                                                    <p> Event Date: {{$collection[2][$j][2][0]->event_date}} </p>                                               
+                                                                    <button class="btn btn-primary">Detailed Info </button>
+                                                                </div>
+                                                            </div>                 
+                                                        </div>  
+                                                    @endfor
 
-                    <h2> Season Info </h2>
-                    <p> Current Season: {{$orgs[0]->season_name}}</p>
-                    <p> Description: {{$orgs[0]->season_description}}</p>
-                    <p> Start of Season: {{$orgs[0]->season_start}}</p>
-                    <p> End of Season: {{$orgs[0]->season_end}}</p>
+                                                </div>                                  
+                                        </div>
+                                    @endfor
+                                </div>
+                    </div>
 
-                    @foreach($orgs[2] as $events)
-                        <h2> Event Info </h2>
-                        <p> Name: {{$events->event_name}} </p>
-                        <p> Date: {{$events->event_date}} </p>
-                    @endforeach                    
-                @endforeach                  
-                </div>
-            </div>
+            </div>           
         </div>
     </div>
-</div>
+
 @endsection

@@ -29,7 +29,6 @@
                                             </div>
                                         </button>
                                         <div id="collapse{{$i}}" class="collapse" aria-labelledby="heading{{$i}}" data-parent="#accordionExample">
-                                            <div class="card-body">
                                                 <div class ="accordion" id="runExample">
                                                     @if(count($collection[0][0][$i][1]) == 0)
                                                         <p>There are currently no runs for this event </p> 
@@ -62,7 +61,6 @@
                                                         @endfor
                                                     @endif                                                    
                                                 </div>                                  
-                                            </div>
                                         </div>
                                     </div>
                                 @endfor
@@ -91,7 +89,6 @@
                             </div>
                         </div>
                     </div>  
-                </div>
             </div>
         </div>
     </div>

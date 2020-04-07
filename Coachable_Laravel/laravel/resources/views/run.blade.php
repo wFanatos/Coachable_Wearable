@@ -2,6 +2,7 @@
 
 @section('content')
 
+<body onload="createCharts(JSON.parse('{{ json_encode($timeArray) }}'), JSON.parse('{{ json_encode($speedArray) }}'), JSON.parse('{{ json_encode($altitudeArray) }}'));"/>
 <div class="container">
   <div class="row">
     <div class="col-sm text-center">
@@ -14,18 +15,11 @@
         <p> Average speed: {{$run[0]->avg_speed}}km/h </p>
         <p> Distance from start to end: {{$run[0]->distance}}km </p>     
     </div>
-    <div class="col">
-      <br>
-      <div>                                  
-          {!! $firstChart->container() !!}                   
-          {!! $firstChart->script() !!}                   
-      </div>
-      <br>
-      <br>
-      <div>                                  
-          {!! $secondChart->container() !!}                   
-          {!! $secondChart->script() !!}                   
-      </div>
+    <div class="col-sm" style="height:300px">
+        <canvas id="chart1"></canvas>
+        <hr/>
+        <canvas id="chart2"></canvas>
+        <br/>
     </div>
   </div>
 </div>
