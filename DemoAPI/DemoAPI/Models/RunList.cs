@@ -84,7 +84,7 @@ namespace DemoAPI.Models
                                 break;
                             }
 
-                            string teamID = teamRow["team_id"].ToString();
+                            int teamID = int.Parse(teamRow["team_id"].ToString());
 
                             // Create and execute query for finding an event that matches the date provided by device
                             const string findEventQuery = @"SELECT id, start_time, end_time FROM events WHERE team_id = @teamID AND event_date = @date";
@@ -114,9 +114,29 @@ namespace DemoAPI.Models
                                     break;
                                 }
                             }
+
+                            if (exitFlag != 1)
+                            {
+                                // Add new training event
+                                const string insertQuery = @"INSERT INTO events(team_id, event_name, event_date, start_time, end_time) VALUES
+                                                             (@teamID, @eventName, @eventDate, @startTime, @endTime)";
+
+                                string name = "Training " + DateTime.Parse(newRun.Date).ToString("MMMM dd, yyyy");
+
+                                var insertCmd = new MySqlCommand(insertQuery, Conn);
+                                insertCmd.Parameters.AddWithValue("@teamID", teamID);
+                                insertCmd.Parameters.AddWithValue("@eventName", name);
+                                insertCmd.Parameters.AddWithValue("@eventDate", newRun.Date);
+                                insertCmd.Parameters.AddWithValue("@startTime", "00:00:00");
+                                insertCmd.Parameters.AddWithValue("@endTime", "23:59:59");
+                                insertCmd.ExecuteNonQuery();
+                                newRun.EventID = Convert.ToInt32(insertCmd.LastInsertedId);
+
+                                exitFlag = 1;
+                            }
                         }
 
-                        if(exitFlag == 1)
+                        if (exitFlag == 1)
                         {
                             //Create and execute query for inserting the run into the DB
                             const string insertQuery = @"INSERT INTO runs(user_id, event_id, duration, date, start_time, end_time, start_altitude, end_altitude, avg_speed, distance, other_data) VALUES
