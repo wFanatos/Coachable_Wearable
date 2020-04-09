@@ -68,10 +68,18 @@ void Metrics::FinishRun(String deviceName, String time, float altitude, float la
   sec += (totalSec - (min * 60) - sec);
   String textDuration = "";
   if (totalSec < 60) {
-    textDuration = "00:" + String(totalSec);
+    textDuration = "00:";
+    if (totalSec < 10) {
+	  textDuration += "0";
+	}
+	textDuration += String(totalSec);
   }
   else {
-    textDuration = String(min) + ":" + String(sec);
+    textDuration = String(min) + ":";
+	if (sec < 10) {
+	  textDuration += "0";
+	}
+	textDuration += String(sec);
   }
   
   if (totalSec < MIN_DURATION || startAltitude < altitude) {

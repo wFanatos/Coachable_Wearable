@@ -25,7 +25,7 @@
 const String SSID_SEP = "-SSID-";
 const String PASSWORD_SEP = "-PWORD-";
 const String DEVICE_NAME = "ABC123";
-const int MIN_ALT_DIFF = 1;
+const float MIN_ALT_DIFF = 0.1f;
 const int MIN_SPD = 4;
 const int LED_PIN = 5;
 const int CS_PIN = 33;
@@ -315,7 +315,7 @@ void finishRun() {
 // Check if start of run conditions met
 bool checkRunStart() {
   // Using speed
-  if (currentSpeed >= MIN_SPD || lastAltitude - currentAltitude >= MIN_ALT_DIFF) {
+  if (currentSpeed >= MIN_SPD && lastAltitude - currentAltitude >= MIN_ALT_DIFF) {
     return true;
   }
 
