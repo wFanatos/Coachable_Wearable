@@ -6,7 +6,6 @@
         <div class="col-md-8">
             <div class="card">
                 <div class="card-header">Team Overview</div>
-
                     <div class="accordion" id="teamAccordion">
                         @for($i = 0; $i < count($collection); $i++)                      
                             <div class="card text-center">
@@ -55,12 +54,10 @@
                                                                                 <a class="btn btn-primary" href="{{ route('event', ['eventid' => $collection[$i][1][$j][0]->id, 'userid' => $collection[$i][1][$j][1][$k][0]->id]) }}">
                                                                                     Detailed Info
                                                                                 </a>
-
                                                                         </div>                 
                                                                     </div>  
                                                                 @endfor 
                                                             </div>     
-
                                                     </div>                 
                                                 </div>  
                                             @endfor 
@@ -73,5 +70,5 @@
             </div>
         </div>
     </div>
-a
+
 @endsection

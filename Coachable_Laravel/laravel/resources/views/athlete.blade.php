@@ -6,7 +6,6 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
-                <div class="card-body">
                         <ul class="nav nav-pills mb-3 nav-justified" id="pills-tab" role="tablist">
                             <li class="nav-item">
                                 <a class="nav-link active" id="pills-overview-tab" data-toggle="pill" href="#pills-overview" role="tab" aria-controls="pills-overview" aria-selected="true">Overview</a>
@@ -19,8 +18,8 @@
                         <div class="tab-pane fade show active" id="pills-overview" role="tabpanel" aria-labelledby="pills-overview-tab">
                             <div class="accordion" id="accordionExample">
                                 @for($i = 0; $i < count($collection[0][0]); $i++)
-                                    <div class="card text-center">
-                                        <button type="button" class="btn btn-link" data-toggle="collapse" data-target="#collapse{{$i}}">
+                                    <div class="card text-center" style="background-color: #6dcdeb;">
+                                        <button type="button" class="btn" data-toggle="collapse" data-target="#collapse{{$i}}">
                                             <div id="heading{{$i}}">
                                                 <h2 class="mb-0">
                                                     <h2> Event: {{$collection[0][0][$i][0]->event_name}} </h2>
@@ -35,9 +34,9 @@
                                                     @else
                                                         @for($j = 0; $j < count($collection[0][0][$i][1]); $j++)
                                                         <div class="card text-center">
-                                                            <div class="card header" id="heading2{{$j}}">
+                                                            <div class="card header" id="heading2{{$j}}" style="background-color: #0191C8;">
                                                                 <h2 class="mb-0">
-                                                                    <button type="button" class="btn btn-link" data-toggle="collapse" data-target= "#collapse2{{$j}}">
+                                                                    <button type="button" class="btn" data-toggle="collapse" data-target= "#collapse2{{$j}}">
                                                                         <h2> Summary of Run {{$j + 1}} </h2>
                                                                     </button>
                                                                 </h2>
@@ -70,7 +69,7 @@
                             <div class="accordion" id="rosterExample">
                                 @for($k = 0; $k < count($collection[1]); $k++)                      
                                     <div class="card text-center">
-                                        <div class="card-header" id="heading3{{$k}}">
+                                        <div class="card-header" id="heading3{{$k}}" style="background-color: #6dcdeb;">
                                             <h2 class="mb-0">
                                                 <button type="button" class="btn btn-link" data-toggle="collapse" data-target="#collapse3{{$k}}">
                                                     <h2> {{$collection[1][$k][0]->name}} </h2>
