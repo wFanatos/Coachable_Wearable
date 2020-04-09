@@ -13,8 +13,8 @@
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js" charset="utf-8"></script>
-	
-	<script type="text/javascript">
+    
+    <script type="text/javascript">
       function createCharts(timeArr, spdArr, altArr) {
         var ctx1 = document.getElementById('chart1').getContext('2d');
         var ctx2 = document.getElementById('chart2').getContext('2d');
@@ -29,7 +29,7 @@
             }]
           },
           options: {
-			  maintainAspectRatio: false,
+              maintainAspectRatio: false,
             legend: {
               display: false
             },
@@ -68,15 +68,12 @@
             }]
           },
           options: {
-			  maintainAspectRatio: false,
+              maintainAspectRatio: false,
             legend: {
               display: false
             },
             scales: {
               yAxes: [{
-                ticks: {
-                  beginAtZero: true
-                },
                 scaleLabel: {
                   display: true,
                   labelString: 'Altitude (meters)',

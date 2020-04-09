@@ -29,11 +29,12 @@
               </div>
           </div>
         @endfor
-		<hr/>
+        <hr/>
         <div class="col-sm" style="height:300px">
             <canvas id="chart1"></canvas>
-			<hr/>
+            <hr/>
             <canvas id="chart2"></canvas>
+            <br/>
         </div>
       </div>
   </div>
