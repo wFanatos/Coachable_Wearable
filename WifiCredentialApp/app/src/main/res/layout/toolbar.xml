@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#121212"
+    android:elevation="4dp"
+    android:textAlignment="center"
+    app:navigationIcon="@mipmap/ic_launcher_foreground">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="Wifi Credentials"
+        android:textColor="#FFFFFF"
+        android:textSize="24sp" />
+
+
+</androidx.appcompat.widget.Toolbar>
