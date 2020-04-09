@@ -19,12 +19,21 @@
                         <div class="tab-pane fade show active" id="pills-overview" role="tabpanel" aria-labelledby="pills-overview-tab">
                             <div class="accordion" id="accordionExample">
                                 @for($i = 0; $i < count($collection[0][0]); $i++)
+                                    @php
+                                        $totalDistance = 0;
+                                    @endphp
+                                    @foreach($collection[0][0][$i][1] as $run)
+                                        @php
+                                            $totalDistance = $totalDistance + $run->distance;
+                                        @endphp
+                                    @endforeach
                                     <div class="card text-center">
                                         <button type="button" class="btn btn-link" data-toggle="collapse" data-target="#collapse{{$i}}">
                                             <div id="heading{{$i}}">
                                                 <h2 class="mb-0">
-                                                    <h2> Event: {{$collection[0][0][$i][0]->event_name}} </h2>
-                                                    <p>Date: {{$collection[0][0][$i][0]->event_date}} </p>                                   								
+                                                    <h2>Event: {{$collection[0][0][$i][0]->event_name}}</h2>
+                                                    <h6>Date: {{$collection[0][0][$i][0]->event_date}}</h6>
+                                                    <h6>Total Distance: {{$totalDistance}} km</h6>                                                  
                                                 </h2>
                                             </div>
                                         </button>
@@ -49,12 +58,12 @@
                                                                         $curRun = $collection[0][0][$i][1][$j];
                                                                     @endphp
 
-                                                                    <p>Distance Travelled: {{$curRun->distance}}km </p>
-                                                                    <p>Average Speed: {{$curRun->avg_speed}}km/h </p>
+                                                                    <p>Distance Travelled: {{$curRun->distance}} km </p>
+                                                                    <p>Average Speed: {{$curRun->avg_speed}} km/h </p>
                                                                     <p>Duration: {{$curRun->duration}} </p>
                                                                     <a class="btn btn-primary" href="{{ route('run', ['userid' => $id, 'runid' => $curRun->id]) }}">
-																	    Detailed Info
-																    </a>
+                                                                        Detailed Info
+                                                                    </a>
                                                                 </div>
                                                             </div>                 
                                                         </div>  
@@ -74,7 +83,7 @@
                                             <h2 class="mb-0">
                                                 <button type="button" class="btn btn-link" data-toggle="collapse" data-target="#collapse3{{$k}}">
                                                     <h2> {{$collection[1][$k][0]->name}} </h2>
-                                                </button>                                       								
+                                                </button>                                                                       
                                             </h2>
                                         </div>
                                         <div id="collapse3{{$k}}" class="collapse" aria-labelledby="heading3{{$k}}" data-parent="#rosterExample">

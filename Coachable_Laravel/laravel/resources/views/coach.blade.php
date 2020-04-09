@@ -24,8 +24,8 @@
                                                     <div class="card header" id="heading2{{$j}}" style="background-color: #0191C8;">
                                                         <h2 class="mb-0">
                                                             <button type="button" class="btn" data-toggle="collapse" data-target= "#collapse2{{$j}}">
-                                                                <h2> Event: {{$collection[$i][1][$j][0]->event_name}}</h2>
-                                                                <p>Date: {{$collection[$i][1][$j][0]->event_date}} </p>
+                                                                <h2>Event: {{$collection[$i][1][$j][0]->event_name}}</h2>
+                                                                <h6>Date: {{$collection[$i][1][$j][0]->event_date}}</h6>
                                                             </button>
                                                         </h2>
                                                     </div>
@@ -50,7 +50,7 @@
                                                                                         $totalDistance = $totalDistance + $run->distance;
                                                                                     @endphp
                                                                                 @endforeach
-                                                                                <p> Total distance travelled: {{$totalDistance}} </p>
+                                                                                <p> Total distance travelled: {{$totalDistance}} km</p>
                                                                                 <p> Total # of Runs: {{$collection[$i][1][$j][1][$k][2]}} <p>
                                                                                 <a class="btn btn-primary" href="{{ route('event', ['eventid' => $collection[$i][1][$j][0]->id, 'userid' => $collection[$i][1][$j][1][$k][0]->id]) }}">
                                                                                     Detailed Info
