@@ -299,7 +299,7 @@ String Metrics::ReadFile(fs::FS &fs, const char* path) {
   if (fs.exists(path)) {
     File file = fs.open(path);
     while (file.available()) {
-      str += file.readStringUntil('\n').c_str();
+      str += file.readStringUntil('\n');
     }
     file.close();
   }
