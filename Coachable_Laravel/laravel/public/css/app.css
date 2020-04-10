@@ -3370,7 +3370,7 @@ input[type=button].btn-block {
 
 @media (prefers-reduced-motion: reduce) {
   .fade {
-    transition: none;
+    transition: opacity 0.15s linear;
   }
 }
 
@@ -3391,7 +3391,7 @@ input[type=button].btn-block {
 
 @media (prefers-reduced-motion: reduce) {
   .collapsing {
-    transition: none;
+    transition: height 0.35s ease;
   }
 }
 
