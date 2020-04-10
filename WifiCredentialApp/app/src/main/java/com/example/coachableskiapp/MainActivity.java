@@ -131,7 +131,7 @@ public class MainActivity extends Activity {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        statusView.append("Verifing Data\n");
+        statusView.append("Verifying Data\n");
         ssidTxt.setText("");
         ssidPassTxt.setText("");
 
