@@ -25,7 +25,8 @@
 const String SSID_SEP = "-SSID-";
 const String PASSWORD_SEP = "-PWORD-";
 const String DEVICE_NAME = "ABC123";
-const float MIN_ALT_DIFF = 0.1f;
+const String WIFI_PATH = "/wifi.txt";
+const float MIN_ALT_DIFF = 0.3f;
 const int MIN_SPD = 4;
 const int LED_PIN = 5;
 const int CS_PIN = 33;
@@ -82,6 +83,8 @@ void setup() {
   if(!SPIFFS.begin(true)){
     Serial.println("SPIFFS Mount Failed");
   }
+
+  getWifiCredentials();
 
   metrics.Init(SD, useSD, SPIFFS);
 
@@ -153,6 +156,7 @@ void loop() {
   
           if (WiFi.status() == WL_CONNECTED) {
             SerialBT.write(VALID_MSG, VALID_MSG_LEN);
+            saveWifiCredentials(ssid, password);
           }
           else {
             SerialBT.write(INVALID_MSG, INVALID_MSG_LEN);
@@ -381,7 +385,7 @@ void sendData() {
 bool sendHttp(String jsonStr) {
   bool success = false;
   HTTPClient http;
-  //http.begin("https://webhook.site/61bc7ed7-97e3-4d80-badd-fba6fdccfe0f");
+  //http.begin("https://webhook.site/5ddee11e-4bfc-4aeb-8296-a3de9281b435");
   http.begin("https://coachablecapstoneapi.azurewebsites.net/run/");
   http.setUserAgent("Wearable");
   http.addHeader("Content-Type", "application/json");
@@ -400,4 +404,42 @@ bool sendHttp(String jsonStr) {
   http.end();
 
   return success;
+}
+
+// Save wifi credentials
+void saveWifiCredentials(String ssid, String password) {
+  File file = SPIFFS.open(WIFI_PATH.c_str(), FILE_WRITE);
+  file.println(SSID_SEP.c_str());
+  file.println(ssid.c_str());
+  file.println(PASSWORD_SEP.c_str());
+  file.println(password.c_str());
+  file.close();
+}
+
+// Get wifi credentials
+void getWifiCredentials() {
+  String str = "";
+  if (SPIFFS.exists(WIFI_PATH.c_str())) {
+    File file = SPIFFS.open(WIFI_PATH.c_str());
+    while (file.available()) {
+      str = file.readStringUntil('\n');
+      str.trim();
+      
+      if (file.available()) {
+        if (str.compareTo(SSID_SEP) == 0) {
+          ssid = file.readStringUntil('\n');
+          ssid.trim();
+        }
+        else if (str.compareTo(PASSWORD_SEP) == 0) {
+          password = file.readStringUntil('\n');
+          password.trim();
+        }
+      }
+    }
+    file.close();
+  }
+
+  if (ssid != "" && password != "") {
+    WiFi.begin(ssid.c_str(), password.c_str());
+  }
 }
