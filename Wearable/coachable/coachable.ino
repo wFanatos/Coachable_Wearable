@@ -130,6 +130,7 @@ void loop() {
       else {
         if (btIn == CLEAR_MSG) {
           Serial.println("Clear wifi info");
+          WiFi.disconnect();
           ssid = "";
           password = "";
         }
@@ -160,6 +161,7 @@ void loop() {
           }
           else {
             SerialBT.write(INVALID_MSG, INVALID_MSG_LEN);
+            getWifiCredentials();
           }
         }
         
