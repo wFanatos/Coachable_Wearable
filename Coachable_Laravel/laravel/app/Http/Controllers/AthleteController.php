@@ -48,10 +48,7 @@ class AthleteController extends Controller
         $usersTeams = UserTeam::where('user_id', $id)->get('team_id');
 
         $rosterArray = array();
-
         $eventArray = array();
-
-        
         $tempEventArray = array();
 
         // Loop through all teams I am on
@@ -87,16 +84,12 @@ class AthleteController extends Controller
                 array_push($tempevent2, $event, $runs, $runs->count());
                 array_push($tempEventArray, $tempevent2);
             }
-                   
-
         }
 
         array_push($eventArray,$tempEventArray);
-
-     
         $collection = collect([$eventArray, $rosterArray]);
 
-       //dd($collection);
+        //dd($collection);
 
         return view('athlete', compact('collection'), compact('id'));
     }

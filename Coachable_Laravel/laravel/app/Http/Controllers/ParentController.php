@@ -48,7 +48,6 @@ class ParentController extends Controller
         // Array for storing child information
         $childArray = array();
 
-
         // Get all children attached to parent
         $children = ParentAthlete::where('parent_id', $id)->get('athlete_id');
 
@@ -73,7 +72,6 @@ class ParentController extends Controller
                 array_push($runArray, $temp);                
             }
 
-            
             $temp2 = array();
 
             array_push($temp2, $childInfo, $team, $runArray);
