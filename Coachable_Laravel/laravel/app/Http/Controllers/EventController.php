@@ -65,6 +65,7 @@ class EventController extends Controller
         }
         else
         {
+            $event = Event::where('id', $eventid)->first();
             $runs = Run::where(['user_id' => $userid, 'event_id' => $eventid])->get();
             
             if (count($runs))
@@ -90,7 +91,7 @@ class EventController extends Controller
                     array_push($runData, $temp);
                 }
                 
-                return view('event', compact('runData'));
+                return view('event', compact('runData'), compact('event'));
             }
             else
             {
