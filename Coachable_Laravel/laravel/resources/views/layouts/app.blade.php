@@ -15,11 +15,19 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js" charset="utf-8"></script>
     
     <script type="text/javascript">
+	  var chart1;
+	  var chart2;
       function createCharts(timeArr, spdArr, altArr) {
         var ctx1 = document.getElementById('chart1').getContext('2d');
         var ctx2 = document.getElementById('chart2').getContext('2d');
+		if (chart1) {
+			chart1.destroy();
+		}
+		if (chart2) {
+			chart2.destroy();
+		}
         
-        var chart1 = new Chart(ctx1, {
+        chart1 = new Chart(ctx1, {
           type: 'line',
           data: {
             labels: timeArr,
@@ -58,7 +66,7 @@
           }
         });
         
-        var chart2 = new Chart(ctx2, {
+        chart2 = new Chart(ctx2, {
           type: 'line',
           data: {
             labels: timeArr,
@@ -107,7 +115,7 @@
     <div id="app">
         <nav class="navbar navbar-expand-md navbar-dark" style="background-color: #0a4b5c;">
             <div class="container">
-                <a class="navbar-brand">
+                <a class="navbar-brand" href="{{ route('home') }}">
                   <img src="/Img/whistle.png" height="15%" width="15%">
                     {{ config('app.name', 'Coachable') }}
                 </a>
