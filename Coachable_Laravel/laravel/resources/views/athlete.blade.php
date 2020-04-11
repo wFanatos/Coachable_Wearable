@@ -22,7 +22,7 @@
                                     <div class="card text-center">
                                         <div class="card-header" id="heading{{$i}}" style="background-color: #6dcdeb;">
                                             <h2 class="mb-0">
-                                                <button type="button" class="btn" data-toggle="collapse" data-target="#collapse{{$i}}">
+                                                <button type="button" class="btn" data-toggle="collapse" data-target="#collapse{{$i}}" style="width:100%">
                                                     <h2>Event: {{$collection[0][0][$i][0]->event_name}}</h2>
                                                     <h6>Date: {{$collection[0][0][$i][0]->event_date}}</h6>                                                  
                                                 </button>
