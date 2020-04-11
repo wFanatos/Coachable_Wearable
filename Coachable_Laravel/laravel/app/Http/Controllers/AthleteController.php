@@ -82,9 +82,9 @@ class AthleteController extends Controller
             {
                 $tempevent2 = array();
 
-                $run = Run::Select('id', 'duration', 'avg_speed', 'distance')->where('user_id', $id)->where('event_id', $event->id)->get();
+                $runs = Run::Select('id', 'duration', 'avg_speed', 'distance')->where('user_id', $id)->where('event_id', $event->id)->get();
                               
-                array_push($tempevent2, $event, $run);
+                array_push($tempevent2, $event, $runs, $runs->count());
                 array_push($tempEventArray, $tempevent2);
             }
                    

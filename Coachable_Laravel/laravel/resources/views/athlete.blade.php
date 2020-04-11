@@ -19,61 +19,37 @@
                         <div class="tab-pane fade show active" id="pills-overview" role="tabpanel" aria-labelledby="pills-overview-tab">
                             <div class="accordion" id="accordionExample">
                                 @for($i = 0; $i < count($collection[0][0]); $i++)
-                                    @php
-                                        $totalDistance = 0;
-                                    @endphp
-                                    @foreach($collection[0][0][$i][1] as $run)
-                                        @php
-                                            $totalDistance = $totalDistance + $run->distance;
-                                        @endphp
-                                    @endforeach
                                     <div class="card text-center">
                                         <div class="card-header" id="heading{{$i}}" style="background-color: #6dcdeb;">
                                             <h2 class="mb-0">
                                                 <button type="button" class="btn" data-toggle="collapse" data-target="#collapse{{$i}}">
                                                     <h2>Event: {{$collection[0][0][$i][0]->event_name}}</h2>
-                                                    <h6>Date: {{$collection[0][0][$i][0]->event_date}}</h6>
-                                                    <h6>Total Distance: {{$totalDistance}} km</h6>                                                  
+                                                    <h6>Date: {{$collection[0][0][$i][0]->event_date}}</h6>                                                  
                                                 </button>
                                             </h2>
                                         </div>
                                         <div id="collapse{{$i}}" class="collapse" aria-labelledby="heading{{$i}}" data-parent="#accordionExample">
-                                            <div class="accordion" id="runExample">
-                                                @if(count($collection[0][0][$i][1]) == 0)
-                                                    <div class="card text-center">
-                                                        <div class="card-body">
-                                                            <p>There are currently no runs for this event.</p>
-                                                        </div>
-                                                    </div>
-                                                @else
-                                                    @for($j = 0; $j < count($collection[0][0][$i][1]); $j++)
-                                                    <div class="card text-center">
-                                                        <div class="card header" id="heading2{{$j}}" style="background-color: #0191C8;">
-                                                            <h2 class="mb-0">
-                                                                <button type="button" class="btn" data-toggle="collapse" data-target= "#collapse2-{{$i}}-{{$j}}"> 
-                                                                    <h3> Summary of Run {{$j + 1}} </h3>
-                                                                </button>
-                                                            </h2>
-                                                        </div>
-
-                                                        <div id="collapse2-{{$i}}-{{$j}}" class="collapse" aria-labelledby="heading2-{{$i}}-{{$j}}" data-parent="#runExample">
-                                                            <div class="card-body">                                 
-                                                                @php
-                                                                    $curRun = $collection[0][0][$i][1][$j];
-                                                                @endphp
-
-                                                                <p>Distance Travelled: {{$curRun->distance}} km </p>
-                                                                <p>Average Speed: {{$curRun->avg_speed}} km/h </p>
-                                                                <p>Duration: {{$curRun->duration}} </p>
-                                                                <a class="btn btn-primary" href="{{ route('run', ['userid' => $id, 'runid' => $curRun->id]) }}">
-                                                                    Detailed Info
-                                                                </a>
-                                                            </div>
-                                                        </div>                 
-                                                    </div>  
-                                                    @endfor
-                                                @endif                                                    
-                                            </div>                                  
+                                            <div class="card text-center">
+                                                <div class="card-body">                                                           
+                                                    @php
+                                                        $totalDistance = 0;
+                                                    @endphp
+                                                    @foreach($collection[0][0][$i][1] as $run)
+                                                        @php
+                                                            $totalDistance = $totalDistance + $run->distance;
+                                                        @endphp
+                                                    @endforeach
+                                                    @if ($collection[0][0][$i][2] > 0)
+                                                        <p> Total # of Runs: {{$collection[0][0][$i][2]}} </p>
+                                                        <p> Total distance travelled: {{$totalDistance}} km</p>
+                                                        <a class="btn btn-primary" href="{{ route('event', ['eventid' => $collection[0][0][$i][0]->id, 'userid' => $id]) }}">
+                                                            Detailed Info
+                                                        </a>
+                                                    @else
+                                                        <p> There are currently no runs for this event. </p>
+                                                    @endif
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 @endfor
