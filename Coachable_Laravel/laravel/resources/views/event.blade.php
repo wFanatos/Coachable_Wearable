@@ -2,7 +2,7 @@
 
 @section('content')
 
-<body onload="createCharts('chart1', 'chart2', JSON.parse('{{ json_encode($runData[0][1]) }}'), JSON.parse('{{ json_encode($runData[0][2]) }}'), JSON.parse('{{ json_encode($runData[0][3]) }}'));"/>
+<body onload="createCharts('chart1', 'chart2', JSON.parse('{{ json_encode($runData[0][1]) }}'), JSON.parse('{{ json_encode($runData[0][2]) }}'), JSON.parse('{{ json_encode($runData[0][3]) }}'));"></body>
 <div class="container">
   <div class="row justify-content-center" style="width:100%">
       <div class="tab-content" id="v-pills-tabContent" style="width:80%">
@@ -24,11 +24,12 @@
                 <h1> Run Statistics: </h1>
                 <p> Run started: {{$runData[$i][0]->start_time}} </p>
                 <p> Run ended: {{$runData[$i][0]->end_time}} </p>
-                <p> Length of run: {{$runData[$i][0]->duration}} </p>            
+                <p> Length of run: {{$runData[$i][0]->duration}} </p>
                 <p> Starting altitude: {{$runData[$i][0]->start_altitude}} m </p>
                 <p> Ending altitude: {{$runData[$i][0]->end_altitude}} m </p>
                 <p> Average speed: {{$runData[$i][0]->avg_speed}} km/h </p>
-                <p> Distance from start to end: {{$runData[$i][0]->distance}} km </p>     
+                <p> Distance from start to end: {{$runData[$i][0]->distance}} km </p>
+                <a class="btn btn-primary" href="{{ route('compare', ['userid' => $runData[$i][0]->user_id,'runid' => $runData[$i][0]->id]) }}">Compare</a>
             </div>
           </div>
         @endfor
