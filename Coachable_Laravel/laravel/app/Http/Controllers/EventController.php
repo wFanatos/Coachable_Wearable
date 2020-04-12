@@ -68,7 +68,7 @@ class EventController extends Controller
             $event = Event::where('id', $eventid)->first();
             $runs = Run::where(['user_id' => $userid, 'event_id' => $eventid])->get();
             
-            if (count($runs))
+            if (count($runs) && $event)
             {
                 $runData = array();
                 
