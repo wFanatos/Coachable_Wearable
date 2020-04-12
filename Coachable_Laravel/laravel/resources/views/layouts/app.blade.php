@@ -15,18 +15,19 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js" charset="utf-8"></script>
     
     <script type="text/javascript">
-	  var chart1;
-	  var chart2;
-      function createCharts(timeArr, spdArr, altArr) {
-        var ctx1 = document.getElementById('chart1').getContext('2d');
-        var ctx2 = document.getElementById('chart2').getContext('2d');
-		if (chart1) {
-			chart1.destroy();
-		}
-		if (chart2) {
-			chart2.destroy();
-		}
-        
+	    let charts = new Map();
+
+      function createCharts(chart1ID, chart2ID, timeArr, spdArr, altArr) {
+        var ctx1 = document.getElementById(chart1ID).getContext('2d');
+        var ctx2 = document.getElementById(chart2ID).getContext('2d');
+
+        if (charts.get(chart1ID)) {
+          charts.get(chart1ID).destroy();
+        }
+        if (charts.get(chart2ID)) {
+          charts.get(chart2ID).destroy();
+        }
+            
         chart1 = new Chart(ctx1, {
           type: 'line',
           data: {
@@ -65,7 +66,7 @@
             }
           }
         });
-        
+            
         chart2 = new Chart(ctx2, {
           type: 'line',
           data: {
@@ -99,8 +100,11 @@
               text: 'Altitude over Time',
               fontSize: 20
             }
-          }
+          } 
         });
+
+        charts.set(chart1ID, chart1);
+        charts.set(chart2ID, chart2);
       }
     </script>
 
