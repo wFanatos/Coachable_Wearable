@@ -30,9 +30,7 @@ Route::get('/run/{userid}/{runid}', 'RunController@index')->name('run');
 
 Route::get('/event/{eventid}/{userid}', 'EventController@index')->name('event');
 
-
-
-
+Route::get('/compare/{userid}/{runid}', 'CompareController@index')->name('compare');
 
 Route::get('/users/logout', 'Auth\LoginController@userLogout')->name('user.logout');
 Route::get('/dashboard', 'DashboardController@index');
