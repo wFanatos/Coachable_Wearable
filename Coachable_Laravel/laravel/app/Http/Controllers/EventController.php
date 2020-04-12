@@ -32,6 +32,11 @@ class EventController extends Controller
 
     public function index($eventid, $userid)
     {
+        if ($eventid <= 0 || $userid <= 0)
+        {
+            return Redirect::back()->withErrors(['msg', 'Invalid event id or user id']);
+        }
+
         $id = Auth::id();
         
         $parents = ParentAthlete::where('athlete_id', $userid)->get();
@@ -91,7 +96,7 @@ class EventController extends Controller
                     array_push($runData, $temp);
                 }
                 
-                return view('event', compact('runData'), compact('event'));
+                return view('event', compact('runData', 'event'));
             }
             else
             {
