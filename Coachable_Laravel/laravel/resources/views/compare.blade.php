@@ -1,6 +1,9 @@
 @extends('layouts.app')
 
 @section('content')
+@if ($selectedRun >= 0 && $selectedEvent >= 0)
+<body onload="createCharts('compare1-chart1', 'compare1-chart2', JSON.parse('{{ json_encode($eventData[$selectedEvent][1][$selectedRun][1]) }}'), JSON.parse('{{ json_encode($eventData[$selectedEvent][1][$selectedRun][2]) }}'), JSON.parse('{{ json_encode($eventData[$selectedEvent][1][$selectedRun][3]) }}'));"></body>
+@endif
 <div class="container" style="width:100%">
     <div class="row justify-content-center" style="width:100%">
         <div style="width:48%;">
@@ -18,7 +21,7 @@
             </ul>
             <div class="tab-content">
                 @for($i = 0; $i < count($eventData); $i++)
-                <div class="tab-pane fade" id="compare1-event{{$i}}" role="tabpanel" aria-labelledby="compare1-event{{$i}}-tab">
+                <div class="tab-pane fade @if ($i == $selectedEvent) show active @endif" id="compare1-event{{$i}}" role="tabpanel" aria-labelledby="compare1-event{{$i}}-tab">
                     <div class="card-header text-center">
                         <h1>{{$eventData[$i][0]->event_name}}</h1>
                         <h2>{{$eventData[$i][0]->event_date}}</h2>
@@ -26,14 +29,14 @@
                     <ul class="nav flex-row nav-pills mb-3 justify-content-center" role="tablist">
                         @for($j = 0; $j < count($eventData[$i][1]); $j++)
                         <li class="nav-item">
-                            <a class="nav-link" data-toggle="tab" href="#compare1-event{{$i}}-run{{$j}}" role="tab" aria-controls="compare1-event{{$i}}-run{{$j}}-tab" aria-selected="false" onclick="createCharts('compare1-chart1', 'compare1-chart2', JSON.parse('{{ json_encode($eventData[$i][1][$j][1]) }}'), JSON.parse('{{ json_encode($eventData[$i][1][$j][2]) }}'), JSON.parse('{{ json_encode($eventData[$i][1][$j][3]) }}'));">Run {{ $j + 1 }}</a>
+                            <a class="nav-link @if ($j == $selectedRun) active @endif" data-toggle="tab" href="#compare1-event{{$i}}-run{{$j}}" role="tab" aria-controls="compare1-event{{$i}}-run{{$j}}-tab" aria-selected="false" onclick="createCharts('compare1-chart1', 'compare1-chart2', JSON.parse('{{ json_encode($eventData[$i][1][$j][1]) }}'), JSON.parse('{{ json_encode($eventData[$i][1][$j][2]) }}'), JSON.parse('{{ json_encode($eventData[$i][1][$j][3]) }}'));">Run {{ $j + 1 }}</a>
                         </li>
                         @endfor
                     </ul>
                     <br/>
                     <div class="tab-content">
                     @for($j = 0; $j < count($eventData[$i][1]); $j++)
-                        <div class="tab-pane fade" id="compare1-event{{$i}}-run{{$j}}" role="tabpanel" aria-labelledby="compare1-event{{$i}}-run{{$j}}">
+                        <div class="tab-pane fade @if ($j == $selectedRun) show active @endif" id="compare1-event{{$i}}-run{{$j}}" role="tabpanel" aria-labelledby="compare1-event{{$i}}-run{{$j}}">
                             <div class="text-center">
                                 <h1> Run Statistics: </h1>
                                 <p> Run started: {{$eventData[$i][1][$j][0]->start_time}} </p>

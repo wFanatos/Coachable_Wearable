@@ -27,6 +27,11 @@ class CompareController extends Controller
 
     public function index($userid, $runid)
     {
+        if ($userid <= 0)
+        {
+            return Redirect::back()->withErrors(['msg', 'Invalid user id']);
+        }
+
         $id = Auth::id();
 
         $parents = ParentAthlete::where('athlete_id', $userid)->get();
@@ -60,12 +65,13 @@ class CompareController extends Controller
         }
         else
         {
-            $selectedRun = Run::where('id', $runid)->first();
-            $selectedEvent = $selectedRun->event_id;
+            $selectedEvent = -1;
+            $selectedRun = -1;
+            
             $events = Event::where('team_id', $team->id)->get();
             $eventData = array();
 
-            if (count($events) && $selectedRun)
+            if (count($events))
             {
                 foreach ($events as $event)
                 {
@@ -78,6 +84,12 @@ class CompareController extends Controller
                         $timeArray = array();
                         $speedArray = array();
                         $altitudeArray = array();
+
+                        if ($run->id == $runid)
+                        {
+                            $selectedRun = count($runData);
+                            $selectedEvent = count($eventData);
+                        }
                         
                         foreach($jsonObj as $dataEntry)
                         {
@@ -96,7 +108,7 @@ class CompareController extends Controller
                     array_push($eventData, $temp);
                 }
 
-                return view('compare', compact('eventData'), compact('runid'), compact('selectedEvent'));
+                return view('compare', compact('eventData', 'selectedRun', 'selectedEvent'));
             }
             else
             {
