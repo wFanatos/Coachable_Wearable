@@ -114,7 +114,7 @@ void Metrics::AddSpeedSample(float speed) {
 
 
 // Adds a data sample
-void Metrics::AddDataSample(float lat, float lon, float spd, float alt, String time) {
+void Metrics::AddDataSample(float lat, float lon, float spd, float alt, float time) {
   data.push_back(IncrementalData(lat, lon, spd, alt, time));
 }
 
@@ -341,7 +341,7 @@ String Metrics::GetIncrementalDataJson(float duration) {
       json += "\"Longitude\": " + String(data[i].lon, 7) + ",";
       json += "\"Speed\": " + String(data[i].spd) + ",";
       json += "\"Altitude\": " + String(data[i].alt) + ",";
-      json += "\"Time\": \"" + data[i].time + "\"}";
+      json += "\"Time\": " + String(data[i].time, 2) + "}";
     }
   }
   

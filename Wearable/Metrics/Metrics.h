@@ -23,9 +23,9 @@ struct IncrementalData {
   float lon;
   float spd;
   float alt;
-  String time;
+  float time;
   
-  IncrementalData(float lat, float lon, float spd, float alt, String time) {
+  IncrementalData(float lat, float lon, float spd, float alt, float time) {
     this->lat = lat;
     this->lon = lon;
     this->spd = spd;
@@ -44,7 +44,7 @@ public:
   void StartRun(String date, String time, float altitude, float lat, float lon);
   void FinishRun(String deviceName, String time, float altitude, float lat, float lon, fs::FS &fs, bool isSD);
   void AddSpeedSample(float speed);
-  void AddDataSample(float lat, float lon, float spd, float alt, String time);
+  void AddDataSample(float lat, float lon, float spd, float alt, float time);
   void ClearJson(fs::FS &fs, bool useSD, int fileIndex);
   String GetJsonStr(fs::FS &fs, bool useSD, int fileIndex);
   int GetNumSavedRuns();

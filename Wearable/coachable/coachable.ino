@@ -44,6 +44,7 @@ int stopCount = 0;
 bool addDataSample = false;
 bool waitWifi = false;
 bool useSD = false;
+int runStartMillis = 0;
 
 float currentAltitude = 0.0f;
 float lastAltitude = 0.0f;
@@ -100,7 +101,6 @@ void setup() {
   
   delay(3000);
 }
-
 
 // Main loop, runs repeatedly
 void loop() {
@@ -195,7 +195,7 @@ void loop() {
       }
       else {
         addDataSamples();
-        
+
         if (checkRunStop()) {
           stopCount++;
 
@@ -296,6 +296,7 @@ String getTime() {
 // Starts the run
 void startRun() {
   metrics.StartRun(getDate(), getTime(), currentAltitude, GPS.latitudeDegrees, GPS.longitudeDegrees);
+  runStartMillis = millis();
   
   digitalWrite(LED_PIN, HIGH);
   Serial.println("--RUN START--");
@@ -345,7 +346,7 @@ void addDataSamples() {
   metrics.AddSpeedSample(currentSpeed);
   // Add data sample every other run
   if (addDataSample) {
-    metrics.AddDataSample(GPS.latitudeDegrees, GPS.longitudeDegrees, currentSpeed, currentAltitude, getTime());
+    metrics.AddDataSample(GPS.latitudeDegrees, GPS.longitudeDegrees, currentSpeed, currentAltitude, (float)(millis() - runStartMillis) / 1000.0f);
     addDataSample = false;
   }
   else {
@@ -387,8 +388,8 @@ void sendData() {
 bool sendHttp(String jsonStr) {
   bool success = false;
   HTTPClient http;
-  //http.begin("https://webhook.site/5ddee11e-4bfc-4aeb-8296-a3de9281b435");
-  http.begin("https://coachablecapstoneapi.azurewebsites.net/run/");
+  //http.begin("https://webhook.site/115894b1-47ae-4609-9714-521a604ff2ba");
+  http.begin("https://stardustapi.azurewebsites.net/run/");
   http.setUserAgent("Wearable");
   http.addHeader("Content-Type", "application/json");
 
