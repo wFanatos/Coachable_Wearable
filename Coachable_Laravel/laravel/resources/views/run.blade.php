@@ -2,7 +2,7 @@
 
 @section('content')
 
-<body onload="createCharts('chart1', 'chart2', JSON.parse('{{ json_encode($timeArray) }}'), JSON.parse('{{ json_encode($speedArray) }}'), JSON.parse('{{ json_encode($altitudeArray) }}'));"/>
+<body onload="createCharts('chart1', 'chart2', JSON.parse('{{ json_encode($timeArray) }}'), JSON.parse('{{ json_encode($speedArray) }}'), JSON.parse('{{ json_encode($altitudeArray) }}'));"></body>
 <div class="container">
   <div class="row">
     <div class="col-sm text-center">
