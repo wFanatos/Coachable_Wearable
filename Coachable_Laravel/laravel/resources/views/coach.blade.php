@@ -15,10 +15,10 @@
                 </ul>
                 <div class="tab-content" id="v-pills-tabContent">
                     @for($i = 0; $i < count($collection); $i++)
-                        <div class="tab-pane fade @if($i == 0) show active @endif" id="team{{$i}}-tab" role="tabpanel" aria-labelledby="team{{$i}}-tab">
+                        <div class="tab-pane fade @if($i == 0) show active @endif" id="team{{$i}}-panel" role="tabpanel" aria-labelledby="team{{$i}}-tab">
                             <div class="card text-center">
                                 <div class="card-body">
-                                    <ul class="nav flex-row nav-pills mb-3 justify-content-center" id="tabTest{{$i}}" role="tablist">
+                                    <ul class="nav flex-row nav-pills mb-3 justify-content-center" id="dropdown{{$i}}" role="tablist">
                                         <li class="nav-item dropdown">
                                             <button class="btn btn-secondary dropdown-toggle" type="button" id="team{{$i}}Button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                Events
@@ -42,7 +42,7 @@
                                                 <div class="card text-center">
                                                     <div class="card header" id="heading3{{$k}}" style="background-color: #74C2E1;">
                                                         <h2 class="mb-0">
-                                                            <button type="button" class="btn" data-toggle="collapse" data-target= "#collapse3{{$k}}" style="width:100%">
+                                                            <button type="button" class="btn" data-toggle="collapse" data-target="#collapse3{{$k}}" style="width:100%">
                                                                 <h3> {{$collection[$i][1][$j][1][$k][0]->name}}</h3>
                                                             </button>
                                                         </h2>
