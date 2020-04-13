@@ -47,10 +47,12 @@
             
         chart1 = new Chart(ctx1, {
           type: 'line',
+          
           data: {
             labels: timeArr,
             datasets: [{
-              label: 'Speed over Time',
+              backgroundColor: ['rgba(249, 157, 50, 0.75)'],
+              label: 'Speed',
               data: spdArr
             }]
           },
@@ -89,7 +91,8 @@
           data: {
             labels: timeArr,
             datasets: [{
-              label: 'Altitude over Time',
+              backgroundColor: ['rgba(249, 157, 50, 0.75)'],
+              label: 'Altitude',
               data: altArr
             }]
           },
@@ -138,7 +141,7 @@
             <div class="container">
                 <a class="navbar-brand" href="{{ route('home') }}">
                   <img src="/Img/whistle.png" height="15%" width="15%">
-                    {{ config('app.name', 'Coachable') }}
+                  {{ config('app.name', 'Coachable') }}
                 </a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
                     <span class="navbar-toggler-icon"></span>
@@ -159,7 +162,7 @@
                             </li>                         
                         @else
                             <li class="nav-item dropdown">
-                                <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+                                <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" style="color: #f99d32" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
                                     {{ Auth::user()->name }} <span class="caret"></span>
                                 </a>
 
