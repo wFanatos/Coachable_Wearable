@@ -15,18 +15,35 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js" charset="utf-8"></script>
     
     <script type="text/javascript">
-	    let charts = new Map();
+      let charts = new Map();
 
-      function createCharts(chart1ID, chart2ID, timeArr, spdArr, altArr) {
-        var ctx1 = document.getElementById(chart1ID).getContext('2d');
-        var ctx2 = document.getElementById(chart2ID).getContext('2d');
+      function removeClass(id, count, classes) {
+        for (var i = 0; i < count; i++) {
+          var tempID = id + i;
+          var element = document.getElementById(tempID);
+          
+          for (var j = 0; j < classes.length; j++) {
+            if (element.classList.contains(classes[j])) {
+              element.classList.remove(classes[j]);
+            }
+          }
+        }
+      }
 
+      function clearCharts(chart1ID, chart2ID) {
         if (charts.get(chart1ID)) {
           charts.get(chart1ID).destroy();
         }
         if (charts.get(chart2ID)) {
           charts.get(chart2ID).destroy();
         }
+      }
+      
+      function createCharts(chart1ID, chart2ID, timeArr, spdArr, altArr) {
+        var ctx1 = document.getElementById(chart1ID).getContext('2d');
+        var ctx2 = document.getElementById(chart2ID).getContext('2d');
+
+        clearCharts(chart1ID, chart2ID);
             
         chart1 = new Chart(ctx1, {
           type: 'line',

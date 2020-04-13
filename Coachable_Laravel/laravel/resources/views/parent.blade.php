@@ -17,18 +17,18 @@
                                 </h2>
                             </div>
                             <div id="collapse{{$i}}" class="collapse" aria-labelledby="heading{{$i}}" data-parent="#childAccordion">
-                                <div class="accordion" id="eventAccordion">
+                                <div class="accordion" id="eventAccordion{{$i}}">
                                     @for($j = 0; $j < count($collection[$i][2]); $j++)                      
                                         <div class="card text-center">
-                                            <div class="card-header" id="heading2{{$j}}" style="background-color: #0191C8;">
+                                            <div class="card-header" id="heading2-{{$i}}-{{$j}}" style="background-color: #0191C8;">
                                                 <h2 class="mb-0">
-                                                    <button type="button" class="btn" data-toggle="collapse" data-target="#collapse2{{$j}}" style="width:100%">
+                                                    <button type="button" class="btn" data-toggle="collapse" data-target="#collapse2-{{$i}}-{{$j}}" style="width:100%">
                                                         <h3>Event: {{$collection[$i][2][$j][0]->event_name}}</h3>
                                                         <h6>Date: {{$collection[$i][2][$j][0]->event_date}}</h6>
                                                     </button>                                                                       
                                                 </h2>
                                             </div>
-                                            <div id="collapse2{{$j}}" class="collapse" aria-labelledby="heading2{{$j}}" data-parent="#eventAccordion">
+                                            <div id="collapse2-{{$i}}-{{$j}}" class="collapse" aria-labelledby="heading2-{{$i}}-{{$j}}" data-parent="#eventAccordion{{$i}}">
                                                 <div class="card-body">                                                           
                                                     @php
                                                         $totalDistance = 0;

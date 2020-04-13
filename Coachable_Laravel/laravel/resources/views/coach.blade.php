@@ -37,17 +37,17 @@
                                                 <h2>Event: {{$collection[$i][1][$j][0]->event_name}}</h3>
                                                 <h5>Date: {{$collection[$i][1][$j][0]->event_date}}</h6>
                                             </h2>
-                                            <div class ="accordion" id="memberAccordion">
+                                            <div class ="accordion" id="memberAccordion{{$i}}-{{$j}}">
                                             @for($k = 0; $k < count($collection[$i][1][$j][1]); $k++)
                                                 <div class="card text-center">
-                                                    <div class="card header" id="heading3{{$k}}" style="background-color: #74C2E1;">
+                                                    <div class="card header" id="heading3-{{$i}}-{{$j}}-{{$k}}" style="background-color: #74C2E1;">
                                                         <h2 class="mb-0">
-                                                            <button type="button" class="btn" data-toggle="collapse" data-target="#collapse3{{$k}}" style="width:100%">
+                                                            <button type="button" class="btn" data-toggle="collapse" data-target="#collapse3-{{$i}}-{{$j}}-{{$k}}" style="width:100%">
                                                                 <h3> {{$collection[$i][1][$j][1][$k][0]->name}}</h3>
                                                             </button>
                                                         </h2>
                                                     </div>
-                                                    <div id="collapse3{{$k}}" class="collapse" aria-labelledby="heading3{{$k}}" data-parent="#memberAccordion">
+                                                    <div id="collapse3-{{$i}}-{{$j}}-{{$k}}" class="collapse" aria-labelledby="heading3-{{$i}}-{{$j}}-{{$k}}" data-parent="#memberAccordion{{$i}}-{{$j}}">
                                                         <div class="card-body">
                                                             @if ($collection[$i][1][$j][1][$k][2] > 0)
                                                                 @php

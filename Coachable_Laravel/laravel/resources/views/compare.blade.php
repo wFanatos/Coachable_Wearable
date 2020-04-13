@@ -14,7 +14,9 @@
                     </button>
                     <div class="dropdown-menu nav nav-tabs" aria-labelledby="compareEventDropdown1">                                    
                         @for($i = 0; $i < count($eventData); $i++)
-                            <a class="dropdown-item" data-toggle="tab" href="#compare1-event{{$i}}">{{$eventData[$i][0]->event_name}}</a>
+                            <a class="dropdown-item" data-toggle="tab" href="#compare1-event{{$i}}" onclick="clearCharts('compare1-chart1', 'compare1-chart2'); removeClass('compare1tab-event{{$i}}-run', {{count($eventData[$i][1])}}, ['active']); removeClass('compare1-event{{$i}}-run', {{count($eventData[$i][1])}}, ['show', 'active']);">
+                                {{$eventData[$i][0]->event_name}}
+                            </a>
                         @endfor
                     </div>
                 </li>
@@ -29,7 +31,9 @@
                     <ul class="nav flex-row nav-pills mb-3 justify-content-center" role="tablist">
                         @for($j = 0; $j < count($eventData[$i][1]); $j++)
                         <li class="nav-item">
-                            <a class="nav-link @if ($j == $selectedRun) active @endif" data-toggle="tab" href="#compare1-event{{$i}}-run{{$j}}" role="tab" aria-controls="compare1-event{{$i}}-run{{$j}}-tab" aria-selected="false" onclick="createCharts('compare1-chart1', 'compare1-chart2', JSON.parse('{{ json_encode($eventData[$i][1][$j][1]) }}'), JSON.parse('{{ json_encode($eventData[$i][1][$j][2]) }}'), JSON.parse('{{ json_encode($eventData[$i][1][$j][3]) }}'));">Run {{ $j + 1 }}</a>
+                            <a id="compare1tab-event{{$i}}-run{{$j}}" class="nav-link @if ($j == $selectedRun) active @endif" data-toggle="tab" href="#compare1-event{{$i}}-run{{$j}}" role="tab" aria-controls="compare1-event{{$i}}-run{{$j}}-tab" aria-selected="false" onclick="createCharts('compare1-chart1', 'compare1-chart2', JSON.parse('{{ json_encode($eventData[$i][1][$j][1]) }}'), JSON.parse('{{ json_encode($eventData[$i][1][$j][2]) }}'), JSON.parse('{{ json_encode($eventData[$i][1][$j][3]) }}'));">
+                                Run {{ $j + 1 }}
+                            </a>
                         </li>
                         @endfor
                     </ul>
@@ -72,7 +76,7 @@
                     </button>
                     <div class="dropdown-menu nav nav-tabs" aria-labelledby="compareEventDropdown2">                                    
                         @for($i = 0; $i < count($eventData); $i++)
-                            <a class="dropdown-item" data-toggle="tab" href="#compare2-event{{$i}}">{{$eventData[$i][0]->event_name}}</a>
+                            <a class="dropdown-item" data-toggle="tab" href="#compare2-event{{$i}}" onclick="clearCharts('compare2-chart1', 'compare2-chart2'); removeClass('compare2tab-event{{$i}}-run', {{count($eventData[$i][1])}}, ['active']); removeClass('compare2-event{{$i}}-run', {{count($eventData[$i][1])}}, ['show', 'active']);">{{$eventData[$i][0]->event_name}}</a>
                         @endfor
                     </div>
                 </li>
@@ -87,7 +91,7 @@
                     <ul class="nav flex-row nav-pills mb-3 justify-content-center" role="tablist">
                         @for($j = 0; $j < count($eventData[$i][1]); $j++)
                         <li class="nav-item">
-                            <a class="nav-link" data-toggle="tab" href="#compare2-event{{$i}}-run{{$j}}" role="tab" aria-controls="compare2-event{{$i}}-run{{$j}}-tab" aria-selected="false" onclick="createCharts('compare2-chart1', 'compare2-chart2', JSON.parse('{{ json_encode($eventData[$i][1][$j][1]) }}'), JSON.parse('{{ json_encode($eventData[$i][1][$j][2]) }}'), JSON.parse('{{ json_encode($eventData[$i][1][$j][3]) }}'));">Run {{ $j + 1 }}</a>
+                            <a id="compare2tab-event{{$i}}-run{{$j}}" class="nav-link" data-toggle="tab" href="#compare2-event{{$i}}-run{{$j}}" role="tab" aria-controls="compare2-event{{$i}}-run{{$j}}-tab" aria-selected="false" onclick="createCharts('compare2-chart1', 'compare2-chart2', JSON.parse('{{ json_encode($eventData[$i][1][$j][1]) }}'), JSON.parse('{{ json_encode($eventData[$i][1][$j][2]) }}'), JSON.parse('{{ json_encode($eventData[$i][1][$j][3]) }}'));">Run {{ $j + 1 }}</a>
                         </li>
                         @endfor
                     </ul>
