@@ -5,6 +5,10 @@
 <body onload="createCharts('compare1-chart1', 'compare1-chart2', JSON.parse('{{ json_encode($eventData[$selectedEvent][1][$selectedRun][1]) }}'), JSON.parse('{{ json_encode($eventData[$selectedEvent][1][$selectedRun][2]) }}'), JSON.parse('{{ json_encode($eventData[$selectedEvent][1][$selectedRun][3]) }}'));"></body>
 @endif
 <div class="container" style="width:100%">
+    <div class="text-center">
+    <h1>{{$user->name}}</h1>
+    <hr/>
+    </div>
     <div class="row justify-content-center" style="width:100%">
         <div style="width:48%;">
             <ul class="nav flex-row nav-pills mb-3 justify-content-center" role="tablist">

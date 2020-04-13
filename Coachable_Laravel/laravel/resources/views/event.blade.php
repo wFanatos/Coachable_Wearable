@@ -8,6 +8,7 @@
       <div class="tab-content" id="v-pills-tabContent" style="width:80%">
         <div class="card-header text-center">
             <h1>{{$event->event_name}}</h1>
+            <h2>{{$user->name}}</h2>
             <h2>{{$event->event_date}}</h2>
         </div>
         <ul class="nav flex-row nav-pills mb-3 justify-content-center" id="pills-tab" role="tablist">

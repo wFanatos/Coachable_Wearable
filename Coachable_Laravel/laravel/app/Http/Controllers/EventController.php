@@ -70,6 +70,7 @@ class EventController extends Controller
         }
         else
         {
+            $user = User::where('id', $userid)->first();
             $event = Event::where('id', $eventid)->first();
             $runs = Run::where(['user_id' => $userid, 'event_id' => $eventid])->get();
             
@@ -96,7 +97,7 @@ class EventController extends Controller
                     array_push($runData, $temp);
                 }
                 
-                return view('event', compact('runData', 'event'));
+                return view('event', compact('runData', 'event', 'user'));
             }
             else
             {

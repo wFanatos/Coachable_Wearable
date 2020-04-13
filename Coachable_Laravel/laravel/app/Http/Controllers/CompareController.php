@@ -68,6 +68,7 @@ class CompareController extends Controller
             $selectedEvent = -1;
             $selectedRun = -1;
             
+            $user = User::where('id', $userid)->first();
             $events = Event::where('team_id', $team->id)->get();
             $eventData = array();
 
@@ -108,7 +109,7 @@ class CompareController extends Controller
                     array_push($eventData, $temp);
                 }
 
-                return view('compare', compact('eventData', 'selectedRun', 'selectedEvent'));
+                return view('compare', compact('eventData', 'selectedRun', 'selectedEvent', 'user'));
             }
             else
             {
