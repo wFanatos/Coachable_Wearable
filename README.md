@@ -10,11 +10,11 @@
 </ul>
 <p>The Arduino code in Coachable_Wearable/wearable/coachable/ can be uploaded to the board using Arduino studio. But first:</p>
 <ul>
-  <li>Move Coachable_Wearable/wearable/Metrics to the Arduino libraries folder (ex. C:\Users\<user>\Documents\Arduino\libraries\)</li>
+  <li>Move Coachable_Wearable/wearable/Metrics to the Arduino libraries folder (ex. C:\Users\[your username]\Documents\Arduino\libraries\)</li>
   <li>In Arduino studio set the partition scheme to Minimal SPIFFS</li>
-  <li>Move the esp32-hal-bt.c file in Coachable_Wearable/wearable/esp32/ to the esp32 core code library (ex. C:\Users\<user>\AppData\Local\Arduino15\packages\esp32\hardware\esp32\1.0.4\cores\esp32)</li>
-  <li>Move boards.txt to the Arduino esp32 folder (ex. C:\Users\<your username>\AppData\Local\Arduino15\packages\esp32\hardware\esp32\1.0.4\)</li>
-  <li>Move Coachable_Wearable/wearable/HTTPClient to the esp32 libraries folder (ex. C:\Users\<your username>\AppData\Local\Arduino15\packages\esp32\hardware\esp32\1.0.4\libraries\)</li>
+  <li>Move the esp32-hal-bt.c file in Coachable_Wearable/wearable/esp32/ to the esp32 core code library (ex. C:\Users\[your username]\AppData\Local\Arduino15\packages\esp32\hardware\esp32\1.0.4\cores\esp32)</li>
+  <li>Move boards.txt to the Arduino esp32 folder (ex. C:\Users\[your username]\AppData\Local\Arduino15\packages\esp32\hardware\esp32\1.0.4\)</li>
+  <li>Move Coachable_Wearable/wearable/HTTPClient to the esp32 libraries folder (ex. C:\Users\[your username]\AppData\Local\Arduino15\packages\esp32\hardware\esp32\1.0.4\libraries\)</li>
 </ul>
 
 <h3>Database</h3>
