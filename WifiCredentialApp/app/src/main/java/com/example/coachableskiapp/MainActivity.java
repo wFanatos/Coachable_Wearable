@@ -52,6 +52,7 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        //init
         startBtn = (Button) findViewById(R.id.buttonStart);
         sendBtn = (Button) findViewById(R.id.buttonSend);
         stopBtn = (Button) findViewById(R.id.buttonStop);
@@ -61,10 +62,10 @@ public class MainActivity extends Activity {
         ssidPassTxt = (EditText) findViewById(R.id.ssidPassword);
         statusView = (TextView) findViewById(R.id.status);
         relLayout = (RelativeLayout) findViewById(R.id.relLayout);
-
+        // enable ui elements
         ConfigureUI(false);
 
-
+        // hide keyboard
         relLayout.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -77,7 +78,7 @@ public class MainActivity extends Activity {
 
     }
 
-
+    //init bluetooth
     public boolean BluetoothInit()
     {
         boolean found=false;
@@ -95,7 +96,7 @@ public class MainActivity extends Activity {
                 e.printStackTrace();
             }
         }
-        Set<BluetoothDevice> bondedDevices = bluetoothAdapter.getBondedDevices();
+        Set<BluetoothDevice> bondedDevices = bluetoothAdapter.getBondedDevices();//paired devices
 
         if(bondedDevices.isEmpty())
         {
@@ -119,7 +120,7 @@ public class MainActivity extends Activity {
         }
         return found;
     }
-
+    // sent info
     public void onClickSend(View view) {
         String clearMsg = "CLEAR_WIFI\0";
         String ssid = "SSID|" + ssidTxt.getText().toString() + "\0";
@@ -136,7 +137,7 @@ public class MainActivity extends Activity {
         ssidPassTxt.setText("");
 
     }
-
+    // disable/enable ui elements
     public void ConfigureUI(boolean bool)
     {
         startBtn.setEnabled(!bool);
@@ -144,7 +145,7 @@ public class MainActivity extends Activity {
         stopBtn.setEnabled(bool);
         statusView.setEnabled(bool);
     }
-
+    //conn bluetooth
     public boolean BluetoothConn()
     {
         boolean connected=true;
@@ -176,7 +177,7 @@ public class MainActivity extends Activity {
 
         return connected;
     }
-
+    //set up bluetooth
     public void onClickStart(View view) {
         stopBtn.setTextColor(Color.parseColor("#FFFFFF"));
 
@@ -194,7 +195,7 @@ public class MainActivity extends Activity {
 
         }
     }
-
+    // background listen for data
     void beginListenForData()
     {
         final Handler handler = new Handler();
@@ -243,7 +244,7 @@ public class MainActivity extends Activity {
     }
 
 
-
+    // disconnect bluetooth
     public void onClickStop(View view) throws IOException {
         stopThread = true;
         outputStream.close();
@@ -253,7 +254,7 @@ public class MainActivity extends Activity {
         deviceConnected=false;
         stopBtn.setTextColor(Color.parseColor("#DE512E"));
         startBtn.setTextColor(Color.parseColor("#FFFFFF"));//FFFFFF
-        //statusView.append("\nConnection Closed!\n");
+
         statusView.setText("");
     }
 
